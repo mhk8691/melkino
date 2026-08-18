@@ -1,222 +1,341 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material'
+import {Box, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
-import { useEffect, useState } from 'react'
-import useDeepCompareEffect from 'use-deep-compare-effect'
-import { useQueryParams } from 'use-query-params'
-import { CustomTable } from '../../../Components/Table/CustomTable'
-import { createTableHeadCells } from '../../../Components/Table/CustomTableHead'
-import { ListPage } from '../../../Components/Table/ListPage'
-import { DataProvider } from '../../../Core/DataProvider'
-import { createQueryParam } from '../../../Core/QueryParams'
-import { UserCreate } from '../Create/UserCreate'
-import { UsersType } from '../Users'
-import { formatDate } from '../../../Core/FormatDate'
-import { setUtil } from '../../../redux/UtilSlice'
-import { useDispatch } from 'react-redux'
-import { BaseModal } from '../../../Components/Modal/BaseModal'
-import { CustomTextField } from '../../../Components/Input/CustomTextField'
-import api from '../../../Core/Request'
-import { GridProducer } from '../../../Components/Table/GridProducer'
+import React, {ReactNode, useEffect, useMemo, useState} from 'react'
+import {useQueryParams} from 'use-query-params'
 
-const RECOURCE = 'users'
+import {CustomTable} from '../../../Components/Table/CustomTable'
+import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
+import {ListPage} from '../../../Components/Table/ListPage'
+import {createQueryParam} from '../../../Core/QueryParams'
+import {UserCreate} from '../Create/UserCreate'
 
-const tableHeadCells = [
-    createTableHeadCells('نام', 'first_name'),
-    createTableHeadCells('نام خانوادگی', 'last_name'),
-    createTableHeadCells('موبایل', 'mobile'),
-    createTableHeadCells('کد ملی', 'national_code'),
-    createTableHeadCells('نقش', 'role'),
-    createTableHeadCells('کارمزدها', 'fees'),
-    createTableHeadCells('کد نمایندگی', 'referral_code'),
-    // createTableHeadCells('سود رفرال', 'referral_code'),
-    createTableHeadCells('وضعیت حساب', 'is_active'),
-]
+import {AppUser, RealEstateAgency, RegularUser, UserRole} from '../UsersType'
 
-const queryNames = tableHeadCells.slice(2, 4).map((cell) => {
-    if (cell.name === 'role')
-        return {
-            field: cell.name,
-            label: cell.label,
-            type: 'choice',
-            choice: [
-                { label: 'کاربر', id: 'customer' },
-                { label: 'ادمین', id: 'admin' },
-            ],
-        }
-
-    return {
-        field: cell.name,
-        label: cell.label,
-        type: '',
-        choice: [],
-    }
-})
-
-function formatRole(role: string) {
-    switch (role) {
-        case 'admin':
-            return 'ادمین'
-        case 'customer':
-            return 'کاربر'
-   
-        default:
-            return role
-    }
+type UserListProps = {
+    role: UserRole
+    data: AppUser[]
+    total?: number
+    loading?: boolean
+    resource?: string
+    onGetList?: () => void
 }
 
-function formatAuthStatus(status: string) {
-    switch (status) {
-        case 'verified':
-            return 'تایید شده'
-        case 'pending':
-            return 'در انتظار تایید'
-        case 'rejected':
-            return 'رد شده'
-        default:
-            return status
+type ColumnConfig = {
+    label: string
+    name: string
+    render: (user: AppUser) => ReactNode
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Helpers                                   */
+/* -------------------------------------------------------------------------- */
+
+const textCell = (value: ReactNode) => (
+    <TableCell>
+        <Typography
+            variant="body2"
+            fontSize={{
+                xs: '13px',
+                sm: '14px',
+                md: '16px',
+                xl: '17px',
+            }}
+        >
+            {value ?? '-'}
+        </Typography>
+    </TableCell>
+)
+
+const imageCell = (src?: string | null, alt = 'کاربر') => (
+    <TableCell>
+        {src ? (
+            <Box
+                component="img"
+                src={src}
+                alt={alt}
+                sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                }}
+            />
+        ) : (
+            '-'
+        )}
+    </TableCell>
+)
+
+/* -------------------------------------------------------------------------- */
+/*                        Image + Name Cell                                   */
+/* -------------------------------------------------------------------------- */
+
+const userInfoCell = (user: AppUser, alt = 'کاربر') => (
+    <TableCell>
+        <Box
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+            }}
+        >
+            <Box
+                component="img"
+                src={user.profileImage || '/images/user.png'}
+                alt={alt}
+                sx={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    flexShrink: 0,
+                }}
+            />
+
+            <Box>
+                <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    color="text.primary"
+                    sx={{
+                        fontSize: {
+                            xs: '13px',
+                            sm: '14px',
+                            md: '15px',
+                            xl: '16px',
+                        },
+                    }}
+                >
+                    {user.firstName} {user.lastName}
+                </Typography>
+            </Box>
+        </Box>
+    </TableCell>
+)
+
+const getFullName = (user: AppUser) => `${user.firstName} ${user.lastName}`
+
+const getAgencyName = (user: AppUser) => {
+    if (
+        user.role === UserRole.REAL_ESTATE_AGENT ||
+        user.role === UserRole.ACCOUNTANT ||
+        user.role === UserRole.SECRETARY
+    ) {
+        return user.agencyName
     }
+
+    return '-'
 }
-interface FeesType {
-    gold_buy_fee:number
-gold_sell_fee:number
-silver_buy_fee:number
-silver_sell_fee:number
+
+/* -------------------------------------------------------------------------- */
+/*                            Columns By Role                                  */
+/* -------------------------------------------------------------------------- */
+
+const columnsByRole: Record<UserRole, ColumnConfig[]> = {
+    /* ---------------------------------------------------------------------- */
+    /*                            Super User                                  */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.SUPER_USER]: [
+        {
+            label: 'کاربر',
+            name: 'name',
+            render: (user) => userInfoCell(user, 'سوپر یوزر'),
+        },
+        {
+            label: 'شماره تماس',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+    ],
+
+    /* ---------------------------------------------------------------------- */
+    /*                         Real Estate Agency                             */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.REAL_ESTATE_AGENCY]: [
+        {
+            label: 'لوگو',
+            name: 'logo',
+            render: (user) => imageCell((user as RealEstateAgency).logo, 'لوگوی املاک'),
+        },
+        {
+            label: 'نام املاک',
+            name: 'agencyName',
+            render: (user) => textCell((user as RealEstateAgency).agencyName),
+        },
+        {
+            label: 'مدیر',
+            name: 'manager',
+            render: (user) => userInfoCell(user, 'مدیر املاک'),
+        },
+        {
+            label: 'شماره تماس',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+    ],
+
+    /* ---------------------------------------------------------------------- */
+    /*                         Real Estate Agent                              */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.REAL_ESTATE_AGENT]: [
+        {
+            label: 'کارشناس',
+            name: 'name',
+            render: (user) => userInfoCell(user, 'کارشناس'),
+        },
+        {
+            label: 'شماره تلفن',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+        {
+            label: 'نام املاک',
+            name: 'agencyName',
+            render: (user) => textCell(getAgencyName(user)),
+        },
+    ],
+
+    /* ---------------------------------------------------------------------- */
+    /*                           Regular User                                 */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.REGULAR_USER]: [
+        {
+            label: 'کاربر',
+            name: 'name',
+            render: (user) => userInfoCell(user, 'کاربر عادی'),
+        },
+        {
+            label: 'شماره تماس',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+        {
+            label: 'کد ملی',
+            name: 'nationalId',
+            render: (user) => textCell((user as RegularUser).nationalId),
+        },
+    ],
+
+    /* ---------------------------------------------------------------------- */
+    /*                              Accountant                                */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.ACCOUNTANT]: [
+        {
+            label: 'حسابدار',
+            name: 'name',
+            render: (user) => userInfoCell(user, 'حسابدار'),
+        },
+        {
+            label: 'شماره تماس',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+        {
+            label: 'نام املاک',
+            name: 'agencyName',
+            render: (user) => textCell(getAgencyName(user)),
+        },
+    ],
+
+    /* ---------------------------------------------------------------------- */
+    /*                              Secretary                                 */
+    /* ---------------------------------------------------------------------- */
+
+    [UserRole.SECRETARY]: [
+        {
+            label: 'منشی',
+            name: 'name',
+            render: (user) => userInfoCell(user, 'منشی'),
+        },
+        {
+            label: 'شماره تماس',
+            name: 'phoneNumber',
+            render: (user) => textCell(user.phoneNumber),
+        },
+        {
+            label: 'نام املاک',
+            name: 'agencyName',
+            render: (user) => textCell(getAgencyName(user)),
+        },
+    ],
 }
-export function UsersList() {
+
+/* -------------------------------------------------------------------------- */
+/*                              Role Labels                                   */
+/* -------------------------------------------------------------------------- */
+
+const roleLabels: Record<UserRole, string> = {
+    [UserRole.SUPER_USER]: 'سوپر یوزر',
+    [UserRole.REAL_ESTATE_AGENCY]: 'املاک',
+    [UserRole.REAL_ESTATE_AGENT]: 'کارشناس',
+    [UserRole.REGULAR_USER]: 'کاربر عادی',
+    [UserRole.ACCOUNTANT]: 'حسابدار',
+    [UserRole.SECRETARY]: 'منشی',
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Users List                                   */
+/* -------------------------------------------------------------------------- */
+
+export function UsersList({
+    role,
+    data,
+    total,
+    loading = false,
+    resource = 'users',
+    onGetList,
+}: UserListProps) {
+    const columns = useMemo(() => columnsByRole[role], [role])
+
+    const tableHeadCells = useMemo(
+        () => columns.map((column) => createTableHeadCells(column.label, column.name)),
+        [columns],
+    )
+
+    const queryNames = useMemo(
+        () =>
+            tableHeadCells.map((cell) => ({
+                field: cell.name,
+                label: cell.label,
+                type: '',
+                choice: [],
+            })),
+        [tableHeadCells],
+    )
+
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
-    const [loading, setLoading] = useState(false)
-const [selectedIds, setSelectedIds] = useState<string[]>([])
-const [isActiveEdit,setIsActiveEdit] = useState(false)
-const [editMode,setEditMode] = useState<'fee'|'referral' | null>(null)
-const [open,setOpen] = useState(false)
-const [fees,setFees] = useState<FeesType>({} as FeesType)
-const [referralProfit,setReferralProfit] = useState('')
-    const [users, setUsers] = useState<{
-        total_results: number
-        data: UsersType[]
-    }>({
-        total_results: 0,
-        data: [],
-    })
 
-    const dispatch = useDispatch()
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-    const getUsers = async () => {
-        setLoading(true)
+    const [isActiveEdit, setIsActiveEdit] = useState(false)
 
-        try {
-            const response = await DataProvider.get<{
-                total_results: number
-                results: UsersType[]
-            }>(`${RECOURCE}/`, search)
+    useEffect(() => {
+        setIsActiveEdit(selectedIds.length > 0)
+    }, [selectedIds])
 
-            if (response) {
-                setUsers({
-                    total_results: response.data.total_results,
-                    data: response.data.results,
-                })
-            }
-        } catch (error: any) {
-            dispatch(
-                setUtil({
-                    open: true,
-                    message: error.message,
-                    severity: 'error',
-                })
-            )
-        }
+    /* ---------------------------------------------------------------------- */
+    /*                         Filter By Role                                 */
+    /* ---------------------------------------------------------------------- */
 
-        setLoading(false)
-    }
-    const handleClearFees = ()=>{
-         setOpen(false)
-        setSelectedIds([])
-        setIsActiveEdit(false)
-        setFees({} as FeesType)
-        setReferralProfit('')
-    }
-const handleEditFees = async ()=>{
-    try{
-        const response = await DataProvider.post('users/bulk-update-fees/',{
-            data:{
-                user_ids:selectedIds,
-                 "gold_buy_fee": fees.gold_buy_fee,
-    "gold_sell_fee": fees.gold_sell_fee,
-    "silver_buy_fee": fees.silver_buy_fee,
-    "silver_sell_fee": fees.silver_sell_fee
-            }
-        })
-        getUsers()
-        dispatch(
-                setUtil({
-                    open: true,
-                    message: response.message,
-                    severity: 'success',
-                }),
-            )
-            handleClearFees()
-           
-    }catch(error:any) {
-        dispatch(
-                setUtil({
-                    open: true,
-                    message: error.response.data.message,
-                    severity: 'success',
-                }),
-            )
-    }
-}
+    const roleData = useMemo(() => data.filter((user) => user.role === role), [data, role])
 
-const handleEditProfit = async ()=>{
-    try{
-        const response = await DataProvider.post('users/bulk-update-referral/',{
-            data:{
-                user_ids:selectedIds,
-                 "referral_percent": referralProfit['referral_percent'],
-
-            }
-        })
-        getUsers()
-        dispatch(
-                setUtil({
-                    open: true,
-                    message: response.message,
-                    severity: 'success',
-                }),
-            )
-            handleClearFees()
-           
-    }catch(error:any) {
-        dispatch(
-                setUtil({
-                    open: true,
-                    message: error.response.data.message,
-                    severity: 'success',
-                }),
-            )
-    }
-}
-
-    useDeepCompareEffect(() => {
-        getUsers()
-    }, [search])
-useEffect(() => {
-    setIsActiveEdit(selectedIds.length > 0)
-}, [selectedIds])
     return (
-        <>
         <ListPage
-        setEditMode={setEditMode}
-        setOpenModal={setOpen}
-        isActiveEdit={isActiveEdit}
-            header="مدیریت کاربران"
-            href={RECOURCE + '/create'}
+            setEditMode={() => {}}
+            isActiveEdit={isActiveEdit}
+            header={`مدیریت ${roleLabels[role]}`}
+            href={`${resource}/create`}
             searchField="title"
             searchText="نام و نام خانوادگی"
             setParams={setSearch}
             params={search}
-            resource={RECOURCE}
-            getList={getUsers}
+            resource={resource}
+            getList={onGetList ?? (() => {})}
             filtersData={queryNames}
             createModal={UserCreate}
             defaultState={{
@@ -228,244 +347,29 @@ useEffect(() => {
             }}
         >
             <CustomTable
-            groupEdit
-              selectedIds={selectedIds}  
-    onSelectionChange={setSelectedIds} 
-                resource={RECOURCE}
+                groupEdit
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                resource={resource}
                 headCells={tableHeadCells}
-                rows={users.data}
-                count={users.total_results}
-                getList={getUsers}
+                rows={roleData}
+                count={total ?? roleData.length}
+                getList={onGetList ?? (() => {})}
                 params={search}
                 setParams={setSearch}
-                handleSort={getUsers}
+                handleSort={onGetList ?? (() => {})}
                 loading={loading}
-                hasDetail={true}
-                tableBodyCells={users.data.map((item) => (
-                    <>
-                        <TableCell >
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.first_name}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell >
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.last_name}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.mobile}
-                            </Typography>
-                        </TableCell>
-  <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.national_code}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {formatRole(item.role)}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 0.5,
-                                    minWidth: 150,
-                                }}
-                            >
-                                <Typography variant="caption">
-                                    خرید طلا:{' '}
-                                    {(
-                                        (item.fees?.gold_buy_fee ?? 0) * 100
-                                    ).toFixed(2)}
-                                    %
-                                </Typography>
-
-                                <Typography variant="caption">
-                                    فروش طلا:{' '}
-                                    {(
-                                        (item.fees?.gold_sell_fee ?? 0) * 100
-                                    ).toFixed(2)}
-                                    %
-                                </Typography>
-
-                                <Typography variant="caption">
-                                    خرید نقره:{' '}
-                                    {(
-                                        (item.fees?.silver_buy_fee ?? 0) * 100
-                                    ).toFixed(2)}
-                                    %
-                                </Typography>
-
-                                <Typography variant="caption">
-                                    فروش نقره:{' '}
-                                    {(
-                                        (item.fees?.silver_sell_fee ?? 0) * 100
-                                    ).toFixed(2)}
-                                    %
-                                </Typography>
-                            </Box>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.referral_code}
-                            </Typography>
-                        </TableCell>
-                        {/* <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item?.fee_settings?.referral_percent}
-                            </Typography>
-                        </TableCell> */}
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                            >
-                                {item.is_active ? 'فعال' : 'غیرفعال'}
-                            </Typography>
-                        </TableCell>
-
-                       
-                    </>
+                hasDetail
+                tableBodyCells={roleData.map((user) => (
+                    <React.Fragment key={user.id}>
+                        {columns.map((column) => (
+                            <React.Fragment key={`${user.id}-${column.name}`}>
+                                {column.render(user)}
+                            </React.Fragment>
+                        ))}
+                    </React.Fragment>
                 ))}
             />
         </ListPage>
-        <BaseModal
-                    open={open}
-                    setOpen={setOpen}
-                    title={editMode === 'fee' ? "ویرایش کارمزدها":'ویرایش سود رفرال'}
-                    onClose={()=>setOpen(false)}
-                    style={{maxWidth: 700}}
-                >
-                 <Stack my={2}>
-                    <GridProducer
-                 count={2}
-                                 data={editMode === 'fee' ? [
-                                     <CustomTextField
-                                         
-                                         name="gold_buy_fee"
-                                         label="کارمزد خرید طلا"
-                                         setData={setFees}
-                                         defaultValue={fees.gold_buy_fee}
-                                     />,
-                                     <CustomTextField
-                                         
-                                         name="gold_sell_fee"
-                                         label="کارمزد فروش طلا"
-                                         setData={setFees}
-                                         defaultValue={fees?.gold_sell_fee}
-                                     />,
-                                     <CustomTextField
-                                         
-                                         name="silver_buy_fee"
-                                         label="کارمزد خرید نقره"
-                                         setData={setFees}
-                                         defaultValue={fees?.silver_buy_fee}
-                                     />,
-                                     <CustomTextField
-                                         
-                                         name="silver_sell_fee"
-                                         label="کارمزد فروش نقره"
-                                         setData={setFees}
-                                         defaultValue={fees?.silver_sell_fee}
-                                     />,
-                                  
-                                 ]:[
-                                      <CustomTextField
-                                         
-                                         name="referral_percent"
-                                         label="سود رفرال"
-                                         setData={setReferralProfit}
-                                         defaultValue={referralProfit}
-                                     />
-                                 ]}
-                                 
-                             />
-                 </Stack>
-        
-                    <Stack direction={'row'} spacing={2} mt={1}>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            onClick={editMode === 'fee' ?handleEditFees:handleEditProfit}
-                        >
-                            تایید
-                        </Button>
-                        <Button variant="outlined" color="primary" size="large" onClick={handleClearFees}>
-                            لغو
-                        </Button>
-                    </Stack>
-        </BaseModal>
-        </>
     )
 }

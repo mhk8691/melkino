@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { useState} from 'react'
+import {useState} from 'react'
 import {Route, Routes, useLocation, useNavigate} from 'react-router-dom'
 import MainLayout from '../../Components/MainLayout'
 
@@ -10,6 +10,9 @@ import {UserEdit} from '../Users/Edit/UserEdit'
 import {UsersList} from '../Users/List/UsersList'
 import {UsersType} from '../Users/Users'
 import {LogsList} from '../Logs/List/LogsList'
+import {UserRole} from '../Users/UsersType'
+import {fakeUsers} from '../Users/usersData'
+import UserPage from '../Users/UserPage'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -84,7 +87,34 @@ export function Home(props) {
                             path="users/create"
                             element={<UserCreate data={data} setData={setData} />}
                         />
-                        <Route path="users" element={<UsersList />} />
+                        <Route
+                            path="users/super-admin"
+                            element={<UsersList role={UserRole.SUPER_USER} data={fakeUsers} />}
+                        />
+                        <Route
+                            path="users/real-estate"
+                            element={<UsersList role={UserRole.REAL_ESTATE_AGENCY} data={fakeUsers} />}
+                        />
+                        <Route
+                            path="users/agent"
+                            element={<UsersList role={UserRole.REAL_ESTATE_AGENT} data={fakeUsers} />}
+                        />
+                        <Route
+                            path="users/user"
+                            element={<UsersList role={UserRole.REGULAR_USER} data={fakeUsers} />}
+                        />
+                        <Route
+                            path="users/accountant"
+                            element={<UsersList role={UserRole.ACCOUNTANT} data={fakeUsers} />}
+                        />
+                        <Route
+                            path="users/secretary"
+                            element={<UsersList role={UserRole.SECRETARY} data={fakeUsers} />}
+                        />
+                         <Route
+                            path="users"
+                            element={<UserPage />}
+                        />
                         <Route path="users/:id" element={<UserEdit />} />
 
                         {/* ...........logs.......... */}
