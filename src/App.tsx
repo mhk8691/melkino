@@ -9,11 +9,11 @@ import {ReactRouter6Adapter} from 'use-query-params/adapters/react-router-6'
 import './App.css'
 import {LoadingBackdrop} from './Components/Backdrop/Backdrop'
 import {CustomizedSnackbars} from './Components/Snackbar/Snackbar'
-import {Login} from './Pages/Auth/Login/Login'
 import {Home} from './Pages/Home/Home'
 import {store} from './redux/store'
 import {RTL} from './RTL'
 import {AppTheme} from './Theme'
+import LoginPage from './Pages/Auth/LoginPage'
 function App() {
     return (
         <RTL>
@@ -33,7 +33,7 @@ function App() {
                             <QueryParamProvider adapter={ReactRouter6Adapter}>
                                 <Routes>
                                     <Route path="/*" element={<Home />} />
-                                    <Route path="login" element={<Login />} />
+                                    <Route path="login" element={<LoginPage />} />
                                 </Routes>
                             </QueryParamProvider>
                         </Provider>
