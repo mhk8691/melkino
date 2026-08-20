@@ -13,6 +13,9 @@ import {LogsList} from '../Logs/List/LogsList'
 import {UserRole} from '../Users/UsersType'
 import {fakeUsers} from '../Users/usersData'
 import UserPage from '../Users/UserPage'
+import { AnnouncementCreate } from '../Announcement/Create/AnnouncementCreate'
+import { AnnouncementList } from '../Announcement/List/AnnouncementList'
+import { AnnouncementEdit } from '../Announcement/Edit/AnnouncementEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -121,6 +124,13 @@ export function Home(props) {
 
                         <Route path="logs" element={<LogsList />} />
                         <Route path="logs" element={<DashboardLayout />} />
+
+                                                <Route
+                            path="announcements/create"
+                            element={<AnnouncementCreate data={data} setData={setData}  />}
+                        />
+                        <Route path="announcements" element={<AnnouncementList  />} />
+                        <Route path="announcements/:id" element={<AnnouncementEdit  />} />
                     </Routes>
                 </Box>
             </Box>

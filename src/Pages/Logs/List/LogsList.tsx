@@ -14,7 +14,7 @@ import { setUtil } from '../../../redux/UtilSlice'
 import { formatDate } from '../../../Core/FormatDate'
 
 const tableHeadCells = [
-    createTableHeadCells('آیدی', 'id'),
+    createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('ادمین', 'admin_mobile'),
     createTableHeadCells('کاربر', 'user_mobile'),
     createTableHeadCells('نوع عملیات', 'action_type'),
@@ -68,51 +68,126 @@ export function LogsList() {
     const [loading, setLoading] = useState(false)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-    const [logs, setLogs] = useState<{
-        total_results: number
-        results: LogsType[]
-    }>({
-        total_results: 0,
-        results: [],
-    })
+   const [logs, setLogs] = useState<{
+    total_results: number
+    results: LogsType[]
+}>({
+    total_results: 5,
+    results: [
+        {
+            id: 1,
+            created_at: '2026-08-20T12:30:00Z',
+            action_type: 'LOGIN',
+            action: 'ورود کاربر به سیستم',
+            level: 'INFO',
+            success: true,
+            response_status: 200,
+            ip_address: '192.168.1.10',
+            method: 'POST',
+            endpoint: '/api/auth/login/',
+            tracking_code: 'TRK-10001',
+            user_mobile: '09121234567',
+            admin_mobile: null,
+        },
+        {
+            id: 2,
+            created_at: '2026-08-20T11:45:00Z',
+            action_type: 'CREATE',
+            action: 'ایجاد کاربر جدید',
+            level: 'INFO',
+            success: true,
+            response_status: 201,
+            ip_address: '192.168.1.15',
+            method: 'POST',
+            endpoint: '/api/users/',
+            tracking_code: 'TRK-10002',
+            user_mobile: '09123456789',
+            admin_mobile: '09121111111',
+        },
+        {
+            id: 3,
+            created_at: '2026-08-20T10:20:00Z',
+            action_type: 'UPDATE',
+            action: 'ویرایش اطلاعات کاربر',
+            level: 'INFO',
+            success: true,
+            response_status: 200,
+            ip_address: '10.10.20.5',
+            method: 'PUT',
+            endpoint: '/api/users/25/',
+            tracking_code: 'TRK-10003',
+            user_mobile: '09129876543',
+            admin_mobile: '09121111111',
+        },
+        {
+            id: 4,
+            created_at: '2026-08-20T09:10:00Z',
+            action_type: 'DELETE',
+            action: 'حذف کاربر',
+            level: 'WARNING',
+            success: false,
+            response_status: 400,
+            ip_address: '172.16.0.12',
+            method: 'DELETE',
+            endpoint: '/api/users/18/',
+            tracking_code: 'TRK-10004',
+            user_mobile: '09125555555',
+            admin_mobile: '09122222222',
+        },
+        {
+            id: 5,
+            created_at: '2026-08-19T18:35:00Z',
+            action_type: 'LOGIN',
+            action: 'تلاش ناموفق برای ورود',
+            level: 'ERROR',
+            success: false,
+            response_status: 401,
+            ip_address: '185.20.30.40',
+            method: 'POST',
+            endpoint: '/api/auth/login/',
+            tracking_code: 'TRK-10005',
+            user_mobile: '09127777777',
+            admin_mobile: null,
+        },
+    ],
+})
 
     const dispatch = useDispatch()
 
-    const getLogs = async () => {
-        setLoading(true)
+    // const getLogs = async () => {
+    //     setLoading(true)
 
-        try {
-            const response = await DataProvider.get<{
-                success: boolean
-                message: string
-                    total_results: number
-                    results: LogsType[]
-            }>(`${resource}/`, search)
-            console.log(response.data)
-            setLogs({
-                total_results: response.data.total_results,
-                results: response.data.results,
-            })
-        } catch (error: any) {
-            dispatch(
-                setUtil({
-                    open: true,
-                    message: error.message,
-                    severity: 'error',
-                })
-            )
-        } finally {
-            setLoading(false)
-        }
-    }
+    //     try {
+    //         const response = await DataProvider.get<{
+    //             success: boolean
+    //             message: string
+    //                 total_results: number
+    //                 results: LogsType[]
+    //         }>(`${resource}/`, search)
+    //         console.log(response.data)
+    //         setLogs({
+    //             total_results: response.data.total_results,
+    //             results: response.data.results,
+    //         })
+    //     } catch (error: any) {
+    //         dispatch(
+    //             setUtil({
+    //                 open: true,
+    //                 message: error.message,
+    //                 severity: 'error',
+    //             })
+    //         )
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
 
-    useDeepCompareEffect(() => {
-        getLogs()
-    }, [search])
+    // useDeepCompareEffect(() => {
+    //     getLogs()
+    // }, [search])
 
     return (
         <ListPage
-            isCsvExport
             header="مدیریت لاگ ها"
             href={`${resource}/create`}
             searchField="username"
@@ -120,7 +195,8 @@ export function LogsList() {
             setParams={setSearch}
             params={search}
             resource={resource}
-            getList={getLogs}
+            // getList={getLogs}
+            getList={()=>{}}
             filtersData={queryNames}
             noCreate
             listData={logs.results}
@@ -138,10 +214,12 @@ export function LogsList() {
                 headCells={tableHeadCells}
                 rows={logs.results}
                 count={logs.total_results}
-                getList={getLogs}
+                getList={()=>{}}
+                // getList={getLogs}
                 params={search}
                 setParams={setSearch}
-                handleSort={getLogs}
+                handleSort={()=>{}}
+                // handleSort={getLogs}
                 loading={loading}
                 hasDetail={false}
                 noEdit

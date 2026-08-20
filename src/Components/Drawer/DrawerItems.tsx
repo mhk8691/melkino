@@ -1,34 +1,15 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import CategoryIcon from '@mui/icons-material/Category'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupIcon from '@mui/icons-material/Group'
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket'
 import StorefrontIcon from '@mui/icons-material/Storefront'
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
-import HandshakeIcon from '@mui/icons-material/Handshake'
-import ImageIcon from '@mui/icons-material/Image'
-import CallReceivedIcon from '@mui/icons-material/CallReceived'
-import CallMadeIcon from '@mui/icons-material/CallMade'
 import AssignmentIcon from '@mui/icons-material/Assignment'
-import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt"
 import {
-    CardMembershipRounded,
-    CurrencyExchange,
     WorkspacePremium,
 } from '@mui/icons-material'
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import { ReactNode } from 'react'
-
-// ----------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------
 
 export type DrawerItemType = {
     title: string
@@ -140,7 +121,7 @@ export const drawerItems: DrawerItemType[] = [
   
     {
         title: 'اطلاعیه ها',
-        link: 'silver-announcements',
+        link: 'announcements',
         role: 'all',
         icon: <CampaignIcon sx={iconStyle} />,
         // groupId: 'silver-content',
