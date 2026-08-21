@@ -1,123 +1,359 @@
-import React, {useEffect, useState} from 'react'
-import {Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField} from '@mui/material'
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+} from 'react'
 
-import {SettingsSection} from './SettingsSection'
-import type {PanelSettingsState, SettingsSetter} from './types'
+import {
+    Box,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+} from '@mui/material'
+
+import { SettingsSection } from './SettingsSection'
+
+import type {
+    PanelSettingsState,
+    SettingsSetter,
+} from './types'
+
+import {
+    CustomTextField,
+} from '../../Components/Input/CustomTextField'
+
+import type {
+    PanelPreviewRef,
+} from './PanelPreview'
 
 interface ThemeSettingsProps {
     settings: PanelSettingsState
     setSettings: SettingsSetter
+
+    previewRef: React.RefObject<PanelPreviewRef | null>
 }
 
 const colorFields: Array<{
     key: keyof PanelSettingsState['theme']
     label: string
 }> = [
-    {key: 'primary', label: 'Primary'},
-    {key: 'secondary', label: 'Secondary'},
-    {key: 'success', label: 'Success'},
-    {key: 'warning', label: 'Warning'},
-    {key: 'error', label: 'Error'},
-    {key: 'background', label: 'Background'},
-    {key: 'text', label: 'Text'},
+    {
+        key: 'primary',
+        label: 'Primary',
+    },
+    {
+        key: 'secondary',
+        label: 'Secondary',
+    },
+    {
+        key: 'success',
+        label: 'Success',
+    },
+    {
+        key: 'warning',
+        label: 'Warning',
+    },
+    {
+        key: 'error',
+        label: 'Error',
+    },
+    {
+        key: 'background',
+        label: 'Background',
+    },
+    {
+        key: 'text',
+        label: 'Text',
+    },
 ]
 
 interface ColorPickerFieldProps {
+    fieldKey: keyof PanelSettingsState['theme']
+
     label: string
+
     value: string
-    onChange: (value: string) => void
+
+    setSettings: SettingsSetter
+
+    previewRef: React.RefObject<
+        PanelPreviewRef | null
+    >
 }
 
-const ColorPickerField = React.memo(function ColorPickerField({
-    label,
-    value,
-    onChange,
-}: ColorPickerFieldProps) {
-    const [localColor, setLocalColor] = useState(value)
+const ColorPickerField = React.memo(
+    function ColorPickerField({
+        fieldKey,
+        label,
+        value,
+        setSettings,
+        previewRef,
+    }: ColorPickerFieldProps) {
+        /*
+         * این state فقط متعلق به همین ColorPicker است.
+         */
+        const [localColor, setLocalColor] =
+            useState(value)
 
-    useEffect(() => {
-        setLocalColor(value)
-    }, [value])
+        /*
+         * Sync با settings
+         */
+        useEffect(() => {
+            setLocalColor(value)
+        }, [value])
 
-    const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // فقط state محلی تغییر می‌کند
-        // بنابراین parent در هر حرکت دوباره render نمی‌شود
-        setLocalColor(event.target.value)
-    }
+        /*
+         * ==========================================
+         * COLOR PICKER CHANGE
+         * ==========================================
+         *
+         * اینجا به هیچ عنوان setSettings نداریم.
+         *
+         * بنابراین والد Render نمی‌شود.
+         */
+        const handleColorChange = useCallback(
+            (
+                event: React.ChangeEvent<HTMLInputElement>,
+            ) => {
+                const newColor =
+                    event.target.value
 
-    const handleColorBlur = () => {
-        // فقط بعد از تمام شدن انتخاب رنگ
-        if (localColor !== value) {
-            onChange(localColor)
-        }
-    }
+                /*
+                 * فقط همین Component تغییر می‌کند
+                 */
+                setLocalColor(newColor)
 
-    const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setLocalColor(event.target.value)
-    }
+                /*
+                 * Preview مستقیماً آپدیت می‌شود
+                 *
+                 * بدون React render در Parent
+                 */
+                previewRef.current?.updateColor(
+                    fieldKey,
+                    newColor,
+                )
+            },
+            [
+                fieldKey,
+                previewRef,
+            ],
+        )
 
-    const handleTextBlur = () => {
-        if (localColor !== value) {
-            onChange(localColor)
-        }
-    }
+        /*
+         * ==========================================
+         * COLOR PICKER BLUR
+         * ==========================================
+         *
+         * اینجا مقدار نهایی وارد settings می‌شود.
+         */
+        const handleColorBlur =
+            useCallback(() => {
+                if (localColor === value) {
+                    return
+                }
 
-    return (
-        <Stack direction="row" alignItems="center" spacing={1}>
-            <Box
-                component="input"
-                type="color"
-                value={localColor}
-                onChange={handleColorChange}
-                onBlur={handleColorBlur}
-                sx={{
-                    width: 42,
-                    height: 42,
-                    flexShrink: 0,
-                    padding: 0,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    backgroundColor: 'transparent',
+                setSettings(prev => ({
+                    ...prev,
 
-                    '&::-webkit-color-swatch-wrapper': {
+                    theme: {
+                        ...prev.theme,
+
+                        [fieldKey]:
+                            localColor,
+                    },
+                }))
+            }, [
+                fieldKey,
+                localColor,
+                setSettings,
+                value,
+            ])
+
+        /*
+         * ==========================================
+         * TEXT FIELD
+         * ==========================================
+         */
+        const handleTextChange = useCallback(
+            (
+                data: Record<string, string>,
+            ) => {
+                const newColor =
+                    data[fieldKey]
+
+                if (
+                    typeof newColor !==
+                    'string'
+                ) {
+                    return
+                }
+
+                /*
+                 * Local
+                 */
+                setLocalColor(newColor)
+
+                /*
+                 * Preview لحظه‌ای
+                 */
+                previewRef.current?.updateColor(
+                    fieldKey,
+                    newColor,
+                )
+
+                /*
+                 * برای تایپ HEX، مقدار اصلی
+                 * نیز آپدیت می‌شود.
+                 *
+                 * این بخش روی Color Picker
+                 * تأثیری ندارد چون Color Picker
+                 * دیگر setSettings نمی‌کند.
+                 */
+                setSettings(prev => ({
+                    ...prev,
+
+                    theme: {
+                        ...prev.theme,
+
+                        [fieldKey]:
+                            newColor,
+                    },
+                }))
+            },
+            [
+                fieldKey,
+                previewRef,
+                setSettings,
+            ],
+        )
+
+        return (
+            <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+            >
+                {/* ==================================
+                    COLOR PICKER
+                =================================== */}
+
+                <Box
+                    component="input"
+                    type="color"
+                    value={
+                        localColor
+                    }
+                    onChange={
+                        handleColorChange
+                    }
+                    onBlur={
+                        handleColorBlur
+                    }
+                    sx={{
+                        width: 42,
+                        height: 42,
+
+                        flexShrink: 0,
+
                         padding: 0,
-                    },
 
-                    '&::-webkit-color-swatch': {
-                        border: 'none',
-                        borderRadius: 1.5,
-                    },
+                        border:
+                            '1px solid',
 
-                    '&::-moz-color-swatch': {
-                        border: 'none',
-                        borderRadius: 1.5,
-                    },
-                }}
-            />
+                        borderColor:
+                            'divider',
 
-            <TextField
-                fullWidth
-                size="small"
-                label={label}
-                value={localColor}
-                onChange={handleTextChange}
-                onBlur={handleTextBlur}
-            />
-        </Stack>
-    )
-})
+                        borderRadius:
+                            2,
 
-export function ThemeSettings({settings, setSettings}: ThemeSettingsProps) {
-    const update = (key: keyof PanelSettingsState['theme'], value: string) => {
-        setSettings((prev) => ({
+                        cursor:
+                            'pointer',
+
+                        backgroundColor:
+                            'transparent',
+
+                        '&::-webkit-color-swatch-wrapper':
+                            {
+                                padding: 0,
+                            },
+
+                        '&::-webkit-color-swatch':
+                            {
+                                border:
+                                    'none',
+
+                                borderRadius:
+                                    1.5,
+                            },
+
+                        '&::-moz-color-swatch':
+                            {
+                                border:
+                                    'none',
+
+                                borderRadius:
+                                    1.5,
+                            },
+                    }}
+                />
+
+                {/* ==================================
+                    CUSTOM TEXT FIELD
+                =================================== */}
+
+                <CustomTextField
+                    key={fieldKey}
+                    name={String(fieldKey)}
+                    label={label}
+                    resource=""
+                    defaultValue={
+                        localColor
+                    }
+                    setData={
+                        handleTextChange
+                    }
+                />
+            </Stack>
+        )
+    },
+)
+
+export function ThemeSettings({
+    settings,
+    setSettings,
+    previewRef,
+}: ThemeSettingsProps) {
+    /*
+     * ==========================================
+     * MODE
+     * ==========================================
+     */
+    const handleModeChange = (
+        event: any,
+    ) => {
+        const mode =
+            event.target.value as PanelSettingsState['theme']['mode']
+
+        /*
+         * settings اصلی
+         */
+        setSettings(prev => ({
             ...prev,
+
             theme: {
                 ...prev.theme,
-                [key]: value,
+                mode,
             },
         }))
+
+        /*
+         * Preview
+         */
+        previewRef.current?.updateMode(
+            mode,
+        )
     }
 
     return (
@@ -126,42 +362,93 @@ export function ThemeSettings({settings, setSettings}: ThemeSettingsProps) {
             description="حالت نمایش و رنگ‌های اصلی پنل را تعیین کنید."
         >
             <Stack spacing={3}>
-                {/* Display Mode */}
+                {/* ==================================
+                    MODE
+                =================================== */}
+
                 <FormControl fullWidth>
-                    <InputLabel>حالت نمایش</InputLabel>
+                    <InputLabel>
+                        حالت نمایش
+                    </InputLabel>
 
                     <Select
                         label="حالت نمایش"
-                        value={settings.theme.mode}
-                        onChange={(event) => update('mode', event.target.value)}
+                        value={
+                            settings.theme
+                                .mode
+                        }
+                        onChange={
+                            handleModeChange
+                        }
+                        sx={{
+                            borderRadius:
+                                '15px',
+
+                            '& .MuiOutlinedInput-notchedOutline':
+                                {
+                                    borderRadius:
+                                        '15px',
+                                },
+                        }}
                     >
-                        <MenuItem value="light">روشن</MenuItem>
+                        <MenuItem value="light">
+                            روشن
+                        </MenuItem>
 
-                        <MenuItem value="dark">تاریک</MenuItem>
-
+                        <MenuItem value="dark">
+                            تاریک
+                        </MenuItem>
                     </Select>
                 </FormControl>
 
-                {/* Colors */}
+                {/* ==================================
+                    COLORS
+                =================================== */}
+
                 <Box
                     sx={{
-                        display: 'grid',
-                        gridTemplateColumns: {
-                            xs: '1fr',
-                            sm: 'repeat(2, 1fr)',
-                            lg: 'repeat(3, 1fr)',
-                        },
+                        display:
+                            'grid',
+
+                        gridTemplateColumns:
+                            {
+                                xs: '1fr',
+
+                                sm: 'repeat(2, 1fr)',
+
+                                lg: 'repeat(3, 1fr)',
+                            },
+
                         gap: 2,
                     }}
                 >
-                    {colorFields.map((field) => (
-                        <ColorPickerField
-                            key={field.key}
-                            label={field.label}
-                            value={settings.theme[field.key]}
-                            onChange={(value) => update(field.key, value)}
-                        />
-                    ))}
+                    {colorFields.map(
+                        field => (
+                            <ColorPickerField
+                                key={
+                                    field.key
+                                }
+                                fieldKey={
+                                    field.key
+                                }
+                                label={
+                                    field.label
+                                }
+                                value={
+                                    settings
+                                        .theme[
+                                        field.key
+                                    ]
+                                }
+                                setSettings={
+                                    setSettings
+                                }
+                                previewRef={
+                                    previewRef
+                                }
+                            />
+                        ),
+                    )}
                 </Box>
             </Stack>
         </SettingsSection>

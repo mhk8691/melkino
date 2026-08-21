@@ -1,11 +1,12 @@
 import React, {useRef} from 'react'
-import {Box, Button, Stack, TextField, Typography} from '@mui/material'
+import {Box, Button, Stack, Typography} from '@mui/material'
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 
 import {SettingsSection} from './SettingsSection'
 import type {PanelSettingsState, SettingsSetter} from './types'
+import { CustomTextField } from '../../Components/Input/CustomTextField'
 
 interface BrandingSettingsProps {
     settings: PanelSettingsState
@@ -14,6 +15,7 @@ interface BrandingSettingsProps {
 
 interface ImageUploadFieldProps {
     label: string
+    name: keyof PanelSettingsState['branding']
     value: string
     placeholder: string
     onChange: (value: string) => void
@@ -22,6 +24,7 @@ interface ImageUploadFieldProps {
 
 function ImageUploadField({
     label,
+    name,
     value,
     placeholder,
     onChange,
@@ -29,7 +32,9 @@ function ImageUploadField({
 }: ImageUploadFieldProps) {
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const file = event.target.files?.[0]
 
         if (!file) return
@@ -61,10 +66,6 @@ function ImageUploadField({
 
     return (
         <Stack spacing={1.5}>
-            <Typography variant="body2" fontWeight={600}>
-                {label}
-            </Typography>
-
             {/* Preview */}
             <Box
                 sx={{
@@ -86,21 +87,27 @@ function ImageUploadField({
                         component="img"
                         src={value}
                         alt={label}
-                        onError={(event) => {
-                            event.currentTarget.style.display = 'none'
-                        }}
                         sx={{
                             maxWidth: '100%',
                             maxHeight: previewHeight,
                             objectFit: 'contain',
                             display: 'block',
                         }}
+                        onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                        }}
                     />
                 ) : (
-                    <Stack alignItems="center" spacing={1} color="text.secondary">
+                    <Stack
+                        alignItems="center"
+                        spacing={1}
+                        color="text.secondary"
+                    >
                         <ImageOutlinedIcon sx={{fontSize: 42}} />
 
-                        <Typography variant="body2">تصویری انتخاب نشده است</Typography>
+                        <Typography variant="body2">
+                            تصویری انتخاب نشده است
+                        </Typography>
                     </Stack>
                 )}
 
@@ -109,7 +116,9 @@ function ImageUploadField({
                         size="small"
                         color="error"
                         variant="contained"
-                        startIcon={<DeleteOutlineOutlinedIcon />}
+                        startIcon={
+                            <DeleteOutlineOutlinedIcon />
+                        }
                         onClick={handleRemove}
                         sx={{
                             position: 'absolute',
@@ -122,14 +131,23 @@ function ImageUploadField({
                 )}
             </Box>
 
-            {/* URL */}
-            <TextField
-                fullWidth
-                size="small"
+            <CustomTextField
+                key={name}
+                name={name}
                 label={`${label} - آدرس`}
+                resource=""
+                setData={(data: any) => {
+                    const newValue =
+                        data?.[name] ?? ''
+
+                    onChange(newValue)
+                }}
+                defaultValue={
+                    value.startsWith('data:')
+                        ? ''
+                        : value
+                }
                 placeholder={placeholder}
-                value={value.startsWith('data:') ? '' : value}
-                onChange={(e) => onChange(e.target.value)}
             />
 
             {/* Upload */}
@@ -144,7 +162,9 @@ function ImageUploadField({
 
                 <Button
                     variant="outlined"
-                    startIcon={<CloudUploadOutlinedIcon />}
+                    startIcon={
+                        <CloudUploadOutlinedIcon />
+                    }
                     onClick={handleUploadClick}
                 >
                     انتخاب تصویر
@@ -154,7 +174,10 @@ function ImageUploadField({
                     <Button
                         variant="text"
                         color="error"
-                        startIcon={<DeleteOutlineOutlinedIcon />}
+                        startIcon={
+                            <DeleteOutlineOutlinedIcon
+                            />
+                        }
                         onClick={handleRemove}
                     >
                         حذف تصویر
@@ -165,9 +188,15 @@ function ImageUploadField({
     )
 }
 
-export function BrandingSettings({settings, setSettings}: BrandingSettingsProps) {
-    const update = (key: keyof PanelSettingsState['branding'], value: string) => {
-        setSettings((prev) => ({
+export function BrandingSettings({
+    settings,
+    setSettings,
+}: BrandingSettingsProps) {
+    const update = (
+        key: keyof PanelSettingsState['branding'],
+        value: string,
+    ) => {
+        setSettings(prev => ({
             ...prev,
             branding: {
                 ...prev.branding,
@@ -177,34 +206,50 @@ export function BrandingSettings({settings, setSettings}: BrandingSettingsProps)
     }
 
     return (
-        <SettingsSection title="برندینگ" description="لوگوها و هویت بصری پنل را مدیریت کنید.">
+        <SettingsSection
+            title="برندینگ"
+            description="لوگوها و هویت بصری پنل را مدیریت کنید."
+        >
             <Stack spacing={3}>
                 <ImageUploadField
                     label="Logo اصلی"
+                    name="logo"
                     placeholder="https://example.com/logo.png"
                     value={settings.branding.logo}
-                    onChange={(value) => update('logo', value)}
+                    onChange={value =>
+                        update('logo', value)
+                    }
                     previewHeight={160}
                 />
 
                 <ImageUploadField
                     label="Logo موبایل"
+                    name="mobileLogo"
                     placeholder="https://example.com/mobile-logo.png"
                     value={settings.branding.mobileLogo}
-                    onChange={(value) => update('mobileLogo', value)}
+                    onChange={value =>
+                        update('mobileLogo', value)
+                    }
                     previewHeight={160}
                 />
 
                 <ImageUploadField
                     label="Favicon"
+                    name="favicon"
                     placeholder="https://example.com/favicon.png"
                     value={settings.branding.favicon}
-                    onChange={(value) => update('favicon', value)}
+                    onChange={value =>
+                        update('favicon', value)
+                    }
                     previewHeight={120}
                 />
 
-                <Typography variant="labelMd" color="text.secondary">
-                    می‌توانید تصویر را مستقیماً آپلود کنید یا آدرس تصویر را وارد کنید.
+                <Typography
+                    variant="labelMd"
+                    color="text.secondary"
+                >
+                    می‌توانید تصویر را مستقیماً آپلود کنید یا
+                    آدرس تصویر را وارد کنید.
                 </Typography>
             </Stack>
         </SettingsSection>

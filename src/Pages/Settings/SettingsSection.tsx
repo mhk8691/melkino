@@ -18,7 +18,7 @@ export function SettingsSection({
                 backgroundColor: 'background.paper',
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: 3,
+                borderRadius: '15px',
                 p: { xs: 2, sm: 3 },
             }}
         >

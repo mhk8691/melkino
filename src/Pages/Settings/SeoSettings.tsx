@@ -1,61 +1,54 @@
-import { Stack, TextField } from '@mui/material'
-import { SettingsSection } from './SettingsSection'
-import { PanelSettingsState, SettingsSetter } from './types'
+import {Stack} from '@mui/material'
+import {SettingsSection} from './SettingsSection'
+import type {PanelSettingsState, SettingsSetter} from './types'
+import { CustomTextField } from '../../Components/Input/CustomTextField'
 
 interface SeoSettingsProps {
     settings: PanelSettingsState
     setSettings: SettingsSetter
 }
 
-export function SeoSettings({ settings, setSettings }: SeoSettingsProps) {
-    const update = (key: keyof PanelSettingsState['seo'], value: string) => {
-        setSettings(prev => ({
-            ...prev,
-            seo: { ...prev.seo, [key]: value },
-        }))
-    }
-
+export function SeoSettings({settings, setSettings}: SeoSettingsProps) {
     return (
         <SettingsSection
             title="تنظیمات SEO"
             description="اطلاعات پایه برای موتورهای جستجو و اشتراک‌گذاری صفحات."
         >
             <Stack spacing={2.5}>
-                <TextField
-                    fullWidth
+                <CustomTextField
+                    key="title"
+                    name="title"
                     label="عنوان سایت"
-                    value={settings.seo.title}
-                    onChange={e => update('title', e.target.value)}
+                    resource=""
+                    setData={(data) => {
+                        setSettings((prev) => ({
+                            ...prev,
+                            seo: {
+                                ...prev.seo,
+                                title: data.title,
+                            },
+                        }))
+                    }}
+                    defaultValue={settings.seo.title}
                 />
 
-                <TextField
-                    fullWidth
+                <CustomTextField
+                    key="description"
+                    name="description"
+                    label="توضیحات SEO"
+                    resource=""
+                    setData={(data) => {
+                        setSettings((prev) => ({
+                            ...prev,
+                            seo: {
+                                ...prev.seo,
+                                description: data.description,
+                            },
+                        }))
+                    }}
+                    defaultValue={settings.seo.description}
                     multiline
                     minRows={3}
-                    label="توضیحات SEO"
-                    value={settings.seo.description}
-                    onChange={e => update('description', e.target.value)}
-                />
-
-                <TextField
-                    fullWidth
-                    label="کلمات کلیدی"
-                    value={settings.seo.keywords}
-                    onChange={e => update('keywords', e.target.value)}
-                />
-
-                <TextField
-                    fullWidth
-                    label="آدرس Open Graph Image"
-                    value={settings.seo.ogImage}
-                    onChange={e => update('ogImage', e.target.value)}
-                />
-
-                <TextField
-                    fullWidth
-                    label="Robots"
-                    value={settings.seo.robots}
-                    onChange={e => update('robots', e.target.value)}
                 />
             </Stack>
         </SettingsSection>
