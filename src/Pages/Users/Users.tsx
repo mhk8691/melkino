@@ -1,34 +1,66 @@
-import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography, Button, Divider} from '@mui/material'
-import {CustomTextField} from '../../Components/Input/CustomTextField'
-import {GridProducer} from '../../Components/Table/GridProducer'
-import { formatDate } from '../../Core/FormatDate'
-import DatePickerFilter from '../../Components/Filter/DatePicker'
-import { ParamType } from '../../Components/Filter/CustomFilter'
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    SelectChangeEvent,
+} from '@mui/material'
 
-export interface ReferralType {
-         "id": number,
-                "from_user_mobile": string,
-                "from_user_name": string,
-                "source_type": string,
-                "source_type_raw": string,
-                "transaction_amount": number,
-                "commission_percent": number,
-                "profit": number,
-                "created_at": string
+import { styled } from '@mui/material/styles'
+import { useState } from 'react'
+
+import {
+    SuperUser,
+    UserRole,
+} from './UsersType'
+
+import { CustomTextField } from '../../Components/Input/CustomTextField'
+import { GridProducer } from '../../Components/Table/GridProducer'
+
+
+// ======================================================
+// Fake Super User
+// ======================================================
+
+const fakeSuperUser: SuperUser = {
+    id: "user-super-001",
+    role: UserRole.SUPER_USER,
+    firstName: "علی",
+    lastName: "رضایی",
+    phoneNumber: "09121234567",
+    profileImage: "/images/users/super-user.jpg",
+    canImpersonateUsers: true,
+    createdAt: "2026-08-01T09:00:00.000Z",
+    updatedAt: "2026-08-18T10:30:00.000Z",
 }
 
 
+// ======================================================
+// Users Type
+// ======================================================
+
+export interface ReferralType {
+    id: number
+    from_user_mobile: string
+    from_user_name: string
+    source_type: string
+    source_type_raw: string
+    transaction_amount: number
+    commission_percent: number
+    profit: number
+    created_at: string
+}
+
 export type UsersType = {
     id: number
-    referral_count:number
-    referral_profit:number
+    referral_count: number
+    referral_profit: number
     username: string
     first_name: string
     last_name: string
     email: string
-    referral_earnings:ReferralType[]
+    referral_earnings: ReferralType[]
     mobile: string
     national_code: string
     birth_date: string
@@ -39,7 +71,7 @@ export type UsersType = {
     referral_code: string | null
     referred_by: number | null
 
-    role: 'customer' | 'admin' 
+    role: 'customer' | 'admin'
 
     is_active: boolean
     is_staff: boolean
@@ -58,364 +90,203 @@ export type UsersType = {
         gold_sell_fee: number
         silver_buy_fee: number
         silver_sell_fee: number
-    },
-    fee_settings:{
-        referral_percent:number
-
     }
-    "balances": {
-            "gold_wallet": {
-                "accessible_toman": number,
-                "blocked_toman": number
-            },
-            "silver_wallet": {
-                "accessible_toman": number,
-                "blocked_toman": number
-            },
-            "gold_inventory": {
-                "accessible_balance": number,
-                "blocked_balance": number
-            },
-            "silver_inventory": {
-                "accessible_balance": number,
-                "blocked_balance": number
-            }
+
+    fee_settings: {
+        referral_percent: number
+    }
+
+    balances: {
+        gold_wallet: {
+            accessible_toman: number
+            blocked_toman: number
+        }
+
+        silver_wallet: {
+            accessible_toman: number
+            blocked_toman: number
+        }
+
+        gold_inventory: {
+            accessible_balance: number
+            blocked_balance: number
+        }
+
+        silver_inventory: {
+            accessible_balance: number
+            blocked_balance: number
+        }
+    }
+}
+
+export interface TransactionsType {
+    id: number
+    type: 'DEPOSIT' | 'WITHDRAW'
+    status: string
+    amount: number
+    toman_amount: number
+    tracking_code: string
+    description: string
+    created_at: string
+}
+
+
+// ======================================================
+// Styled Components
+// ======================================================
+
+const CustomFormControl = styled(FormControl)(({ theme }) => ({
+    width: '100%',
+
+    '& .MuiOutlinedInput-root': {
+        borderRadius: '15px',
+
+        '& fieldset': {
+            borderRadius: '15px',
         },
-}
-export interface TransactionsType{
-    id:number
-        "type": "DEPOSIT" | 'WITHDRAW',
-        "status":string,
-        "amount": number,
-        "toman_amount": number,
-        "tracking_code": string,
-        "description": string,
-        "created_at": string
-}
-const RESOURCE = 'users'
 
-export function Users({
-    user,
-    setUser,
-    editMode = false,
-    isProfile = false,
-    setDate,
-    date,
-    id
-}: {
-    user: UsersType
-    setUser: React.Dispatch<React.SetStateAction<UsersType>>
-     setDate: React.Dispatch<React.SetStateAction<ParamType>>
-     date:ParamType
-    editMode?: boolean
-    isProfile?: boolean
-    id?:string
-    
-}) {
-    const navigate = useNavigate()
-    const handleRoleChange = (event: SelectChangeEvent) => {
-        setUser((prev) => ({
-            ...prev,
-            role: event.target.value as UsersType['role'],
-        }))
+        '&:hover fieldset': {
+            borderColor: `${theme.palette.primary.light} !important`,
+        },
+
+        '&.Mui-focused fieldset': {
+            borderColor: theme.palette.primary.main,
+        },
+
+        '&.Mui-disabled': {
+            backgroundColor: theme.palette.action.disabledBackground,
+            opacity: 0.6,
+        },
+    },
+
+    '& .MuiSelect-select': {
+        fontSize: '15px',
+        padding: '16.5px 14px',
+    },
+
+    '& .MuiInputLabel-root': {
+        fontSize: '15px',
+
+        '&.Mui-disabled': {
+            color: theme.palette.text.disabled,
+            opacity: 0.7,
+        },
+    },
+}))
+
+
+// ======================================================
+// Component
+// ======================================================
+
+export function Users() {
+
+    const [selectedRole, setSelectedRole] = useState<UserRole>(
+        fakeSuperUser.role
+    )
+
+
+    const handleRoleChange = (
+        event: SelectChangeEvent
+    ) => {
+        const role = event.target.value as UserRole
+
+        setSelectedRole(role)
     }
-       const queryNames = {
-  label: "تاریخ تولد",
-  field: "date",
-}   
-useEffect(() => {
-    if (!date.date) return;
-
-    setUser(prev => ({
-        ...prev,
-        birth_date: date.date as string,
-    }));
-}, [date]);
-
-
 
 
     return (
-        <>
-        <Stack gap={3} >
+        <Stack gap={3}>
+
             <GridProducer
                 data={[
+
+                    // ==================================
+                    // First Name
+                    // ==================================
+
                     <CustomTextField
-                        key={user.id}
-                        name="first_name"
+                        key="firstName"
+                        name="firstName"
                         label="نام"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.first_name}
+                        resource="users"
+                        defaultValue={fakeSuperUser.firstName}
                     />,
+
+
+                    // ==================================
+                    // Last Name
+                    // ==================================
+
                     <CustomTextField
-                        key={user.id}
-                        name="last_name"
+                        key="lastName"
+                        name="lastName"
                         label="نام خانوادگی"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.last_name}
+                        resource="users"
+                        defaultValue={fakeSuperUser.lastName}
                     />,
+
+
+                    // ==================================
+                    // Phone Number
+                    // ==================================
+
                     <CustomTextField
-                        key={user.id}
-                        name="national_code"
-                        label="کد ملی"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.national_code}
-                        disabled={editMode}
-                    />,
-                    <CustomTextField
-                        key={user.id}
-                        name="mobile"
+                        key="phoneNumber"
+                        name="phoneNumber"
                         label="شماره تلفن"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.mobile}
-                        disabled={editMode}
-                        
+                        resource="users"
+                        defaultValue={fakeSuperUser.phoneNumber}
                     />,
-                ]}
-            />
-<GridProducer
-                data={[
-                    <CustomTextField
-                        key={user.id}
-                        name="gold_buy_fee"
-                        label="کارمزد خرید طلا"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.fees?.gold_buy_fee}
-                    />,
-                    <CustomTextField
-                        key={user.id}
-                        name="gold_sell_fee"
-                        label="کارمزد فروش طلا"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user?.fees?.gold_sell_fee}
-                    />,
-                    <CustomTextField
-                        key={user.id}
-                        name="silver_buy_fee"
-                        label="کارمزد خرید نقره"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user?.fees?.silver_buy_fee}
-                    />,
-                    <CustomTextField
-                        key={user.id}
-                        name="silver_sell_fee"
-                        label="کارمزد فروش نقره"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user?.fees?.silver_sell_fee}
-                    />,
-                 
-                ]}
-                
-            />
-            <GridProducer
-               
-                data={[
-                   
-                    !isProfile && (
-                <Stack spacing={2}>
-                    <FormControl fullWidth>
-                        <InputLabel>نقش کاربر</InputLabel>
+
+
+
+                    <CustomFormControl
+                        key="role"
+                    >
+
+                        <InputLabel id="user-role-label">
+                            نقش کاربر
+                        </InputLabel>
+
                         <Select
-                        key={user.id}
-                            value={user.role}
+                            labelId="user-role-label"
+                            value={selectedRole}
                             label="نقش کاربر"
                             onChange={handleRoleChange}
                         >
-                            <MenuItem value="customer">کاربر عادی</MenuItem>
-                            <MenuItem value="admin">ادمین</MenuItem>
+
+                            <MenuItem value={UserRole.SUPER_USER}>
+                                سوپر یوزر
+                            </MenuItem>
+
+                            <MenuItem value={UserRole.REAL_ESTATE_AGENCY}>
+                                املاک
+                            </MenuItem>
+
+                            <MenuItem value={UserRole.REAL_ESTATE_AGENT}>
+                                کارشناس املاک
+                            </MenuItem>
+
+                            <MenuItem value={UserRole.REGULAR_USER}>
+                                کاربر عادی
+                            </MenuItem>
+
+                            <MenuItem value={UserRole.ACCOUNTANT}>
+                                حسابدار
+                            </MenuItem>
+
+                            <MenuItem value={UserRole.SECRETARY}>
+                                منشی
+                            </MenuItem>
+
                         </Select>
-                    </FormControl>
-                   
-                </Stack>
-                
-                ),
-        
-                    <DatePickerFilter setParams={setDate} item={queryNames} initialValue={user.birth_date} /> ,
-                    
-                      editMode &&<CustomTextField   
-                      key={user.id}
-                        name="referral_code"
-                        label="کد نمایندگی"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.referral_code}
-                    />,
-                    <CustomTextField   
-                      key={user.id}
-                        name="referral_percent"
-                        label="سود کد نمایندگی"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user?.fee_settings?.referral_percent}
-                    />,
-                      <CustomTextField   
-                      key={user.id}
-                        name="referral_count"
-                        label="تعداد دعوت شده ها"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={user.referral_count}
-                        disabled
-                    />,
-                     <FormControl fullWidth>
-                                <InputLabel>وضعیت حساب</InputLabel>
-                    
-                                <Select
-                                key={user.id}
-                                  value={user.is_active ? 'true' : 'false'}
-                                  label="وضعیت حساب"
-                                  onChange={(e: SelectChangeEvent) => {
-                                    const value = e.target.value === 'true';
-                                    setUser((prev) => ({
-                                      ...prev,
-                                      is_active: value,
-                                    }));
-                                  }}
-                                >
-                                  <MenuItem value="true">فعال</MenuItem>
-                                  <MenuItem value="false">غیرفعال</MenuItem>
-                                </Select>
-                    </FormControl>,
-              
-                         editMode &&  <CustomTextField
-                        key={user.id}
-                        name="created_at"
-                        label="تاریخ عضویت"
-                        resource={RESOURCE}
-                        setData={setUser}
-                        defaultValue={formatDate(user.created_at)}
-                        disabled
-                    />,
-                   
-            
+
+                    </CustomFormControl>,
+
                 ]}
             />
-            {
-                editMode &&             <GridProducer
-  data={[
-    <CustomTextField
-    thousandSeparator={true}
-      key={user.id}
-      name="gold_wallet_accessible"
-      label="تومان طلا (قابل برداشت)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.gold_wallet?.accessible_toman}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="gold_wallet_blocked"
-      label="تومان طلا (مسدود)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.gold_wallet?.blocked_toman}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="silver_wallet_accessible"
-      label="تومان نقره (قابل برداشت)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.silver_wallet?.accessible_toman}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="silver_wallet_blocked"
-      label="تومان نقره (مسدود)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.silver_wallet?.blocked_toman}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="gold_inventory_accessible"
-      label="موجودی طلا (قابل استفاده)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.gold_inventory?.accessible_balance}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="gold_inventory_blocked"
-      label="موجودی طلا (مسدود)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.gold_inventory?.blocked_balance}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="silver_inventory_accessible"
-      label="موجودی نقره (قابل استفاده)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.silver_inventory?.accessible_balance}
-      disabled
-    />,
-    <CustomTextField
-    thousandSeparator
-      key={user.id}
-      name="silver_inventory_blocked"
-      label="موجودی نقره (مسدود)"
-      resource={RESOURCE}
-      setData={setUser}
-      defaultValue={user.balances?.silver_inventory?.blocked_balance}
-      disabled
-    />,
-  ]}
-/>
-            }
-        </Stack>
-     {
-        editMode && <>
-           <Typography variant="body1" mt={5}>عملیات:</Typography>
-        <Stack direction={'row'} gap={2} mt={2}>
-            <Button variant="outlined" color="primary" size='large' onClick={()=>{
-                 navigate(`/users/${id}/balance/`)
-            }}>
-          واریز دارینه 
-        </Button>
-            <Button variant="outlined" color="primary" size='large' onClick={()=>{
-                 navigate(`/users/${id}/silver-balance/`)
-            }}>
-          واریز نقرینه 
-        </Button>
-        <Button variant="outlined" color="primary" size='large' onClick={()=>{
-           navigate(`/users/${id}/gold-withdrawals/`)
-        }}>
-          برداشت دارینه
-        </Button>
-   <Button variant="outlined" color="primary" size='large' onClick={()=>{
-           navigate(`/users/${id}/silver-withdrawals/`)
-        }}>
-          برداشت نقرینه
-        </Button>
-        </Stack>
 
-     
-        <Divider sx={{mt:5}} />
-        </>
-     }
-  
-        </>
+        </Stack>
     )
 }

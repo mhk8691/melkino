@@ -117,7 +117,7 @@ export default function Profile() {
                     </Stack>
                 </Stack>
             </Stack>
-            <Users user={profile} setUser={setProfile} id={profile?.id?.toString()} editMode isProfile date={date} setDate={setDate} />
+            <Users    />
         </Box>
     )
 }

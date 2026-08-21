@@ -34,7 +34,7 @@ export function UserEdit() {
             initialData={initialData}
             isFormData
         >
-            <Users id={userId} user={user} setDate={setDate} date={date} setUser={setUser} editMode={true} />
+            {/* <Users id={userId} user={user} setDate={setDate} date={date} setUser={setUser} editMode={true} /> */}
         </EditPage>
     )
 }
