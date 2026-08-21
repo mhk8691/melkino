@@ -6,7 +6,6 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import {
     Avatar,
     Divider,
-    IconButton,
     ListItemIcon,
     Menu,
     MenuItem,
@@ -40,6 +39,10 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
 
     const handleProfile = () => {
         navigate('/profile')
+        handleClose()
+    }
+     const handleSettings = () => {
+        navigate('/settings')
         handleClose()
     }
 
@@ -218,7 +221,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                 </MenuItem>
 
                 <MenuItem
-                    onClick={handleProfile}
+                    onClick={handleSettings}
                     sx={{
                         mx: 0.75,
                         my: 0.5,
@@ -231,7 +234,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                     </ListItemIcon>
 
                     <Typography fontSize={13}>
-                        تنظیمات حساب
+                        تنظیمات 
                     </Typography>
                 </MenuItem>
 

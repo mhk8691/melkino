@@ -3,13 +3,15 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupIcon from '@mui/icons-material/Group'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import AssignmentIcon from '@mui/icons-material/Assignment'
-import {
-    WorkspacePremium,
-} from '@mui/icons-material'
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+
+import {WorkspacePremium} from '@mui/icons-material'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
+
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import { ReactNode } from 'react'
+import {ReactNode} from 'react'
 
 export type DrawerItemType = {
     title: string
@@ -26,8 +28,8 @@ export type DrawerGroupType = {
     icon: ReactNode
 }
 
-const iconStyle = { fontSize: '1.9rem !important' }
-const groupIconStyle = { fontSize: '1.6rem !important' }
+const iconStyle = {fontSize: '1.9rem !important'}
+const groupIconStyle = {fontSize: '1.6rem !important'}
 
 // ----------------------------------------------------------------------
 // Groups
@@ -106,24 +108,31 @@ export const drawerItems: DrawerItemType[] = [
         icon: <GroupIcon sx={iconStyle} />,
     },
 
-
     {
         title: 'لاگ',
         link: 'logs',
         role: 'all',
         icon: <AssignmentIcon sx={iconStyle} />,
     },
-
-
-
- 
-
-  
-    {
+       {
         title: 'اطلاعیه ها',
         link: 'announcements',
         role: 'all',
         icon: <CampaignIcon sx={iconStyle} />,
         // groupId: 'silver-content',
     },
+    {
+        title: 'تنظیمات',
+        link: 'settings',
+        role: 'all',
+        icon: <SettingsRoundedIcon sx={iconStyle} />,
+    },
+    {
+        title: 'پروفایل',
+        link: 'profile',
+        role: 'all',
+        icon: <AccountCircleRoundedIcon sx={iconStyle} />,
+    },
+
+ 
 ]

@@ -1,8 +1,6 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded'
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded'
-import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 
 import {
     Box,
@@ -24,18 +22,7 @@ const addOptions = [
         link: 'users/create',
         icon: <PersonAddAltRoundedIcon />,
     },
-    {
-        title: 'محصول جدید',
-        description: 'افزودن محصول',
-        link: 'products/create',
-        icon: <ShoppingBagRoundedIcon />,
-    },
-    {
-        title: 'دسته‌بندی جدید',
-        description: 'ایجاد دسته‌بندی',
-        link: 'category/create',
-        icon: <CategoryRoundedIcon />,
-    },
+
 ]
 
 const NewActivity = () => {
@@ -234,7 +221,7 @@ const NewActivity = () => {
                                 </Typography>
                             </Stack>
 
-                            <ArrowForwardIosRoundedIcon
+                            <ArrowBackIosRoundedIcon
                                 className="quick-arrow"
                                 sx={{
                                     fontSize: 13,
