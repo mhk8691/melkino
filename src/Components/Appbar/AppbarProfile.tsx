@@ -1,131 +1,273 @@
-import {Avatar, Button, Popover, Stack, Typography} from '@mui/material'
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+
+import {
+    Avatar,
+    Divider,
+    IconButton,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Stack,
+    Typography,
+} from '@mui/material'
+
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {ProfileType} from '../../Core/types'
 import axios from 'axios'
 
+import {ProfileType} from '../../Core/types'
+
 const AppbarProfile = ({user}: {user: ProfileType}) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const [anchorEl, setAnchorEl] =
+        useState<null | HTMLElement>(null)
+
     const navigate = useNavigate()
 
-    const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    const open = Boolean(anchorEl)
+
+    const handleOpen = (
+        event: React.MouseEvent<HTMLElement>,
+    ) => {
         setAnchorEl(event.currentTarget)
     }
 
     const handleClose = () => {
         setAnchorEl(null)
     }
-    const handleLogout = async () => {
-        try{
-        await axios.post('https://api.darine.shop/accounts/logout/', null, {
-  withCredentials: true,
-})
-                handleClose()
-        // navigate('/login')
-        }catch(error:unknown){
-            console.log(error)
-        }
-        
+
+    const handleProfile = () => {
+        navigate('/profile')
+        handleClose()
     }
 
-    const open = Boolean(anchorEl)
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                'https://api.darine.shop/accounts/logout/',
+                null,
+                {
+                    withCredentials: true,
+                },
+            )
+
+            handleClose()
+
+            // navigate('/login')
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
-        <Stack>
+        <>
             <Stack
-                direction={{xs: 'row-reverse', mdl: 'row'}}
+                direction="row"
                 alignItems="center"
                 gap={1}
-                sx={{cursor: 'pointer'}}
                 onClick={handleOpen}
+                sx={{
+                    cursor: 'pointer',
+                    px: 0.75,
+                    py: 0.5,
+                    borderRadius: '14px',
+
+                    transition: 'background-color .2s ease',
+
+                    '&:hover': {
+                        backgroundColor: 'action.hover',
+                    },
+                }}
             >
-                <Typography
-                    variant="subtitle2"
-                    noWrap
+                <Avatar
+                    src={user.profile_picture || ''}
+                    alt={user.first_name}
                     sx={{
-                        fontSize: {
-                            xs: '14px',
-                            mdl: '15px',
+                        width: 38,
+                        height: 38,
+                        fontSize: 15,
+                        fontWeight: 700,
+                    }}
+                >
+                    {user.first_name?.slice(0, 1)}
+                </Avatar>
+
+                <Stack
+                    sx={{
+                        display: {
+                            xs: 'none',
+                            mdl: 'flex',
                         },
                     }}
                 >
-                    {user.first_name}
-                </Typography>
-                <Avatar
-                    alt="profile image"
-                    src={user.profile_picture || ''}
+                    <Typography
+                        fontSize={14}
+                        fontWeight={700}
+                        lineHeight={1.3}
+                        noWrap
+                    >
+                        {user.first_name}
+                    </Typography>
+
+                    <Typography
+                        fontSize={11}
+                        color="text.secondary"
+                        lineHeight={1.3}
+                    >
+                        حساب کاربری
+                    </Typography>
+                </Stack>
+
+                <KeyboardArrowDownRoundedIcon
                     sx={{
-                        height: {
-                            xs: 45,
-                            mdl: 35,
-                        },
-                        width: {
-                            xs: 45,
-                            mdl: 35,
-                        },
+                        fontSize: 20,
+                        color: 'text.secondary',
+                        transition: 'transform .2s ease',
+                        transform: open
+                            ? 'rotate(180deg)'
+                            : 'rotate(0)',
                     }}
                 />
             </Stack>
-            <Popover
-                open={open}
+
+            <Menu
                 anchorEl={anchorEl}
+                open={open}
                 onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
                 transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'center',
+                    horizontal: 'right',
                 }}
-                sx={{mt: '1rem'}}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                slotProps={{
+                    paper: {
+                        elevation: 0,
+                        sx: {
+                            mt: 1,
+                            minWidth: 250,
+                            borderRadius: '16px',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            boxShadow:
+                                '0 12px 35px rgba(0,0,0,.10)',
+                            overflow: 'hidden',
+                        },
+                    },
+                }}
             >
-                <Stack p="15px" bgcolor="background.main" minWidth="200px" gap={1}>
-                    <Stack direction="row" alignItems="center" gap={1.5}>
-                        <Avatar sx={{width: 36, height: 36}} src={user?.profile_picture || ''}>
-                            {user?.first_name?.slice(0, 1)}
-                        </Avatar>
-                        <Stack>
-                            <Typography
-                                variant="bodyLg"
-                                fontWeight={700}
-                                fontSize={{xs: '14px', mdl: '15px'}}
-                            >
-                                {user.first_name}
-                            </Typography>
-                            <Typography
-                                variant="caption"
-                                fontWeight={600}
-                                fontSize={{xs: '12px', mdl: '14px'}}
-                                sx={{
-                                    mt: {
-                                        xs: 0.5,
-                                        mdl: 0,
-                                    },
-                                }}
-                            >
-                                {user.mobile}
-                            </Typography>
-                        </Stack>
-                    </Stack>
-                    <Stack direction="row" justifyContent="space-around">
-                        <Button
-                            variant="text"
-                            size="small"
-                            onClick={() => {
-                                navigate('/profile')
-                                handleClose()
-                            }}
+                {/* PROFILE HEADER */}
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    gap={1.5}
+                    px={2}
+                    py={1.75}
+                >
+                    <Avatar
+                        src={user.profile_picture || ''}
+                        sx={{
+                            width: 44,
+                            height: 44,
+                        }}
+                    >
+                        {user.first_name?.slice(0, 1)}
+                    </Avatar>
+
+                    <Stack minWidth={0}>
+                        <Typography
+                            fontSize={14}
+                            fontWeight={700}
+                            noWrap
                         >
-                            تنظیمات حساب
-                        </Button>
-                        <Button variant="text" size="small" onClick={handleLogout}>
-                            خروج
-                        </Button>
+                            {user.first_name}
+                        </Typography>
+
+                        <Typography
+                            fontSize={12}
+                            color="text.secondary"
+                            noWrap
+                        >
+                            {user.mobile}
+                        </Typography>
                     </Stack>
                 </Stack>
-            </Popover>
-        </Stack>
+
+                <Divider />
+
+                <MenuItem
+                    onClick={handleProfile}
+                    sx={{
+                        mx: 0.75,
+                        my: 0.5,
+                        borderRadius: '10px',
+                        py: 1,
+                    }}
+                >
+                    <ListItemIcon>
+                        <AccountCircleRoundedIcon fontSize="small" />
+                    </ListItemIcon>
+
+                    <Typography fontSize={13}>
+                        پروفایل
+                    </Typography>
+                </MenuItem>
+
+                <MenuItem
+                    onClick={handleProfile}
+                    sx={{
+                        mx: 0.75,
+                        my: 0.5,
+                        borderRadius: '10px',
+                        py: 1,
+                    }}
+                >
+                    <ListItemIcon>
+                        <SettingsRoundedIcon fontSize="small" />
+                    </ListItemIcon>
+
+                    <Typography fontSize={13}>
+                        تنظیمات حساب
+                    </Typography>
+                </MenuItem>
+
+                <Divider sx={{my: 0.5}} />
+
+                <MenuItem
+                    onClick={handleLogout}
+                    sx={{
+                        mx: 0.75,
+                        mb: 0.75,
+                        borderRadius: '10px',
+                        py: 1,
+                        color: 'error.main',
+
+                        '&:hover': {
+                            backgroundColor: 'error.lighter',
+                        },
+                    }}
+                >
+                    <ListItemIcon
+                        sx={{
+                            color: 'error.main',
+                        }}
+                    >
+                        <LogoutRoundedIcon fontSize="small" />
+                    </ListItemIcon>
+
+                    <Typography
+                        fontSize={13}
+                        fontWeight={600}
+                    >
+                        خروج از حساب
+                    </Typography>
+                </MenuItem>
+            </Menu>
+        </>
     )
 }
 
