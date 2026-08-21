@@ -109,6 +109,7 @@ export function AnnouncementList() {
             }}
         >
             <CustomTable
+            title='اطلاعیه'
                 resource={RESOURCE}
                 headCells={tableHeadCells}
                 rows={announcement.data}

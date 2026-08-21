@@ -5,14 +5,16 @@ import {DataProvider} from '../../Core/DataProvider'
 import AddButton from '../Buttons/add'
 import {Searchbar} from '../Input/Searchbar'
 import {BaseModal} from '../Modal/BaseModal'
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@mui/icons-material/Edit'
 import CsvExportButton from '../../Pages/Logs/List/CsvExportButton'
-import { LogsType } from '../../Pages/Logs/List/LogsList'
+import {LogsType} from '../../Pages/Logs/List/LogsList'
+import AddRoundedIcon from '@mui/icons-material/AddRounded'
+
 export function ListPage({
-        setEditMode,
-    
+    setEditMode,
+
     listData,
-    isCsvExport=false,
+    isCsvExport = false,
     isActiveEdit,
     header,
     searchText,
@@ -28,12 +30,12 @@ export function ListPage({
     children,
     href,
     nofilter = false,
-    setOpenModal
+    setOpenModal,
 }: {
-    setEditMode?:Dispatch<SetStateAction<"fee" | "referral" | null>>
-    
-    listData?:LogsType[]
-    isCsvExport?:boolean
+    setEditMode?: Dispatch<SetStateAction<'fee' | 'referral' | null>>
+
+    listData?: LogsType[]
+    isCsvExport?: boolean
     header: string
     searchText: string
     searchField: string
@@ -48,8 +50,8 @@ export function ListPage({
     noCreate?: boolean
     children: React.ReactNode
     nofilter?: boolean
-    isActiveEdit?:boolean
-    setOpenModal?:Dispatch<SetStateAction<boolean>>
+    isActiveEdit?: boolean
+    setOpenModal?: Dispatch<SetStateAction<boolean>>
 }) {
     const CreaterModal = createModal
     const [open, setOpen] = useState(false)
@@ -131,60 +133,111 @@ export function ListPage({
                         {header}
                     </Typography>
 
-                   <Stack direction={'row'} alignItems={'center'} gap={1}>
-                     {noCreate ? null : (
-                        <AddButton
-                            href={href}
-                            text={'جدید'}
-                            sx={{
-                                fontSize: {
-                                    xs: '14px',
-                                    sm: '18px',
-                                },
-                                padding: '7px 13px',
-                            }}
-                        />
-                    )}
-                    {
-                        isActiveEdit &&   <>
-                        <Button variant="outlined" color="primary" onClick={()=>{
-                            setOpenModal&&setOpenModal(true)
-                            setEditMode && setEditMode('fee')
-                        }} startIcon={<EditIcon/>} sx={{
-                                fontSize: {
-                                    xs: '14px',
-                                    sm: '18px',
-                                },
-                                padding: '7px 13px',
-                            }}>
-                      ویرایش کارمزد ها
-                    </Button>
-                    <Button variant="outlined" color="primary" onClick={()=>{
-                        setOpenModal&&setOpenModal(true)
-                        setEditMode&&setEditMode('referral')
-                    }} startIcon={<EditIcon/>} sx={{
-                                fontSize: {
-                                    xs: '14px',
-                                    sm: '18px',
-                                },
-                                padding: '7px 13px',
-                            }}>
-                      ویرایش سود 
-                    </Button>
-                        </>
-                    }
-                        {
-                            isCsvExport && (
-                                <CsvExportButton
-                                exportType='table'
-                                rowOptions={[5,10,25,50,100,250]}
-      data={listData || []}
-      fileName="logs.csv"
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+
+{noCreate ? null : (
+    <AddButton
+        href={href}
+        text="جدید"
+        startIcon={<AddRoundedIcon />}
+        sx={{
+            height: 44,
+            minWidth: 105,
+            px: 1.2,
+            borderRadius: '12px',
+
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 0.8,
+
+            fontSize: {
+                xs: '13px',
+                sm: '14px',
+            },
+            fontWeight: 600,
+
+            color: '#fff',
+            backgroundColor: 'primary.main',
+
+            border: '1px solid',
+            borderColor: 'primary.main',
+
+            boxShadow: 'none',
+
+            transition:
+                'background-color .2s ease, border-color .2s ease, transform .2s ease',
+
+            '& .MuiSvgIcon-root': {
+                fontSize: 21,
+                transition: 'transform .2s ease',
+            },
+
+            '&:hover': {
+                backgroundColor: 'primary.dark',
+                borderColor: 'primary.dark',
+                boxShadow: 'none',
+
+                '& .MuiSvgIcon-root': {
+                    transform: 'rotate(90deg)',
+                },
+            },
+
+            '&:active': {
+                transform: 'scale(.97)',
+            },
+        }}
     />
-                            )
-                        }
-                 
-                   </Stack>
+)}
+                        {isActiveEdit && (
+                            <>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => {
+                                        setOpenModal && setOpenModal(true)
+                                        setEditMode && setEditMode('fee')
+                                    }}
+                                    startIcon={<EditIcon />}
+                                    sx={{
+                                        fontSize: {
+                                            xs: '14px',
+                                            sm: '18px',
+                                        },
+                                        padding: '7px 13px',
+                                    }}
+                                >
+                                    ویرایش کارمزد ها
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => {
+                                        setOpenModal && setOpenModal(true)
+                                        setEditMode && setEditMode('referral')
+                                    }}
+                                    startIcon={<EditIcon />}
+                                    sx={{
+                                        fontSize: {
+                                            xs: '14px',
+                                            sm: '18px',
+                                        },
+                                        padding: '7px 13px',
+                                    }}
+                                >
+                                    ویرایش سود
+                                </Button>
+                            </>
+                        )}
+                        {isCsvExport && (
+                            <CsvExportButton
+                                exportType="table"
+                                rowOptions={[5, 10, 25, 50, 100, 250]}
+                                data={listData || []}
+                                fileName="logs.csv"
+                            />
+                        )}
+                    </Stack>
                 </Stack>
 
                 {!nofilter && (

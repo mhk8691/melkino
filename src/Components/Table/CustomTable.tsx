@@ -1,6 +1,4 @@
-import { ArrowBack } from '@mui/icons-material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
 import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded'
 import { Button, Checkbox, IconButton, TableFooter, Typography } from '@mui/material'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
@@ -12,7 +10,7 @@ import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 import { alpha, useTheme } from '@mui/material/styles'
 import { Box, Stack } from '@mui/system'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { DataProvider } from '../../Core/DataProvider'
@@ -20,7 +18,7 @@ import { setUtil } from '../../redux/UtilSlice'
 import { BaseModal } from '../Modal/BaseModal'
 import { BlankList } from '../Pictures/BlankList'
 import { CustomTableHead, HeadCellType } from './CustomTableHead'
-
+import EditIcon from '@mui/icons-material/Edit';
 export function CustomTable(props: {
     headCells: HeadCellType
     handleSort: () => void
@@ -39,6 +37,7 @@ export function CustomTable(props: {
     groupEdit?: boolean
     selectedIds?: string[]
     onSelectionChange?: (ids: string[]) => void
+    title:string
 }) {
     const {
         rows,
@@ -57,6 +56,7 @@ export function CustomTable(props: {
         groupEdit,
         selectedIds: externalSelectedIds,
         onSelectionChange,
+        title
     } = props
 
     const theme = useTheme()
@@ -237,47 +237,84 @@ export function CustomTable(props: {
                                             </TableCell>
                                         )}
                                         {tableBodyCells[index]}
-                                        {hasDetail && (
-                                            <TableCell width="32px">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleDetailClick(row.id, hasDetail, row)}
-                                                    sx={{
-                                                        color: 'text.secondary',
-                                                        transition: 'all .15s ease',
-                                                        '&:hover': {
-                                                            bgcolor: tint.hoverBg,
-                                                            color: 'primary.dark',
-                                                            transform: 'translateY(-1px)',
-                                                        },
-                                                    }}
-                                                >
-                                                    <ArrowBack fontSize="small" />
-                                                </IconButton>
-                                            </TableCell>
-                                        )}
-                                        {!noDelete && (
-                                            <TableCell width="32px">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => {
-                                                        setSelected(row.id)
-                                                        setOpen(true)
-                                                    }}
-                                                    sx={{
-                                                        color: 'text.secondary',
-                                                        transition: 'all .15s ease',
-                                                        '&:hover': {
-                                                            bgcolor: 'error.lighter',
-                                                            color: 'error.main',
-                                                            transform: 'translateY(-1px)',
-                                                        },
-                                                    }}
-                                                >
-                                                    <DeleteIcon fontSize="small" />
-                                                </IconButton>
-                                            </TableCell>
-                                        )}
+                                       {hasDetail && (
+    <TableCell
+        width="52px"
+        align="center"
+        sx={{
+            px: 0.5,
+        }}
+    >
+        <IconButton
+            size="small"
+            onClick={() => handleDetailClick(row.id, hasDetail, row)}
+            sx={{
+                width: 34,
+                height: 34,
+                borderRadius: '10px',
+                color: 'primary.main',
+                backgroundColor: 'rgba(25, 118, 210, 0.06)',
+                border: '1px solid rgba(25, 118, 210, 0.12)',
+                transition: 'all 0.2s ease',
+
+                '&:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.12)',
+                    borderColor: 'rgba(25, 118, 210, 0.25)',
+                    color: 'primary.dark',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 10px rgba(25, 118, 210, 0.12)',
+                },
+
+                '&:active': {
+                    transform: 'translateY(0)',
+                },
+            }}
+        >
+            <EditIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+    </TableCell>
+)}
+
+{!noDelete && (
+    <TableCell
+        width="52px"
+        align="center"
+        sx={{
+            px: 0.5,
+        }}
+    >
+        <IconButton
+            size="small"
+            onClick={() => {
+                setSelected(row.id)
+                setOpen(true)
+            }}
+            sx={{
+                width: 34,
+                height: 34,
+                borderRadius: '10px',
+                color: 'error.main',
+                backgroundColor: 'rgba(211, 47, 47, 0.06)',
+                border: '1px solid rgba(211, 47, 47, 0.12)',
+                transition: 'all 0.2s ease',
+
+                '&:hover': {
+                    backgroundColor: 'rgba(211, 47, 47, 0.12)',
+                    borderColor: 'rgba(211, 47, 47, 0.25)',
+                    color: 'error.dark',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 10px rgba(211, 47, 47, 0.12)',
+                },
+
+                '&:active': {
+                    transform: 'translateY(0)',
+                },
+            }}
+        >
+            <DeleteIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+    </TableCell>
+)}
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -345,55 +382,116 @@ export function CustomTable(props: {
                     )}
                 </Box>
             </Box>
-            <BaseModal open={open} setOpen={setOpen} title="توجه!" style={{maxWidth: 'sm'}}>
-                <Stack alignItems="center" textAlign="center" spacing={1.5} mb={1}>
-                    <Box
-                        sx={{
-                            width: 52,
-                            height: 52,
-                            borderRadius: '50%',
-                            bgcolor: 'error.lighter',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <ReportProblemRoundedIcon sx={{color: 'error.main', fontSize: 26}} />
-                    </Box>
-                    <Typography variant="body2" fontSize={'17px'} fontWeight={500}>
-                        آیا از انجام این عمل مطمئن هستید؟
-                    </Typography>
-                    <Typography variant="body2" fontSize={'13px'} color="text.secondary">
-                        این عملیات قابل بازگشت نیست.
-                    </Typography>
-                </Stack>
-                <Stack direction={'row'} spacing={2} mt={2.5}>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleDelete}
-                        size="large"
-                        fullWidth
-                        sx={{borderRadius: '10px', boxShadow: 'none'}}
-                    >
-                        بله، حذف کن
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        onClick={(e) => setOpen(false)}
-                        size="large"
-                        fullWidth
-                        sx={{
-                            borderRadius: '10px',
-                            borderColor: tint.line,
-                            color: 'text.primary',
-                            '&:hover': {borderColor: 'primary.main', bgcolor: tint.headerBg},
-                        }}
-                    >
-                        خیر
-                    </Button>
-                </Stack>
-            </BaseModal>
+<BaseModal
+    open={open}
+    setOpen={setOpen}
+    title={`حذف ${props.title}`}
+    style={{ maxWidth: 'sm' }}
+>
+    <Stack spacing={2.5}>
+        <Stack
+            alignItems="center"
+            textAlign="center"
+            spacing={1.5}
+            sx={{
+                pt: 1,
+                px: 2,
+            }}
+        >
+            <Box
+                sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'error.lighter',
+                    border: '1px solid',
+                    borderColor: 'error.light',
+                }}
+            >
+                <ReportProblemRoundedIcon
+                    sx={{
+                        color: 'error.main',
+                        fontSize: 32,
+                    }}
+                />
+            </Box>
+
+            <Typography
+                sx={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: 'text.primary',
+                }}
+            >
+                آیا از حذف این {props.title} مطمئن هستید؟
+            </Typography>
+
+            <Typography
+                sx={{
+                    fontSize: '13px',
+                    color: 'text.secondary',
+                    lineHeight: 1.8,
+                }}
+            >
+                با حذف این {props.title}، اطلاعات آن برای همیشه حذف خواهد شد
+                <br />
+                و این عملیات قابل بازگشت نیست.
+            </Typography>
+        </Stack>
+
+        <Stack
+            direction="row"
+            spacing={1.5}
+            sx={{
+                pt: 1,
+                px: 1,
+            }}
+        >
+            <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                onClick={handleDelete}
+                sx={{
+                    height: 46,
+                    borderRadius: '11px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    boxShadow: 'none',
+                    '&:hover': {
+                        boxShadow: 'none',
+                        backgroundColor: 'error.dark',
+                    },
+                }}
+            >
+                حذف {props.title}
+            </Button>
+
+            <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => setOpen(false)}
+                sx={{
+                    height: 46,
+                    borderRadius: '11px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    borderColor: 'divider',
+                    '&:hover': {
+                        borderColor: 'text.secondary',
+                        backgroundColor: 'action.hover',
+                    },
+                }}
+            >
+                انصراف
+            </Button>
+        </Stack>
+    </Stack>
+</BaseModal>
         </>
     )
 }

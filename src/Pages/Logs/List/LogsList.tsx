@@ -66,7 +66,6 @@ const resource = 'logs'
 export function LogsList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-    const [selectedIds, setSelectedIds] = useState<string[]>([])
 
    const [logs, setLogs] = useState<{
     total_results: number
@@ -207,9 +206,7 @@ export function LogsList() {
             }}
         >
             <CustomTable
-            groupEdit
-              selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
+                title={'لاگ'}
                 resource={resource}
                 headCells={tableHeadCells}
                 rows={logs.results}

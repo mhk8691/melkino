@@ -242,9 +242,7 @@ const columnsByRole: Record<UserRole, ColumnConfig[]> = {
         },
     ],
 
-    /* ---------------------------------------------------------------------- */
-    /*                              Secretary                                 */
-    /* ---------------------------------------------------------------------- */
+
 
     [UserRole.SECRETARY]: [
         {
@@ -265,9 +263,6 @@ const columnsByRole: Record<UserRole, ColumnConfig[]> = {
     ],
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Role Labels                                   */
-/* -------------------------------------------------------------------------- */
 
 const roleLabels: Record<UserRole, string> = {
     [UserRole.SUPER_USER]: 'سوپر یوزر',
@@ -278,9 +273,6 @@ const roleLabels: Record<UserRole, string> = {
     [UserRole.SECRETARY]: 'منشی',
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Users List                                   */
-/* -------------------------------------------------------------------------- */
 
 export function UsersList({
     role,
@@ -318,9 +310,7 @@ export function UsersList({
         setIsActiveEdit(selectedIds.length > 0)
     }, [selectedIds])
 
-    /* ---------------------------------------------------------------------- */
-    /*                         Filter By Role                                 */
-    /* ---------------------------------------------------------------------- */
+
 
     const roleData = useMemo(() => data.filter((user) => user.role === role), [data, role])
 
@@ -347,6 +337,7 @@ export function UsersList({
             }}
         >
             <CustomTable
+            title='کاربر'
                 groupEdit
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
