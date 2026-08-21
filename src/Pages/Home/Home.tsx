@@ -13,9 +13,10 @@ import {LogsList} from '../Logs/List/LogsList'
 import {UserRole} from '../Users/UsersType'
 import {fakeUsers} from '../Users/usersData'
 import UserPage from '../Users/UserPage'
-import { AnnouncementCreate } from '../Announcement/Create/AnnouncementCreate'
-import { AnnouncementList } from '../Announcement/List/AnnouncementList'
-import { AnnouncementEdit } from '../Announcement/Edit/AnnouncementEdit'
+import {AnnouncementCreate} from '../Announcement/Create/AnnouncementCreate'
+import {AnnouncementList} from '../Announcement/List/AnnouncementList'
+import {AnnouncementEdit} from '../Announcement/Edit/AnnouncementEdit'
+import PanelSettings from '../Settings/PanelSettings'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -96,11 +97,15 @@ export function Home(props) {
                         />
                         <Route
                             path="users/real-estate"
-                            element={<UsersList role={UserRole.REAL_ESTATE_AGENCY} data={fakeUsers} />}
+                            element={
+                                <UsersList role={UserRole.REAL_ESTATE_AGENCY} data={fakeUsers} />
+                            }
                         />
                         <Route
                             path="users/agent"
-                            element={<UsersList role={UserRole.REAL_ESTATE_AGENT} data={fakeUsers} />}
+                            element={
+                                <UsersList role={UserRole.REAL_ESTATE_AGENT} data={fakeUsers} />
+                            }
                         />
                         <Route
                             path="users/user"
@@ -114,23 +119,22 @@ export function Home(props) {
                             path="users/secretary"
                             element={<UsersList role={UserRole.SECRETARY} data={fakeUsers} />}
                         />
-                         <Route
-                            path="users"
-                            element={<UserPage />}
-                        />
+                        <Route path="users" element={<UserPage />} />
                         <Route path="users/:id" element={<UserEdit />} />
 
                         {/* ...........logs.......... */}
 
                         <Route path="logs" element={<LogsList />} />
                         <Route path="logs" element={<DashboardLayout />} />
-
-                                                <Route
+                        {/* ...........Announcemen.......... */}
+                        <Route
                             path="announcements/create"
-                            element={<AnnouncementCreate data={data} setData={setData}  />}
+                            element={<AnnouncementCreate data={data} setData={setData} />}
                         />
-                        <Route path="announcements" element={<AnnouncementList  />} />
-                        <Route path="announcements/:id" element={<AnnouncementEdit  />} />
+                        <Route path="announcements" element={<AnnouncementList />} />
+                        <Route path="announcements/:id" element={<AnnouncementEdit />} />
+                        {/* ...........Settings.......... */}
+                        <Route path="settings" element={<PanelSettings />} />
                     </Routes>
                 </Box>
             </Box>
