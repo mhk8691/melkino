@@ -2,8 +2,8 @@ import {Button, Stack} from '@mui/material'
 import {useForm} from 'react-hook-form'
 import axios from 'axios'
 import {useDispatch} from 'react-redux'
-import {CustomTextField} from '../../Components/Input/CustomTextField'
-import {setUtil} from '../../redux/UtilSlice'
+import {CustomTextField} from '../../../Components/Input/CustomTextField'
+import {setUtil} from '../../../redux/UtilSlice'
 
 type LoginPasswordForm = {
     mobile: string

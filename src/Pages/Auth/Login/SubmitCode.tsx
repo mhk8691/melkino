@@ -5,8 +5,8 @@ import {useForm, UseFormGetValues} from 'react-hook-form'
 import {useDispatch} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 
-import {CustomTextField} from '../../Components/Input/CustomTextField'
-import {setUtil} from '../../redux/UtilSlice'
+import {CustomTextField} from '../../../Components/Input/CustomTextField'
+import {setUtil} from '../../../redux/UtilSlice'
 
 type ParentForm = {
     mobile: string

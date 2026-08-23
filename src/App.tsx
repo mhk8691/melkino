@@ -13,7 +13,8 @@ import {Home} from './Pages/Home/Home'
 import {store} from './redux/store'
 import {RTL} from './RTL'
 import {AppTheme} from './Theme'
-import LoginPage from './Pages/Auth/LoginPage'
+import LoginPage from './Pages/Auth/Login/LoginPage'
+import SignupPage from './Pages/Auth/Signup/SignupPage'
 function App() {
     return (
         <RTL>
@@ -34,6 +35,7 @@ function App() {
                                 <Routes>
                                     <Route path="/*" element={<Home />} />
                                     <Route path="login" element={<LoginPage />} />
+                                    <Route path="signup" element={<SignupPage />} />
                                 </Routes>
                             </QueryParamProvider>
                         </Provider>

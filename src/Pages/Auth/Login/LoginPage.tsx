@@ -12,7 +12,7 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 
 import {useState} from 'react'
 
-import logoImage from '../../Images/melkino.png'
+import logoImage from '../../../Images/melkino.png'
 import LoginOtp from './LoginOtp'
 import LoginPassword from './LoginPassword'
 

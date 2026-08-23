@@ -4,8 +4,8 @@ import {useEffect, useState} from 'react'
 import {useForm} from 'react-hook-form'
 import {useDispatch} from 'react-redux'
 
-import {CustomTextField} from '../../Components/Input/CustomTextField'
-import {setUtil} from '../../redux/UtilSlice'
+import {CustomTextField} from '../../../Components/Input/CustomTextField'
+import {setUtil} from '../../../redux/UtilSlice'
 import SubmitCode from './SubmitCode'
 
 type OtpForm = {
