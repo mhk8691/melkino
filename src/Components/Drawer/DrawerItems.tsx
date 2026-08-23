@@ -90,21 +90,17 @@ export const drawerGroups: DrawerGroupType[] = [
     },
 ]
 
-// ----------------------------------------------------------------------
-// Items
-// ----------------------------------------------------------------------
-
 export const drawerItems: DrawerItemType[] = [
-    {
-        title: 'پیشخوان',
-        link: '',
-        role: 'all',
-        icon: <DashboardIcon sx={iconStyle} />,
-    },
+    // {
+    //     title: 'پیشخوان',
+    //     link: '',
+    //     role: 'all',
+    //     icon: <DashboardIcon sx={iconStyle} />,
+    // },
     {
         title: 'کاربران',
         link: 'users',
-        role: 'admin',
+        role: 'all',
         icon: <GroupIcon sx={iconStyle} />,
     },
 

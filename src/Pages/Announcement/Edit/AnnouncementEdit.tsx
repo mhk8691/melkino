@@ -3,7 +3,7 @@ import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
 
 import { Announcement, AnnouncementType } from '../Announcement'
-const resource = 'announcement'
+const resource = 'announcements'
 
 export function AnnouncementEdit() {
     const state = useLocation().state as {row: AnnouncementType}

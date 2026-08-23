@@ -13,7 +13,7 @@ import {useDispatch} from 'react-redux'
 import { AnnouncementType } from '../Announcement'
 import { AnnouncementCreate } from '../Create/AnnouncementCreate'
 
-const RESOURCE = 'announcement'
+const RESOURCE = 'announcements'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),

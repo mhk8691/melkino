@@ -2,7 +2,7 @@ import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
 import { Announcement } from '../Announcement'
 
-const resource = 'announcement'
+const resource = 'announcements'
 
 export function AnnouncementCreate({
     data,
