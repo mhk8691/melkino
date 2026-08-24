@@ -194,16 +194,7 @@ const SignupInfo = ({mobile, onBack}: Props) => {
                             sx={{'& input': {direction: 'ltr', textAlign: 'right'}}}
                             fullWidth
                         />
-                        <CustomTextField
-                            label="تلفن ثابت"
-                            name="landline"
-                            inputMode="numeric"
-                            register={{...register('landline', {required: 'تلفن ثابت الزامی است'})}}
-                            error={!!errors.landline}
-                            helperText={errors.landline?.message}
-                            sx={{'& input': {direction: 'ltr', textAlign: 'right'}}}
-                            fullWidth
-                        />
+                      
                     </Stack>
 
                     <Stack direction="row" spacing={1.5} mt={1}>
