@@ -1,79 +1,115 @@
-import {Box, Typography} from '@mui/material'
-import TableCell from '@mui/material/TableCell'
+import {Box, Grid, Typography} from '@mui/material'
 import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
-import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
-import { FilesType } from '../Files'
-import { FilesCreate } from '../Create/FilesCreate'
+import {PropertyType} from '../Files'
+import {FilesCreate} from '../Create/FilesCreate'
+import {PropertyCard} from '../PropertyCard'
 
 const RESOURCE = 'files'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('عنوان', 'title'),
-    createTableHeadCells('توضیحات', 'description'),
-    createTableHeadCells('لینک', 'link'),
+    createTableHeadCells('نوع ملک', 'propertyType'),
+    createTableHeadCells('شهر', 'city'),
+    createTableHeadCells('قیمت', 'totalPrice'),
 ]
 const queryNames = tableHeadCells.map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
 }))
+
 export function FilesList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-  const [files, setFiles] = useState<{
-    total_results: number
-    data: FilesType[]
-}>({
-    total_results: 5,
-    data: [
-        {
-            id: 1,
-            title: 'اطلاعیه بروزرسانی سامانه',
-            description: 'سامانه در روز پنجشنبه جهت بروزرسانی به مدت یک ساعت در دسترس نخواهد بود.',
-            link: 'https://example.com/update',
-        },
-        {
-            id: 2,
-            title: 'تغییر ساعات پشتیبانی',
-            description: 'از این پس ساعات پاسخگویی تیم پشتیبانی از ساعت ۸ صبح تا ۱۸ خواهد بود.',
-            link: 'https://example.com/support',
-        },
-        {
-            id: 3,
-            title: 'نسخه جدید پنل مدیریت',
-            description: 'نسخه جدید پنل مدیریت با امکانات و قابلیت‌های جدید منتشر شد.',
-            link: 'https://example.com/panel',
-        },
-        {
-            id: 4,
-            title: 'اطلاعیه مهم کاربران',
-            description: 'لطفاً اطلاعات حساب کاربری خود را بررسی و در صورت نیاز بروزرسانی کنید.',
-            link: 'https://example.com/account',
-        },
-        {
-            id: 5,
-            title: 'جشنواره ویژه کاربران',
-            description: 'جشنواره ویژه کاربران از تاریخ ۱ شهریور آغاز می‌شود و تا پایان ماه ادامه دارد.',
-            link: 'https://example.com/festival',
-        },
-    ],
-})
+    const [files, setFiles] = useState<{
+        total_results: number
+        data: Partial<PropertyType>[]
+    }>({
+        total_results: 5,
+        data: [
+            {
+                id: 1,
+                status: 'فعال',
+                propertyType: 'آپارتمان',
+                contractType: 'فروش',
+                city: 'تهران',
+                district: 'منطقه ۲',
+                neighborhood: 'سعادت‌آباد',
+                address: 'خیابان علامه شمالی، کوچه ۱۲',
+                area: 120,
+                totalPrice: 8500000000,
+                roomCount: 2,
+            },
+            {
+                id: 2,
+                status: 'فعال',
+                propertyType: 'ویلایی',
+                contractType: 'رهن و اجاره',
+                city: 'کرج',
+                district: 'گوهردشت',
+                neighborhood: 'فاز ۲',
+                address: 'خیابان شهید بهشتی',
+                area: 200,
+                mortgagePrice: 500000000,
+                monthlyRent: 15000000,
+                roomCount: 3,
+            },
+            {
+                id: 3,
+                status: 'کنسل شد',
+                propertyType: 'زمین',
+                contractType: 'فروش',
+                city: 'شیراز',
+                district: 'معالی‌آباد',
+                neighborhood: '',
+                address: 'بلوار معالی‌آباد',
+                area: 350,
+                totalPrice: 12000000000,
+                roomCount: 0,
+            },
+            {
+                id: 4,
+                status: 'منصرف شد',
+                propertyType: 'آپارتمان',
+                contractType: 'فروش',
+                city: 'اصفهان',
+                district: 'ملک‌شهر',
+                neighborhood: '',
+                address: 'خیابان کاوه',
+                area: 95,
+                totalPrice: 3200000000,
+                roomCount: 2,
+            },
+            {
+                id: 5,
+                status: 'فروخته شده',
+                propertyType: 'پیش فروش',
+                contractType: 'مشارکت',
+                city: 'مشهد',
+                district: 'وکیل‌آباد',
+                neighborhood: '',
+                address: 'بلوار وکیل‌آباد',
+                area: 140,
+                totalPrice: 6100000000,
+                roomCount: 3,
+            },
+        ],
+    })
     const dispatch = useDispatch()
-    // const getAnnouncement = async () => {
+    // const getFiles = async () => {
     //     setLoading(true)
     //     try {
     //         let response = await DataProvider.get<{
     //             total_results: number
-    //             results: FilesType[]
+    //             results: PropertyType[]
     //         }>(`${RESOURCE}/`, search)
     //         if (response) {
     //             setFiles({
@@ -87,12 +123,12 @@ export function FilesList() {
     //     setLoading(false)
     // }
     // useDeepCompareEffect(() => {
-    //     getAnnouncement()
+    //     getFiles()
     // }, [search])
 
     return (
         <ListPage
-            header={'مدیریت اطلاعیه ها'}
+            header={'مدیریت فایل‌های ملکی'}
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
@@ -100,99 +136,33 @@ export function FilesList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={()=>{}}
-            // getList={getAnnouncement}
+            getList={() => {}}
+            // getList={getFiles}
             filtersData={[]}
             createModal={FilesCreate}
             defaultState={{
                 name: '',
             }}
         >
-            <CustomTable
-            title='اطلاعیه'
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={files.data}
-                count={files.total_results}
-                getList={()=>{}}
-                // getList={getAnnouncement}
-                params={search}
-                setParams={setSearch}
-                handleSort={()=>{}}
-                // handleSort={getAnnouncement}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={files.data.map((item, index) => (
-                    <>
-                     <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.title || '--'}
-                            </Typography>
-                        </TableCell>
-                      <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.description || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.link || '--'}
-                            </Typography>
-                        </TableCell>
-                       
-              
-                    </>
-                ))}
-            />
+            {loading ? (
+                <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
+                    در حال بارگذاری...
+                </Typography>
+            ) : files.data.length === 0 ? (
+                <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
+                    فایلی ثبت نشده است.
+                </Typography>
+            ) : (
+                <Box sx={{pt: 1,px:1.5}}>
+                    <Grid container spacing={2.5}>
+                        {files.data.map((item) => (
+                            <Grid item xs={12} sm={6} md={4} key={item.id}>
+                                <PropertyCard item={item} />
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            )}
         </ListPage>
     )
 }
