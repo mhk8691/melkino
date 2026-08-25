@@ -10,6 +10,7 @@ import {
     Stack,
     Paper,
     Typography,
+    InputAdornment,
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
@@ -18,6 +19,7 @@ import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 import {CustomImagesField} from '../../Components/Input/CustomImagesField'
 import {GridProducer} from '../../Components/Table/GridProducer'
+import {numberToPersianWordsToman} from '../../Core/numberToPersianWords'
 
 export type PropertyType = {
     id: number
@@ -151,6 +153,9 @@ const toSelectOptions = (values: string[]) =>
         label: value,
         value,
     }))
+
+// اگر مقدار خالی/صفر بود متن حروفی نشون داده نشه
+const priceHelperText = (value: number) => (value ? numberToPersianWordsToman(value) : '')
 
 /* ---------------------------------------------------------------------- */
 /* Stepper سفارشی                                                          */
@@ -436,6 +441,8 @@ export function Files({
                                 resource={resource}
                                 label="متراژ"
                                 defaultValue={property.area}
+                                thousandSeparator
+                                endIcon={<InputAdornment position="end">متر</InputAdornment>}
                             />,
 
                             /* ---------------- فروش ---------------- */
@@ -448,6 +455,11 @@ export function Files({
                                           resource={resource}
                                           label="قیمت کل"
                                           defaultValue={property.totalPrice}
+                                          thousandSeparator
+                                          endIcon={
+                                              <InputAdornment position="end">تومان</InputAdornment>
+                                          }
+                                          helperText={priceHelperText(property.totalPrice)}
                                       />,
 
                                       <CustomTextField
@@ -456,6 +468,11 @@ export function Files({
                                           resource={resource}
                                           label="قیمت متری"
                                           defaultValue={property.pricePerMeter}
+                                          thousandSeparator
+                                          endIcon={
+                                              <InputAdornment position="end">تومان</InputAdornment>
+                                          }
+                                          helperText={priceHelperText(property.pricePerMeter)}
                                       />,
                                   ]
                                 : []),
@@ -470,6 +487,11 @@ export function Files({
                                           resource={resource}
                                           label="قیمت رهن"
                                           defaultValue={property.mortgagePrice}
+                                          thousandSeparator
+                                          endIcon={
+                                              <InputAdornment position="end">تومان</InputAdornment>
+                                          }
+                                          helperText={priceHelperText(property.mortgagePrice)}
                                       />,
 
                                       <CustomTextField
@@ -478,6 +500,11 @@ export function Files({
                                           resource={resource}
                                           label="اجاره ماهانه"
                                           defaultValue={property.monthlyRent}
+                                          thousandSeparator
+                                          endIcon={
+                                              <InputAdornment position="end">تومان</InputAdornment>
+                                          }
+                                          helperText={priceHelperText(property.monthlyRent)}
                                       />,
 
                                       <CustomTextField
@@ -521,6 +548,7 @@ export function Files({
                                     resource={resource}
                                     label="تعداد اتاق"
                                     defaultValue={property.roomCount}
+                                    
                                 />,
 
                                 <CustomSelectField
@@ -582,6 +610,7 @@ export function Files({
                                     resource={resource}
                                     label="طبقه کل"
                                     defaultValue={property.totalFloor}
+                                    thousandSeparator
                                 />,
 
                                 <CustomSelectField
