@@ -9,7 +9,7 @@ import {WorkspacePremium} from '@mui/icons-material'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
-
+import HomeIcon from '@mui/icons-material/Home';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {ReactNode} from 'react'
 
@@ -115,6 +115,13 @@ export const drawerItems: DrawerItemType[] = [
         link: 'announcements',
         role: 'all',
         icon: <CampaignIcon sx={iconStyle} />,
+        // groupId: 'silver-content',
+    },
+      {
+        title: 'فایل ها',
+        link: 'files',
+        role: 'all',
+        icon: <HomeIcon sx={iconStyle} />,
         // groupId: 'silver-content',
     },
     {
