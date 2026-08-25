@@ -353,6 +353,7 @@ export function Files({
                         sx={{marginBottom: '16px'}}
                         data={[
                             <CustomSelectField
+                                key="status"
                                 name="status"
                                 setData={setProperty}
                                 resource={resource}
@@ -362,6 +363,7 @@ export function Files({
                             />,
 
                             <CustomSelectField
+                                key="propertyType"
                                 name="propertyType"
                                 setData={setProperty}
                                 resource={resource}
@@ -371,6 +373,7 @@ export function Files({
                             />,
 
                             <CustomSelectField
+                                key="contractType"
                                 name="contractType"
                                 setData={setProperty}
                                 resource={resource}
@@ -380,6 +383,7 @@ export function Files({
                             />,
 
                             <CustomSelectField
+                                key="documentType"
                                 name="documentType"
                                 setData={setProperty}
                                 resource={resource}
@@ -389,6 +393,7 @@ export function Files({
                             />,
 
                             <CustomSelectField
+                                key="city"
                                 name="city"
                                 setData={setProperty}
                                 resource={resource}
@@ -398,6 +403,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="district"
                                 name="district"
                                 setData={setProperty}
                                 resource={resource}
@@ -406,6 +412,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="neighborhood"
                                 name="neighborhood"
                                 setData={setProperty}
                                 resource={resource}
@@ -414,6 +421,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="address"
                                 name="address"
                                 setData={setProperty}
                                 resource={resource}
@@ -436,6 +444,7 @@ export function Files({
                         sx={{marginBottom: '16px'}}
                         data={[
                             <CustomTextField
+                                key="area"
                                 name="area"
                                 setData={setProperty}
                                 resource={resource}
@@ -450,6 +459,7 @@ export function Files({
                             ...(property.contractType === 'فروش'
                                 ? [
                                       <CustomTextField
+                                          key="totalPrice"
                                           name="totalPrice"
                                           setData={setProperty}
                                           resource={resource}
@@ -463,6 +473,7 @@ export function Files({
                                       />,
 
                                       <CustomTextField
+                                          key="pricePerMeter"
                                           name="pricePerMeter"
                                           setData={setProperty}
                                           resource={resource}
@@ -482,6 +493,7 @@ export function Files({
                             ...(property.contractType === 'رهن و اجاره'
                                 ? [
                                       <CustomTextField
+                                          key="mortgagePrice"
                                           name="mortgagePrice"
                                           setData={setProperty}
                                           resource={resource}
@@ -495,6 +507,7 @@ export function Files({
                                       />,
 
                                       <CustomTextField
+                                          key="monthlyRent"
                                           name="monthlyRent"
                                           setData={setProperty}
                                           resource={resource}
@@ -508,6 +521,7 @@ export function Files({
                                       />,
 
                                       <CustomTextField
+                                          key="mortgageTerms"
                                           name="mortgageTerms"
                                           setData={setProperty}
                                           resource={resource}
@@ -543,15 +557,17 @@ export function Files({
                             sx={{marginBottom: '16px'}}
                             data={[
                                 <CustomTextField
+                                    key="roomCount"
                                     name="roomCount"
                                     setData={setProperty}
                                     resource={resource}
                                     label="تعداد اتاق"
                                     defaultValue={property.roomCount}
-                                    
+                                    thousandSeparator
                                 />,
 
                                 <CustomSelectField
+                                    key="occupancyStatus"
                                     name="occupancyStatus"
                                     setData={setProperty}
                                     resource={resource}
@@ -561,6 +577,7 @@ export function Files({
                                 />,
 
                                 <CustomTextField
+                                    key="bathroom"
                                     name="bathroom"
                                     setData={setProperty}
                                     resource={resource}
@@ -569,6 +586,7 @@ export function Files({
                                 />,
 
                                 <CustomSelectField
+                                    key="heating"
                                     name="heating"
                                     setData={setProperty}
                                     resource={resource}
@@ -578,6 +596,7 @@ export function Files({
                                 />,
 
                                 <CustomSelectField
+                                    key="cooling"
                                     name="cooling"
                                     setData={setProperty}
                                     resource={resource}
@@ -587,6 +606,7 @@ export function Files({
                                 />,
 
                                 <CustomSelectField
+                                    key="flooring"
                                     name="flooring"
                                     setData={setProperty}
                                     resource={resource}
@@ -596,6 +616,7 @@ export function Files({
                                 />,
 
                                 <CustomSelectField
+                                    key="facade"
                                     name="facade"
                                     setData={setProperty}
                                     resource={resource}
@@ -605,6 +626,7 @@ export function Files({
                                 />,
 
                                 <CustomTextField
+                                    key="totalFloor"
                                     name="totalFloor"
                                     setData={setProperty}
                                     resource={resource}
@@ -614,6 +636,7 @@ export function Files({
                                 />,
 
                                 <CustomSelectField
+                                    key="direction"
                                     name="direction"
                                     setData={setProperty}
                                     resource={resource}
@@ -646,6 +669,7 @@ export function Files({
                         sx={{marginBottom: '16px'}}
                         data={[
                             <CustomTextField
+                                key="ownerName"
                                 name="ownerName"
                                 setData={setProperty}
                                 resource={resource}
@@ -654,6 +678,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="ownerPhone"
                                 name="ownerPhone"
                                 setData={setProperty}
                                 resource={resource}
@@ -662,6 +687,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="ownerPhone2"
                                 name="ownerPhone2"
                                 setData={setProperty}
                                 resource={resource}
@@ -670,6 +696,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="ownerJob"
                                 name="ownerJob"
                                 setData={setProperty}
                                 resource={resource}
@@ -685,7 +712,14 @@ export function Files({
             /* ---------------------------------------------------------- */
 
             case 4:
-                return <CustomImagesField name="images" setData={setProperty} label="تصاویر" />
+                return (
+                    <CustomImagesField
+                        key="images"
+                        name="images"
+                        setData={setProperty}
+                        label="تصاویر"
+                    />
+                )
 
             /* ---------------------------------------------------------- */
             /* توضیحات                                                       */
@@ -697,6 +731,7 @@ export function Files({
                         sx={{marginBottom: '16px'}}
                         data={[
                             <CustomTextField
+                                key="description"
                                 name="description"
                                 setData={setProperty}
                                 resource={resource}
@@ -707,6 +742,7 @@ export function Files({
                             />,
 
                             <CustomTextField
+                                key="internalNote"
                                 name="internalNote"
                                 setData={setProperty}
                                 resource={resource}
