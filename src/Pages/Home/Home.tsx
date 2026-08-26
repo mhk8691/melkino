@@ -20,6 +20,9 @@ import PanelSettings from '../Settings/PanelSettings'
 import { FilesCreate } from '../Files/Create/FilesCreate'
 import { FilesList } from '../Files/List/FilesList'
 import { FilesEdit } from '../Files/Edit/FilesEdit'
+import { RequestCreate } from '../Request/Create/RequestCreate'
+import { RequestEdit } from '../Request/Edit/RequestEdit'
+import { RequestList } from '../Request/List/RequestList'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -138,13 +141,20 @@ export function Home(props) {
                         <Route path="announcements/:id" element={<AnnouncementEdit />} />
                         {/* ...........Settings.......... */}
                         <Route path="settings" element={<PanelSettings />} />
-                           {/* ...........Announcemen.......... */}
+                           {/* ...........files.......... */}
                         <Route
                             path="files/create"
                             element={<FilesCreate data={data} setData={setData} />}
                         />
                         <Route path="files" element={<FilesList />} />
                         <Route path="files/:id" element={<FilesEdit />} />
+                                {/* ...........requests.......... */}
+                        <Route
+                            path="requests/create"
+                            element={<RequestCreate data={data} setData={setData} />}
+                        />
+                        <Route path="requests" element={<RequestList />} />
+                        <Route path="requests/:id" element={<RequestEdit />} />
                     </Routes>
                 </Box>
             </Box>

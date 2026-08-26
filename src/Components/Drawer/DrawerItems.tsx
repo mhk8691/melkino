@@ -9,9 +9,11 @@ import {WorkspacePremium} from '@mui/icons-material'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from '@mui/icons-material/Home'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import RequestPageIcon from '@mui/icons-material/RequestPage'
 import {ReactNode} from 'react'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export type DrawerItemType = {
     title: string
@@ -110,19 +112,26 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <AssignmentIcon sx={iconStyle} />,
     },
-       {
+    {
         title: 'اطلاعیه ها',
         link: 'announcements',
         role: 'all',
         icon: <CampaignIcon sx={iconStyle} />,
         // groupId: 'silver-content',
     },
-      {
+    {
         title: 'فایل ها',
         link: 'files',
         role: 'all',
         icon: <HomeIcon sx={iconStyle} />,
         // groupId: 'silver-content',
+    },
+    {
+        title: 'درخواست ها',
+        link: 'requests',
+        role: 'all',
+        icon: (<AddCircleOutlineIcon sx={iconStyle} />
+        ),
     },
     {
         title: 'تنظیمات',
@@ -136,6 +145,4 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <AccountCircleRoundedIcon sx={iconStyle} />,
     },
-
- 
 ]

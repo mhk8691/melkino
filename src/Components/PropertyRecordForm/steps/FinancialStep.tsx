@@ -63,7 +63,6 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                               />
                           ),
 
-                          // قیمت متری فقط برای ثبت فایل نمایش داده می‌شود
                           ...(mode === 'file'
                               ? [
                                     <CustomTextField

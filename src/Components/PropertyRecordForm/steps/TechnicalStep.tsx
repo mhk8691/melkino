@@ -91,7 +91,15 @@ export function TechnicalStep({property, setProperty, resource, mode}: ModeStepP
                               />,
                           ]
                         : []),
-
+  <CustomSelectField
+                        key="direction"
+                        name="direction"
+                        setData={setProperty}
+                        resource={resource}
+                        label="جهت"
+                        defaultValue={property.direction}
+                        options={toSelectOptions(DIRECTION_OPTIONS)}
+                    />,
                     mode === 'request' ? (
                         <RangeField
                             key="totalFloor"
@@ -113,15 +121,7 @@ export function TechnicalStep({property, setProperty, resource, mode}: ModeStepP
                         />
                     ),
 
-                    <CustomSelectField
-                        key="direction"
-                        name="direction"
-                        setData={setProperty}
-                        resource={resource}
-                        label="جهت"
-                        defaultValue={property.direction}
-                        options={toSelectOptions(DIRECTION_OPTIONS)}
-                    />,
+                  
                 ]}
             />
 

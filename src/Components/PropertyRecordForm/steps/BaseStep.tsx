@@ -54,7 +54,6 @@ export function BaseStep({property, setProperty, resource, mode}: ModeStepProps)
                     options={toSelectOptions(CITY_OPTIONS)}
                 />,
 
-                // منطقه و محله: در «درخواست» چند مقداری، در «فایل» تک مقداری
                 mode === 'request' ? (
                     <MultiValueField
                         key="district"

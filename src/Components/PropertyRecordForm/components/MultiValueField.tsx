@@ -27,7 +27,16 @@ export function MultiValueField({
                 ))
             }
             renderInput={(params) => (
-                <TextField {...params} label={label} placeholder="افزودن و اینتر بزنید" />
+                <TextField
+                    {...params}
+                    label={label}
+                    placeholder="افزودن و اینتر بزنید"
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '15px',
+                        },
+                    }}
+                />
             )}
         />
     )
