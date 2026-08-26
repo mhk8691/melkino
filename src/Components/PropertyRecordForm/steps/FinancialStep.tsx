@@ -1,3 +1,4 @@
+import {useRef} from 'react'
 import {InputAdornment} from '@mui/material'
 
 import {RangeField} from '../components/RangeField'
@@ -6,6 +7,60 @@ import type {ModeStepProps} from '../types'
 import {priceHelperText} from '../utils'
 
 export function FinancialStep({property, setProperty, resource, mode}: ModeStepProps) {
+    // آخرین مقادیری که پردازش شدن (برای تشخیص تغییر)
+    const prevValues = useRef({
+        area: property.area,
+        totalPrice: property.totalPrice,
+        pricePerMeter: property.pricePerMeter,
+    })
+
+    // آخرین فیلد قیمتی‌ای که خود کاربر دستی تغییرش داده: 'totalPrice' یا 'pricePerMeter'
+    // نوع رو صراحتاً مشخص کردیم تا TS مقدار null رو narrow نکنه
+    const lastEditedPriceField = useRef<'totalPrice' | 'pricePerMeter' | null>(null)
+
+    if (property.contractType === 'فروش' && mode === 'file') {
+        const prev = prevValues.current
+
+        const areaChanged = property.area !== prev.area
+        const totalPriceChanged = property.totalPrice !== prev.totalPrice
+        const pricePerMeterChanged = property.pricePerMeter !== prev.pricePerMeter
+
+        const area = Number(property.area) || 0
+        const totalPrice = Number(property.totalPrice) || 0
+        const pricePerMeter = Number(property.pricePerMeter) || 0
+
+        // ثبت اینکه کاربر کدوم فیلد قیمتی رو دستی عوض کرده
+        if (totalPriceChanged) lastEditedPriceField.current = 'totalPrice'
+        if (pricePerMeterChanged) lastEditedPriceField.current = 'pricePerMeter'
+
+        let nextTotalPrice = property.totalPrice
+        let nextPricePerMeter = property.pricePerMeter
+
+        if ((areaChanged || totalPriceChanged || pricePerMeterChanged) && area > 0) {
+            if (lastEditedPriceField.current === 'totalPrice' && !pricePerMeterChanged) {
+                // مبنا: قیمت کل (که کاربر آخرین بار زده) + متراژ فعلی => قیمت متری
+                const computed = Math.round(totalPrice / area)
+                if (computed !== pricePerMeter) {
+                    nextPricePerMeter = computed
+                    setProperty((prev) => ({...prev, pricePerMeter: computed}))
+                }
+            } else if (lastEditedPriceField.current === 'pricePerMeter' && !totalPriceChanged) {
+                // مبنا: قیمت متری (که کاربر آخرین بار زده) + متراژ فعلی => قیمت کل
+                const computed = Math.round(pricePerMeter * area)
+                if (computed !== totalPrice) {
+                    nextTotalPrice = computed
+                    setProperty((prev) => ({...prev, totalPrice: computed}))
+                }
+            }
+        }
+
+        prevValues.current = {
+            area: property.area,
+            totalPrice: nextTotalPrice,
+            pricePerMeter: nextPricePerMeter,
+        }
+    }
+
     return (
         <GridProducer
             sx={{marginBottom: '16px'}}
@@ -49,16 +104,13 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                               />
                           ) : (
                               <CustomTextField
-                                  key="totalPrice"
                                   name="totalPrice"
                                   setData={setProperty}
                                   resource={resource}
                                   label="قیمت کل"
                                   defaultValue={property.totalPrice}
                                   thousandSeparator
-                                  endIcon={
-                                      <InputAdornment position="end">تومان</InputAdornment>
-                                  }
+                                  endIcon={<InputAdornment position="end">تومان</InputAdornment>}
                                   helperText={priceHelperText(property.totalPrice)}
                               />
                           ),
@@ -66,7 +118,6 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                           ...(mode === 'file'
                               ? [
                                     <CustomTextField
-                                        key="pricePerMeter"
                                         name="pricePerMeter"
                                         setData={setProperty}
                                         resource={resource}
@@ -74,9 +125,7 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                                         defaultValue={property.pricePerMeter}
                                         thousandSeparator
                                         endIcon={
-                                            <InputAdornment position="end">
-                                                تومان
-                                            </InputAdornment>
+                                            <InputAdornment position="end">تومان</InputAdornment>
                                         }
                                         helperText={priceHelperText(property.pricePerMeter)}
                                     />,
@@ -108,9 +157,7 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                                   label="قیمت رهن"
                                   defaultValue={property.mortgagePrice}
                                   thousandSeparator
-                                  endIcon={
-                                      <InputAdornment position="end">تومان</InputAdornment>
-                                  }
+                                  endIcon={<InputAdornment position="end">تومان</InputAdornment>}
                                   helperText={priceHelperText(property.mortgagePrice)}
                               />
                           ),
@@ -134,9 +181,7 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                                   label="اجاره ماهانه"
                                   defaultValue={property.monthlyRent}
                                   thousandSeparator
-                                  endIcon={
-                                      <InputAdornment position="end">تومان</InputAdornment>
-                                  }
+                                  endIcon={<InputAdornment position="end">تومان</InputAdornment>}
                                   helperText={priceHelperText(property.monthlyRent)}
                               />
                           ),
