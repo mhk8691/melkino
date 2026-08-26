@@ -3,7 +3,7 @@ import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded'
 import SquareFootRoundedIcon from '@mui/icons-material/SquareFootRounded'
 import BedRoundedIcon from '@mui/icons-material/BedRounded'
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded'
-import { PropertyType } from './Files'
+import { PropertyType } from '../../Components/PropertyRecordForm'
 
 /* ---------------------------------------------------------------------- */
 /* وضعیت → رنگ برند                                                         */

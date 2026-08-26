@@ -1,6 +1,6 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import { Files } from '../Files'
+import { PropertyRecordForm } from '../../../Components/PropertyRecordForm'
 
 const resource = 'files'
 
@@ -19,7 +19,7 @@ export function FilesCreate({
             redirect={resource}
             formDetails={data}
         >
-            <Files property={data} setProperty={setData} resource={resource} />
+            <PropertyRecordForm mode='file' property={data} setProperty={setData} resource={resource} />
         </CreatePage>
     )
 }

@@ -1,0 +1,79 @@
+import type {Dispatch, SetStateAction} from 'react'
+
+export type RecordMode = 'file' | 'request'
+
+export type PropertyType = {
+    id: number
+    status: string
+    propertyType: string
+    contractType: string
+    documentType: string
+
+    city: string
+    // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
+    district: string | string[]
+    neighborhood: string | string[]
+    address: string
+
+    area: number
+    totalPrice: number
+    pricePerMeter: number
+    rent: number
+
+    mortgagePrice: number
+    monthlyRent: number
+    mortgageTerms: string
+
+    // فیلدهای بازه‌ای، فقط برای «ثبت درخواست» استفاده می‌شوند
+    areaFrom?: number
+    areaTo?: number
+    totalPriceFrom?: number
+    totalPriceTo?: number
+    mortgagePriceFrom?: number
+    mortgagePriceTo?: number
+    monthlyRentFrom?: number
+    monthlyRentTo?: number
+    totalFloorFrom?: number
+    totalFloorTo?: number
+
+    roomCount: number
+    occupancyStatus: string
+    bathroom: string
+    heating: string
+    cooling: string
+    flooring: string
+    facade: string
+    totalFloor: number
+    direction: string
+
+    amenities: string[]
+
+    ownerName: string
+    ownerPhone: string
+    ownerPhone2: string
+    ownerJob: string
+
+    images: File[]
+
+    description: string
+    internalNote: string
+}
+
+export type FilesType = {
+    id: number
+    title: string
+    description: string
+    link: string
+}
+
+// پراپ‌های پایه‌ای که تقریبا همه‌ی مراحل به آن نیاز دارند
+export type StepProps = {
+    property: PropertyType
+    setProperty: Dispatch<SetStateAction<PropertyType>>
+    resource: string
+}
+
+// مراحلی که رفتارشان بین «فایل» و «درخواست» فرق می‌کند
+export type ModeStepProps = StepProps & {
+    mode: RecordMode
+}

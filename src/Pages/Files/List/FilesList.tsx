@@ -8,9 +8,9 @@ import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
-import {PropertyType} from '../Files'
 import {FilesCreate} from '../Create/FilesCreate'
 import {PropertyCard} from '../PropertyCard'
+import { PropertyType } from '../../../Components/PropertyRecordForm'
 
 const RESOURCE = 'files'
 
