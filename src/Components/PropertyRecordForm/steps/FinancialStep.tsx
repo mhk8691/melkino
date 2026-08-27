@@ -1,4 +1,4 @@
-import {useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {InputAdornment} from '@mui/material'
 
 import {RangeField} from '../components/RangeField'
@@ -7,7 +7,7 @@ import type {ModeStepProps} from '../types'
 import {priceHelperText} from '../utils'
 
 export function FinancialStep({property, setProperty, resource, mode}: ModeStepProps) {
-    // آخرین مقادیری که پردازش شدن (برای تشخیص تغییر)
+    // آخرین مقادیری که پردازش شدن (برای تشخیص اینکه واقعاً چه چیزی تغییر کرده)
     const prevValues = useRef({
         area: property.area,
         totalPrice: property.totalPrice,
@@ -15,51 +15,80 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
     })
 
     // آخرین فیلد قیمتی‌ای که خود کاربر دستی تغییرش داده: 'totalPrice' یا 'pricePerMeter'
-    // نوع رو صراحتاً مشخص کردیم تا TS مقدار null رو narrow نکنه
     const lastEditedPriceField = useRef<'totalPrice' | 'pricePerMeter' | null>(null)
 
-    if (property.contractType === 'فروش' && mode === 'file') {
-        const prev = prevValues.current
+    // CustomTextField ظاهراً uncontrolled هست (defaultValue می‌گیره)، پس وقتی خودمون
+    // مقدارش رو برنامه‌ای عوض می‌کنیم باید مجبورش کنیم دوباره mount بشه تا مقدار
+    // جدید رو توی خودِ اینپوت نشون بده. برای همین یه شماره نسخه جدا برای هرکدوم داریم
+    // که فقط وقتی خودمون اون فیلد رو محاسبه می‌کنیم بالا می‌ره (نه موقع تایپ کاربر).
+    const [totalPriceVersion, setTotalPriceVersion] = useState(0)
+    const [pricePerMeterVersion, setPricePerMeterVersion] = useState(0)
 
+    // محاسبه‌ی خودکار قیمت کل / قیمت متری بر اساس متراژ — فقط «ثبت فایل» + «فروش»
+    useEffect(() => {
+        const isSaleFile = property.contractType === 'فروش' && mode === 'file'
+
+        if (!isSaleFile) {
+            // اگر از حالت فروش/فایل خارج شدیم، ردیابی قبلی رو ریست کن تا برگشتن بهش تمیز باشه
+            lastEditedPriceField.current = null
+            prevValues.current = {
+                area: property.area,
+                totalPrice: property.totalPrice,
+                pricePerMeter: property.pricePerMeter,
+            }
+            return
+        }
+
+        const prev = prevValues.current
         const areaChanged = property.area !== prev.area
         const totalPriceChanged = property.totalPrice !== prev.totalPrice
         const pricePerMeterChanged = property.pricePerMeter !== prev.pricePerMeter
 
-        const area = Number(property.area) || 0
-        const totalPrice = Number(property.totalPrice) || 0
-        const pricePerMeter = Number(property.pricePerMeter) || 0
+        // هیچی واقعاً عوض نشده (مثلاً کامپوننت به دلیل دیگه‌ای ری‌رندر شده)
+        if (!areaChanged && !totalPriceChanged && !pricePerMeterChanged) return
 
         // ثبت اینکه کاربر کدوم فیلد قیمتی رو دستی عوض کرده
         if (totalPriceChanged) lastEditedPriceField.current = 'totalPrice'
         if (pricePerMeterChanged) lastEditedPriceField.current = 'pricePerMeter'
 
+        const area = Number(property.area) || 0
+        const totalPrice = Number(property.totalPrice) || 0
+        const pricePerMeter = Number(property.pricePerMeter) || 0
+
         let nextTotalPrice = property.totalPrice
         let nextPricePerMeter = property.pricePerMeter
 
-        if ((areaChanged || totalPriceChanged || pricePerMeterChanged) && area > 0) {
+        if (area > 0) {
             if (lastEditedPriceField.current === 'totalPrice' && !pricePerMeterChanged) {
-                // مبنا: قیمت کل (که کاربر آخرین بار زده) + متراژ فعلی => قیمت متری
+                // مبنا: قیمت کل (آخرین چیزی که کاربر زده) + متراژ فعلی => قیمت متری
                 const computed = Math.round(totalPrice / area)
                 if (computed !== pricePerMeter) {
                     nextPricePerMeter = computed
                     setProperty((prev) => ({...prev, pricePerMeter: computed}))
+                    // فیلد قیمت متری رو ری‌مونت کن تا مقدار محاسبه‌شده توی خودِ اینپوت دیده بشه
+                    setPricePerMeterVersion((v) => v + 1)
                 }
             } else if (lastEditedPriceField.current === 'pricePerMeter' && !totalPriceChanged) {
-                // مبنا: قیمت متری (که کاربر آخرین بار زده) + متراژ فعلی => قیمت کل
+                // مبنا: قیمت متری (آخرین چیزی که کاربر زده) + متراژ فعلی => قیمت کل
                 const computed = Math.round(pricePerMeter * area)
                 if (computed !== totalPrice) {
                     nextTotalPrice = computed
                     setProperty((prev) => ({...prev, totalPrice: computed}))
+                    // فیلد قیمت کل رو ری‌مونت کن تا مقدار محاسبه‌شده توی خودِ اینپوت دیده بشه
+                    setTotalPriceVersion((v) => v + 1)
                 }
             }
         }
 
+        // مقدار «محاسبه‌شده» رو همین‌جا به‌عنوان prev ثبت می‌کنیم، نه مقدار خام state رو؛
+        // این‌جوری وقتی رندر بعدی با مقدار جدید (که خودمون ست کردیم) بیاد، به اشتباه
+        // به‌عنوان «تغییر دستی کاربر» تشخیص داده نمی‌شه.
         prevValues.current = {
             area: property.area,
             totalPrice: nextTotalPrice,
             pricePerMeter: nextPricePerMeter,
         }
-    }
+    }, [property.area, property.totalPrice, property.pricePerMeter, property.contractType, mode, setProperty])
 
     return (
         <GridProducer
@@ -104,6 +133,7 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                               />
                           ) : (
                               <CustomTextField
+                                  key={`totalPrice-${totalPriceVersion}`}
                                   name="totalPrice"
                                   setData={setProperty}
                                   resource={resource}
@@ -118,6 +148,7 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                           ...(mode === 'file'
                               ? [
                                     <CustomTextField
+                                        key={`pricePerMeter-${pricePerMeterVersion}`}
                                         name="pricePerMeter"
                                         setData={setProperty}
                                         resource={resource}
