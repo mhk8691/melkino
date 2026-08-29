@@ -3,10 +3,13 @@ import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded'
 import SquareFootRoundedIcon from '@mui/icons-material/SquareFootRounded'
 import BedRoundedIcon from '@mui/icons-material/BedRounded'
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded'
-import { PropertyType } from '../../Components/PropertyRecordForm'
+import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded'
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
+import LocalPhoneRoundedIcon from '@mui/icons-material/LocalPhoneRounded'
+import type {PropertyType, RecordMode} from '../../Components/PropertyRecordForm'
 
 /* ---------------------------------------------------------------------- */
-/* وضعیت → رنگ برند                                                         */
+/* وضعیت → رنگ برند (فقط حالت «فایل» وضعیت دارد)                             */
 /* ---------------------------------------------------------------------- */
 
 const STATUS_COLOR: Record<string, string> = {
@@ -17,6 +20,25 @@ const STATUS_COLOR: Record<string, string> = {
 }
 
 const formatPrice = (value?: number) => (value ? value.toLocaleString('fa-IR') : '--')
+
+const formatNumber = (value?: number) => (value ? value.toLocaleString('fa-IR') : undefined)
+
+// برای فیلدهای بازه‌ای «ثبت درخواست» (مثلا قیمت یا متراژ از/تا)
+const formatNumberRange = (from?: number, to?: number) => {
+    const f = formatNumber(from)
+    const t = formatNumber(to)
+
+    if (f && t) return `${f} - ${t}`
+    if (f) return `از ${f}`
+    if (t) return `تا ${t}`
+    return '--'
+}
+
+// منطقه/محله در حالت «درخواست» می‌تواند چند مقداری (آرایه) باشد
+const asDisplayText = (value?: string | string[]) => {
+    if (Array.isArray(value)) return value.filter(Boolean).join('، ')
+    return value
+}
 
 /* ---------------------------------------------------------------------- */
 /* یه سوراخ پانچ در لبه‌ی کارت                                                */
@@ -42,20 +64,48 @@ function Notch({side}: {side: 'insetInlineStart' | 'insetInlineEnd'}) {
 
 export type PropertyCardProps = {
     item: Partial<PropertyType>
+    mode?: RecordMode
     onClick?: () => void
 }
 
-export function PropertyCard({item, onClick}: PropertyCardProps) {
+export function PropertyCard({item, mode = 'file', onClick}: PropertyCardProps) {
+    const isRequest = mode === 'request'
     const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
 
     const isRent = item.contractType === 'رهن و اجاره'
-    const priceMain = isRent ? formatPrice(item.mortgagePrice) : formatPrice(item.totalPrice)
     const priceLabel = isRent ? 'رهن' : 'قیمت کل'
-    const priceSecondary =
-        isRent && item.monthlyRent ? `اجاره ماهانه ${formatPrice(item.monthlyRent)} تومان` : null
 
-    const image = item.images?.[0]
+    const priceMain = isRequest
+        ? isRent
+            ? formatNumberRange(item.mortgagePriceFrom, item.mortgagePriceTo)
+            : formatNumberRange(item.totalPriceFrom, item.totalPriceTo)
+        : isRent
+          ? formatPrice(item.mortgagePrice)
+          : formatPrice(item.totalPrice)
+
+    const priceSecondary = isRent
+        ? isRequest
+            ? item.monthlyRentFrom || item.monthlyRentTo
+                ? `اجاره ماهانه ${formatNumberRange(item.monthlyRentFrom, item.monthlyRentTo)} تومان`
+                : null
+            : item.monthlyRent
+              ? `اجاره ماهانه ${formatPrice(item.monthlyRent)} تومان`
+              : null
+        : null
+
+    const areaText = isRequest
+        ? item.areaFrom || item.areaTo
+            ? `${formatNumberRange(item.areaFrom, item.areaTo)} متر`
+            : '--'
+        : item.area
+          ? `${item.area} متر`
+          : '--'
+
+    // در حالت «درخواست» اصلا مفهوم تصویر وجود ندارد
+    const image = !isRequest ? item.images?.[0] : undefined
     const imageUrl = image ? URL.createObjectURL(image) : undefined
+
+    const hasRequester = isRequest && (item.requesterName || item.requesterPhone)
 
     return (
         <Box
@@ -85,7 +135,7 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                 },
             }}
         >
-            {/* بخش بالا: تصویر + موقعیت */}
+            {/* بخش بالا: تصویر/آیکون + موقعیت */}
             <Box sx={{display: 'flex', gap: 1.5, p: 2, pb: 1.75}}>
                 <Box
                     sx={{
@@ -93,7 +143,7 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                         height: 60,
                         flexShrink: 0,
                         borderRadius: 1.5,
-                        bgcolor: 'background.default',
+                        bgcolor: isRequest ? 'action.hover' : 'background.default',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -102,28 +152,53 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                         backgroundPosition: 'center',
                     }}
                 >
-                    {!imageUrl && (
-                        <ImageNotSupportedRoundedIcon sx={{fontSize: 20, color: 'text.disabled'}} />
+                    {isRequest ? (
+                        <TravelExploreRoundedIcon sx={{fontSize: 22, color: 'primary.main'}} />
+                    ) : (
+                        !imageUrl && (
+                            <ImageNotSupportedRoundedIcon
+                                sx={{fontSize: 20, color: 'text.disabled'}}
+                            />
+                        )
                     )}
                 </Box>
 
                 <Box sx={{minWidth: 0, flexGrow: 1}}>
                     <Stack direction="row" alignItems="center" spacing={0.75} sx={{mb: 0.5}}>
-                        <Box
-                            sx={{
-                                width: 7,
-                                height: 7,
-                                borderRadius: '50%',
-                                bgcolor: statusColor,
-                                flexShrink: 0,
-                            }}
-                        />
-                        <Typography variant="badge" sx={{color: statusColor, fontSize: '12px'}} noWrap>
-                            {item.status || '--'}
-                        </Typography>
-                        <Typography variant="badge" sx={{color: 'text.disabled', fontSize: '12px'}}>
-                            · #{item.id ?? '--'}
-                        </Typography>
+                        {isRequest ? (
+                            <Typography
+                                variant="badge"
+                                sx={{color: 'text.disabled', fontSize: '12px'}}
+                                noWrap
+                            >
+                                درخواست · #{item.id ?? '--'}
+                            </Typography>
+                        ) : (
+                            <>
+                                <Box
+                                    sx={{
+                                        width: 7,
+                                        height: 7,
+                                        borderRadius: '50%',
+                                        bgcolor: statusColor,
+                                        flexShrink: 0,
+                                    }}
+                                />
+                                <Typography
+                                    variant="badge"
+                                    sx={{color: statusColor, fontSize: '12px'}}
+                                    noWrap
+                                >
+                                    {item.status || '--'}
+                                </Typography>
+                                <Typography
+                                    variant="badge"
+                                    sx={{color: 'text.disabled', fontSize: '12px'}}
+                                >
+                                    · #{item.id ?? '--'}
+                                </Typography>
+                            </>
+                        )}
                     </Stack>
 
                     <Typography variant="titleMd" fontWeight={700} noWrap>
@@ -133,8 +208,9 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                     <Stack direction="row" alignItems="center" spacing={0.5} sx={{mt: 0.25}}>
                         <PlaceRoundedIcon sx={{fontSize: 14, color: 'text.disabled', flexShrink: 0}} />
                         <Typography variant="bodySm" color="text.secondary" noWrap>
-                            {[item.city, item.district, item.neighborhood].filter(Boolean).join(' - ') ||
-                                '--'}
+                            {[item.city, asDisplayText(item.district), asDisplayText(item.neighborhood)]
+                                .filter(Boolean)
+                                .join(' - ') || '--'}
                         </Typography>
                     </Stack>
                 </Box>
@@ -153,13 +229,12 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                 />
             </Box>
 
-            {/* بخش پایین: متراژ/اتاق + قیمت */}
             <Box sx={{p: 2, pt: 1.75, display: 'flex', flexDirection: 'column', flexGrow: 1}}>
                 <Stack direction="row" spacing={2} sx={{mb: 1.5}}>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
                         <SquareFootRoundedIcon sx={{fontSize: 15, color: 'text.disabled'}} />
                         <Typography variant="labelSm" color="text.secondary">
-                            {item.area ? `${item.area} متر` : '--'}
+                            {areaText}
                         </Typography>
                     </Stack>
 
@@ -196,6 +271,39 @@ export function PropertyCard({item, onClick}: PropertyCardProps) {
                         </Typography>
                     )}
                 </Box>
+
+                {/* نام و شماره‌ی کاربری که درخواست ثبت کرده — فقط حالت «درخواست» */}
+                {hasRequester && (
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{mt: 1.5, pt: 1.25, borderTop: '1px solid', borderColor: 'divider'}}
+                    >
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{minWidth: 0}}>
+                            <PersonRoundedIcon
+                                sx={{fontSize: 15, color: 'text.disabled', flexShrink: 0}}
+                            />
+                            <Typography variant="labelSm" color="text.secondary" noWrap>
+                                {item.requesterName || '--'}
+                            </Typography>
+                        </Stack>
+
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <LocalPhoneRoundedIcon
+                                sx={{fontSize: 14, color: 'text.disabled', flexShrink: 0}}
+                            />
+                            <Typography
+                                variant="labelSm"
+                                color="text.secondary"
+                                dir="ltr"
+                                sx={{fontVariantNumeric: 'tabular-nums'}}
+                            >
+                                {item.requesterPhone || '--'}
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                )}
             </Box>
         </Box>
     )

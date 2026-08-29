@@ -8,7 +8,8 @@ export type PropertyType = {
     propertyType: string
     contractType: string
     documentType: string
-
+    requesterName?:string
+    requesterPhone?:string
     city: string
     // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
     district: string | string[]

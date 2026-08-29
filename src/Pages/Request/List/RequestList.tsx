@@ -9,8 +9,8 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import {PropertyCard} from '../PropertyCard'
-import { PropertyType } from '../../../Components/PropertyRecordForm'
-import { RequestCreate } from '../Create/RequestCreate'
+import {PropertyType} from '../../../Components/PropertyRecordForm'
+import {RequestCreate} from '../Create/RequestCreate'
 
 const RESOURCE = 'requests'
 
@@ -29,82 +29,63 @@ const queryNames = tableHeadCells.map((cell) => ({
 export function RequestList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-    const [files, setFiles] = useState<{
+    const [requests, setRequests] = useState<{
         total_results: number
         data: Partial<PropertyType>[]
     }>({
-        total_results: 5,
+        total_results: 3,
         data: [
             {
                 id: 1,
-                status: 'فعال',
                 propertyType: 'آپارتمان',
                 contractType: 'فروش',
                 city: 'تهران',
-                district: 'منطقه ۲',
-                neighborhood: 'سعادت‌آباد',
-                address: 'خیابان علامه شمالی، کوچه ۱۲',
-                area: 120,
-                totalPrice: 8500000000,
+                district: ['منطقه ۱', 'منطقه ۲'],
+                neighborhood: ['زعفرانیه', 'الهیه'],
+                areaFrom: 90,
+                areaTo: 130,
+                totalPriceFrom: 5000000000,
+                totalPriceTo: 7500000000,
                 roomCount: 2,
+                requesterName: 'علی محمدی',
+                requesterPhone: '09121234567',
             },
             {
                 id: 2,
-                status: 'فعال',
                 propertyType: 'ویلایی',
                 contractType: 'رهن و اجاره',
                 city: 'کرج',
-                district: 'گوهردشت',
-                neighborhood: 'فاز ۲',
-                address: 'خیابان شهید بهشتی',
-                area: 200,
-                mortgagePrice: 500000000,
-                monthlyRent: 15000000,
+                district: ['گوهردشت'],
+                neighborhood: ['فاز ۲', 'فاز ۳'],
+                areaFrom: 150,
+                areaTo: 220,
+                mortgagePriceFrom: 300000000,
+                mortgagePriceTo: 600000000,
+                monthlyRentFrom: 8000000,
+                monthlyRentTo: 15000000,
                 roomCount: 3,
+                requesterName: 'سارا احمدی',
+                requesterPhone: '09351234567',
             },
             {
                 id: 3,
-                status: 'کنسل شد',
                 propertyType: 'زمین',
                 contractType: 'فروش',
                 city: 'شیراز',
-                district: 'معالی‌آباد',
-                neighborhood: '',
-                address: 'بلوار معالی‌آباد',
-                area: 350,
-                totalPrice: 12000000000,
+                district: ['معالی‌آباد'],
+                neighborhood: [],
+                areaFrom: 300,
+                areaTo: 400,
+                totalPriceFrom: 10000000000,
+                totalPriceTo: 14000000000,
                 roomCount: 0,
-            },
-            {
-                id: 4,
-                status: 'منصرف شد',
-                propertyType: 'آپارتمان',
-                contractType: 'فروش',
-                city: 'اصفهان',
-                district: 'ملک‌شهر',
-                neighborhood: '',
-                address: 'خیابان کاوه',
-                area: 95,
-                totalPrice: 3200000000,
-                roomCount: 2,
-            },
-            {
-                id: 5,
-                status: 'فروخته شده',
-                propertyType: 'پیش فروش',
-                contractType: 'مشارکت',
-                city: 'مشهد',
-                district: 'وکیل‌آباد',
-                neighborhood: '',
-                address: 'بلوار وکیل‌آباد',
-                area: 140,
-                totalPrice: 6100000000,
-                roomCount: 3,
+                requesterName: 'رضا کریمی',
+                requesterPhone: '09131234567',
             },
         ],
     })
     const dispatch = useDispatch()
-    // const getFiles = async () => {
+    // const getRequests = async () => {
     //     setLoading(true)
     //     try {
     //         let response = await DataProvider.get<{
@@ -112,7 +93,7 @@ export function RequestList() {
     //             results: PropertyType[]
     //         }>(`${RESOURCE}/`, search)
     //         if (response) {
-    //             setFiles({
+    //             setRequests({
     //                 total_results: response.data.total_results,
     //                 data: response.data.results,
     //             })
@@ -123,12 +104,12 @@ export function RequestList() {
     //     setLoading(false)
     // }
     // useDeepCompareEffect(() => {
-    //     getFiles()
+    //     getRequests()
     // }, [search])
 
     return (
         <ListPage
-            header={'مدیریت فایل‌های ملکی'}
+            header={'مدیریت درخواست‌ها'}
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
@@ -137,7 +118,7 @@ export function RequestList() {
             params={search}
             resource={RESOURCE}
             getList={() => {}}
-            // getList={getFiles}
+            // getList={getRequests}
             filtersData={[]}
             createModal={RequestCreate}
             defaultState={{
@@ -148,16 +129,16 @@ export function RequestList() {
                 <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
                     در حال بارگذاری...
                 </Typography>
-            ) : files.data.length === 0 ? (
+            ) : requests.data.length === 0 ? (
                 <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
-                    فایلی ثبت نشده است.
+                    درخواستی ثبت نشده است.
                 </Typography>
             ) : (
-                <Box sx={{pt: 1,px:1.5}}>
+                <Box sx={{pt: 1, px: 1.5}}>
                     <Grid container spacing={2.5}>
-                        {files.data.map((item) => (
+                        {requests.data.map((item) => (
                             <Grid item xs={12} sm={6} md={4} key={item.id}>
-                                <PropertyCard item={item} />
+                                <PropertyCard item={item} mode="request" />
                             </Grid>
                         ))}
                     </Grid>
