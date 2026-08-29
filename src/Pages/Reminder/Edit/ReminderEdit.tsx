@@ -18,6 +18,7 @@ export function ReminderEdit() {
             isFormData={true}
         >
             <Reminder
+            editMode
                 reminders={reminders}
                 setReminders={setReminders}
                 resource={resource}
