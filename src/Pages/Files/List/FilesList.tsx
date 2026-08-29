@@ -9,8 +9,8 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import {FilesCreate} from '../Create/FilesCreate'
-import {PropertyCard} from '../PropertyCard'
 import { PropertyType } from '../../../Components/PropertyRecordForm'
+import { PropertyCard } from '../PropertyCard/PropertyCard'
 
 const RESOURCE = 'files'
 
@@ -29,77 +29,115 @@ const queryNames = tableHeadCells.map((cell) => ({
 export function FilesList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-    const [files, setFiles] = useState<{
+     const [files, setFiles] = useState<{
         total_results: number
         data: Partial<PropertyType>[]
     }>({
         total_results: 5,
         data: [
+            // ۱) رکورد کامل — تقریباً همه‌ی فیلدها پر شده
             {
                 id: 1,
                 status: 'فعال',
                 propertyType: 'آپارتمان',
                 contractType: 'فروش',
+                documentType: 'تک برگ',
                 city: 'تهران',
                 district: 'منطقه ۲',
                 neighborhood: 'سعادت‌آباد',
-                address: 'خیابان علامه شمالی، کوچه ۱۲',
+                address: 'خیابان علامه شمالی، کوچه ۱۲، پلاک ۴',
                 area: 120,
                 totalPrice: 8500000000,
+                pricePerMeter: 70833333,
                 roomCount: 2,
+                occupancyStatus: 'تخلیه',
+                bathroom: 'ایرانی و فرنگی',
+                heating: 'پکیج',
+                cooling: 'اسپلیت',
+                flooring: 'سرامیک',
+                facade: 'سنگ',
+                totalFloor: 6,
+                direction: 'شمالی',
+                amenities: ['آسانسور', 'پارکینگ', 'انباری', 'بالکن'],
+                ownerName: 'علی رضایی',
+                ownerPhone: '09121234567',
+                ownerPhone2: '02188451234',
+                ownerJob: 'مهندس',
+                description: 'واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.',
+                internalNote: 'مالک عجله برای فروش دارد، قابل مذاکره.',
             },
+            // ۲) ویلایی رهن و اجاره — تعدادی از فیلدها خالی
             {
                 id: 2,
                 status: 'فعال',
                 propertyType: 'ویلایی',
                 contractType: 'رهن و اجاره',
+                documentType: 'دفترچه‌ای',
                 city: 'کرج',
                 district: 'گوهردشت',
                 neighborhood: 'فاز ۲',
-                address: 'خیابان شهید بهشتی',
+                address: 'خیابان شهید بهشتی، بن‌بست گل‌ها',
                 area: 200,
                 mortgagePrice: 500000000,
                 monthlyRent: 15000000,
+                mortgageTerms: 'قابل تبدیل به رهن کامل',
                 roomCount: 3,
+                totalFloor: 2,
+                heating: 'شوفاژ',
+                cooling: 'کولر آبی',
+                amenities: ['حیاط', 'پارکینگ'],
+                ownerName: 'محمد کریمی',
+                ownerPhone: '09351234567',
+                description: 'ویلای دوبلکس با حیاط بزرگ و درخت‌های میوه.',
             },
+            // ۳) زمین — فقط حداقل اطلاعات
             {
                 id: 3,
                 status: 'کنسل شد',
                 propertyType: 'زمین',
                 contractType: 'فروش',
+                documentType: 'قولنامه‌ای',
                 city: 'شیراز',
                 district: 'معالی‌آباد',
-                neighborhood: '',
-                address: 'بلوار معالی‌آباد',
+                address: 'بلوار معالی‌آباد، نبش کوچه ۱۴',
                 area: 350,
                 totalPrice: 12000000000,
-                roomCount: 0,
+                direction: 'جنوبی',
             },
+            // ۴) آپارتمان — اطلاعات متوسط، بدون قیمت هر متر و امکانات
             {
                 id: 4,
                 status: 'منصرف شد',
                 propertyType: 'آپارتمان',
                 contractType: 'فروش',
                 city: 'اصفهان',
-                district: 'ملک‌شهر',
-                neighborhood: '',
-                address: 'خیابان کاوه',
+                neighborhood: 'ملک‌شهر',
                 area: 95,
                 totalPrice: 3200000000,
+                pricePerMeter: 33684210,
                 roomCount: 2,
+                occupancyStatus: 'در حال سکونت',
+                bathroom: 'ایرانی',
+                facade: 'رومی',
+                totalFloor: 4,
+                ownerName: 'زهرا احمدی',
+                ownerPhone: '09131234567',
+                ownerJob: 'آزاد',
             },
+            // ۵) پیش فروش — بدون مالک و بدون امکانات، فقط یادداشت داخلی
             {
                 id: 5,
                 status: 'فروخته شده',
                 propertyType: 'پیش فروش',
                 contractType: 'مشارکت',
+                documentType: 'وکالتی',
                 city: 'مشهد',
                 district: 'وکیل‌آباد',
-                neighborhood: '',
-                address: 'بلوار وکیل‌آباد',
                 area: 140,
                 totalPrice: 6100000000,
                 roomCount: 3,
+                flooring: 'پارکت',
+                internalNote: 'فایل به مشتری قبلی فروخته شد، آرشیو شود.',
             },
         ],
     })
