@@ -2,10 +2,44 @@ import {Box, Chip, Dialog, DialogContent, IconButton, Stack, Typography} from '@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded'
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded'
+import SquareFootRoundedIcon from '@mui/icons-material/SquareFootRounded'
+import BedRoundedIcon from '@mui/icons-material/BedRounded'
+import LayersRoundedIcon from '@mui/icons-material/LayersRounded'
+import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded'
+import PaidRoundedIcon from '@mui/icons-material/PaidRounded'
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
+import ContactPhoneRoundedIcon from '@mui/icons-material/ContactPhoneRounded'
+import NotesRoundedIcon from '@mui/icons-material/NotesRounded'
+import StickyNote2RoundedIcon from '@mui/icons-material/StickyNote2Rounded'
+import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
 import {ImageGallery} from './ImageGallery'
 import {DetailSection} from './DetailSection'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
 import { PropertyType } from '../../../Components/PropertyRecordForm'
+
+function QuickFactChip({icon, label}: {icon: React.ReactNode; label?: string}) {
+    if (!label) return null
+    return (
+        <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            sx={{
+                px: 1.25,
+                py: 0.6,
+                borderRadius: 5,
+                bgcolor: 'background.default',
+                flexShrink: 0,
+            }}
+        >
+            <Box sx={{display: 'flex', color: 'primary.main'}}>{icon}</Box>
+            <Typography variant="labelSm" fontWeight={700} noWrap>
+                {label}
+            </Typography>
+        </Stack>
+    )
+}
 
 export function PropertyDetailDialog({
     open,
@@ -20,6 +54,7 @@ export function PropertyDetailDialog({
     const images = item.images ?? []
     const {
         location,
+        quickFacts,
         priceMain,
         priceLabel,
         priceSecondary,
@@ -32,26 +67,46 @@ export function PropertyDetailDialog({
     } = useDerivedPropertyInfo(item)
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth scroll="paper">
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="sm"
+            fullWidth
+            scroll="paper"
+            PaperProps={{sx: {borderRadius: 3, overflow: 'hidden'}}}
+        >
+            {/* هدر تصویری */}
             <Box sx={{position: 'relative'}}>
                 <IconButton
                     onClick={onClose}
                     size="small"
                     sx={{
                         position: 'absolute',
-                        top: 8,
-                        insetInlineEnd: 8,
-                        zIndex: 2,
-                        bgcolor: 'rgba(0,0,0,0.35)',
+                        top: 10,
+                        insetInlineEnd: 10,
+                        zIndex: 3,
+                        bgcolor: 'rgba(0,0,0,0.4)',
                         color: '#fff',
-                        '&:hover': {bgcolor: 'rgba(0,0,0,0.55)'},
+                        backdropFilter: 'blur(4px)',
+                        '&:hover': {bgcolor: 'rgba(0,0,0,0.6)'},
                     }}
                 >
                     <CloseRoundedIcon fontSize="small" />
                 </IconButton>
 
                 {images.length > 0 ? (
-                    <ImageGallery images={images} height={260} />
+                    <Box sx={{position: 'relative'}}>
+                        <ImageGallery images={images} height={240} />
+                        {/* گرادیانت پایین عکس برای خوانایی بهتر وضعیت روی آن */}
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                pointerEvents: 'none',
+                                background: 'linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%)',
+                            }}
+                        />
+                    </Box>
                 ) : (
                     <Box
                         sx={{
@@ -68,20 +123,33 @@ export function PropertyDetailDialog({
                 )}
             </Box>
 
-            <DialogContent sx={{display: 'flex', flexDirection: 'column', gap: 2.5}}>
+            <DialogContent sx={{display: 'flex', flexDirection: 'column', gap: 2, p: 2.5}}>
+                {/* عنوان و موقعیت */}
                 <Box>
-                    <Stack direction="row" alignItems="center" spacing={0.75} sx={{mb: 0.5}}>
+                    <Stack direction="row" alignItems="center" spacing={0.75} sx={{mb: 0.75}}>
                         {item.status && (
-                            <>
-                                <Box sx={{width: 7, height: 7, borderRadius: '50%', bgcolor: statusColor}} />
-                                <Typography variant="badge" sx={{color: statusColor, fontSize: '12px'}}>
-                                    {item.status}
-                                </Typography>
-                            </>
+                            <Chip
+                                size="small"
+                                label={item.status}
+                                sx={{
+                                    height: 22,
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    color: statusColor,
+                                    bgcolor: 'transparent',
+                                    border: '1px solid',
+                                    borderColor: statusColor,
+                                }}
+                            />
                         )}
                         {isFilled(item.id) && (
                             <Typography variant="badge" sx={{color: 'text.disabled', fontSize: '12px'}}>
-                                · #{item.id}
+                                #{item.id}
+                            </Typography>
+                        )}
+                        {item.contractType && (
+                            <Typography variant="badge" sx={{color: 'text.disabled', fontSize: '12px'}}>
+                                · {item.contractType}
                             </Typography>
                         )}
                     </Stack>
@@ -98,75 +166,110 @@ export function PropertyDetailDialog({
                             </Typography>
                         </Stack>
                     )}
-
-                    {item.contractType && (
-                        <Typography variant="labelSm" color="text.disabled" sx={{mt: 0.25}}>
-                            {item.contractType}
-                        </Typography>
-                    )}
                 </Box>
 
+                {/* چیپ‌های مشخصات کلیدی */}
+                {(quickFacts.areaText || quickFacts.roomCountText || quickFacts.totalFloorText || quickFacts.direction) && (
+                    <Stack direction="row" flexWrap="wrap" gap={0.75}>
+                        <QuickFactChip icon={<SquareFootRoundedIcon sx={{fontSize: 15}} />} label={quickFacts.areaText} />
+                        <QuickFactChip icon={<BedRoundedIcon sx={{fontSize: 15}} />} label={quickFacts.roomCountText} />
+                        <QuickFactChip icon={<LayersRoundedIcon sx={{fontSize: 15}} />} label={quickFacts.totalFloorText} />
+                        <QuickFactChip icon={<ExploreRoundedIcon sx={{fontSize: 15}} />} label={quickFacts.direction} />
+                    </Stack>
+                )}
+
+                {/* کارت قیمت */}
                 {priceMain && (
-                    <Box sx={{p: 1.5, borderRadius: 2, bgcolor: 'background.default'}}>
-                        <Typography variant="labelSm" color="text.disabled">
+                    <Box
+                        sx={{
+                            p: 1.75,
+                            borderRadius: 2.5,
+                            bgcolor: 'primary.main',
+                            color: 'primary.contrastText',
+                        }}
+                    >
+                        <Typography variant="labelSm" sx={{opacity: 0.85}}>
                             {priceLabel}
                         </Typography>
-                        <Typography variant="titleLg" fontWeight={800} color="primary.main" sx={{fontVariantNumeric: 'tabular-nums'}}>
+                        <Typography variant="titleLg" fontWeight={800} sx={{fontVariantNumeric: 'tabular-nums'}}>
                             {priceMain}{' '}
-                            <Typography component="span" variant="labelSm" color="text.disabled">
+                            <Typography component="span" variant="labelSm" sx={{opacity: 0.85}}>
                                 تومان
                             </Typography>
                         </Typography>
                         {priceSecondary && (
-                            <Typography variant="labelSm" color="text.secondary">
+                            <Typography variant="labelSm" sx={{opacity: 0.85}}>
                                 {priceSecondary}
                             </Typography>
                         )}
                     </Box>
                 )}
 
-                <DetailSection title="مشخصات ملک" fields={specFields} />
-
+                {/* امکانات */}
                 {amenities.length > 0 && (
-                    <Box>
-                        <Typography variant="labelSm" fontWeight={700} color="text.disabled" sx={{mb: 1}}>
-                            امکانات
-                        </Typography>
-                        <Stack direction="row" flexWrap="wrap" gap={0.75}>
-                            {amenities.map((amenity) => (
-                                <Chip key={amenity} label={amenity} size="small" variant="outlined" />
-                            ))}
-                        </Stack>
-                    </Box>
+                    <Stack direction="row" flexWrap="wrap" gap={0.75}>
+                        {amenities.map((amenity) => (
+                            <Chip key={amenity} label={amenity} size="small" variant="outlined" />
+                        ))}
+                    </Stack>
                 )}
 
-                <DetailSection title="جزئیات مالی" fields={financialFields} />
-                <DetailSection title="مالک" fields={ownerFields} />
-                <DetailSection title="درخواست‌کننده" fields={requesterFields} />
+                <DetailSection
+                    title="مشخصات ملک"
+                    icon={<GridViewRoundedIcon sx={{fontSize: 16}} />}
+                    fields={specFields}
+                />
+                <DetailSection
+                    title="جزئیات مالی"
+                    icon={<PaidRoundedIcon sx={{fontSize: 16}} />}
+                    fields={financialFields}
+                />
+                <DetailSection
+                    title="مالک"
+                    icon={<PersonRoundedIcon sx={{fontSize: 16}} />}
+                    fields={ownerFields}
+                />
+                <DetailSection
+                    title="درخواست‌کننده"
+                    icon={<ContactPhoneRoundedIcon sx={{fontSize: 16}} />}
+                    fields={requesterFields}
+                />
 
+                {/* توضیحات */}
                 {hasNotes && (
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1.5}}>
+                    <Stack spacing={1.5}>
                         {isFilled(item.description) && (
-                            <Box>
-                                <Typography variant="labelSm" fontWeight={700} color="text.disabled" sx={{mb: 0.5}}>
-                                    توضیحات
-                                </Typography>
-                                <Typography variant="bodySm" color="text.secondary">
-                                    {item.description}
-                                </Typography>
-                            </Box>
+                            <Stack direction="row" spacing={1} alignItems="flex-start">
+                                <NotesRoundedIcon sx={{fontSize: 17, color: 'text.disabled', mt: '2px'}} />
+                                <Box>
+                                    <Typography variant="labelSm" fontWeight={700} color="text.disabled">
+                                        توضیحات
+                                    </Typography>
+                                    <Typography variant="bodySm" color="text.secondary">
+                                        {item.description}
+                                    </Typography>
+                                </Box>
+                            </Stack>
                         )}
                         {isFilled(item.internalNote) && (
-                            <Box>
-                                <Typography variant="labelSm" fontWeight={700} color="text.disabled" sx={{mb: 0.5}}>
-                                    یادداشت داخلی
-                                </Typography>
-                                <Typography variant="bodySm" color="text.secondary" fontStyle="italic">
-                                    {item.internalNote}
-                                </Typography>
-                            </Box>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="flex-start"
+                                sx={{p: 1.5, borderRadius: 2, bgcolor: 'background.default'}}
+                            >
+                                <StickyNote2RoundedIcon sx={{fontSize: 17, color: 'text.disabled', mt: '2px'}} />
+                                <Box>
+                                    <Typography variant="labelSm" fontWeight={700} color="text.disabled">
+                                        یادداشت داخلی
+                                    </Typography>
+                                    <Typography variant="bodySm" color="text.secondary" fontStyle="italic">
+                                        {item.internalNote}
+                                    </Typography>
+                                </Box>
+                            </Stack>
                         )}
-                    </Box>
+                    </Stack>
                 )}
             </DialogContent>
         </Dialog>

@@ -1,30 +1,35 @@
-import {Box, Typography} from '@mui/material'
+import {Stack, Typography} from '@mui/material'
 import {isFilled} from './propertyCardUtils'
 import type {DetailField} from './propertyCardUtils'
 
+/** لیست ردیفی از جفت‌های لیبل/مقدار با جداکننده‌ی ظریف؛ فقط فیلدهای پرشده رندر می‌شوند */
 export function DetailGrid({fields}: {fields: DetailField[]}) {
     const visible = fields.filter((field) => isFilled(field.value))
     if (visible.length === 0) return null
 
     return (
-        <Box
-            sx={{
-                display: 'grid',
-                gridTemplateColumns: {xs: '1fr 1fr', sm: 'repeat(3, 1fr)'},
-                rowGap: 1.5,
-                columnGap: 2,
-            }}
-        >
-            {visible.map((field) => (
-                <Box key={field.label} sx={{minWidth: 0}}>
-                    <Typography variant="labelSm" color="text.disabled" noWrap>
+        <Stack>
+            {visible.map((field, idx) => (
+                <Stack
+                    key={field.label}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}
+                    sx={{
+                        py: 1,
+                        borderBottom: idx < visible.length - 1 ? '1px solid' : 'none',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Typography variant="bodySm" color="text.secondary" sx={{flexShrink: 0}}>
                         {field.label}
                     </Typography>
-                    <Typography variant="bodySm" fontWeight={600} noWrap>
+                    <Typography variant="bodySm" fontWeight={700} sx={{textAlign: 'left'}}>
                         {field.value}
                     </Typography>
-                </Box>
+                </Stack>
             ))}
-        </Box>
+        </Stack>
     )
 }

@@ -8,9 +8,9 @@ import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
-import {PropertyCard} from '../PropertyCard'
 import {PropertyType} from '../../../Components/PropertyRecordForm'
 import {RequestCreate} from '../Create/RequestCreate'
+import { PropertyCard } from '../../Files/PropertyCard/PropertyCard'
 
 const RESOURCE = 'requests'
 

@@ -7,7 +7,7 @@ import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedR
 import {PropertyCardMenu} from './PropertyCardMenu'
 import {PropertyDetailDialog} from './PropertyDetailDialog'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
-import { PropertyType } from '../../../Components/PropertyRecordForm'
+import { PropertyType, RecordMode } from '../../../Components/PropertyRecordForm'
 
 function Notch({side}: {side: 'insetInlineStart' | 'insetInlineEnd'}) {
     return (
@@ -27,15 +27,23 @@ function Notch({side}: {side: 'insetInlineStart' | 'insetInlineEnd'}) {
     )
 }
 
+const RESOURCE_BY_MODE: Record<RecordMode, string> = {
+    file: 'files',
+    request: 'requests',
+}
+
 export type PropertyCardProps = {
     item: Partial<PropertyType>
+    mode?: RecordMode
     resource?: string
     onEdit?: (item: Partial<PropertyType>) => void
     onDelete?: (id?: number) => void
 }
 
-export function PropertyCard({item, resource = 'files', onEdit, onDelete}: PropertyCardProps) {
+export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: PropertyCardProps) {
     const [detailOpen, setDetailOpen] = useState(false)
+
+    const resolvedResource = resource ?? RESOURCE_BY_MODE[mode]
 
     const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
     const coverImage = item.images?.[0]
@@ -69,7 +77,7 @@ export function PropertyCard({item, resource = 'files', onEdit, onDelete}: Prope
             >
                 <PropertyCardMenu
                     id={item.id}
-                    resource={resource}
+                    resource={resolvedResource}
                     dark={Boolean(coverUrl)}
                     onEdit={onEdit ? () => onEdit(item) : undefined}
                     onDelete={onDelete}

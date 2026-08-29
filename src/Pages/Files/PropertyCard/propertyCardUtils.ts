@@ -44,6 +44,7 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         ? `${formatRange(item.areaFrom, item.areaTo)} متر`
         : undefined
 
+    const roomCountText = isFilled(item.roomCount) ? `${item.roomCount} خوابه` : undefined
     const totalFloorText = formatNumber(item.totalFloor) ?? formatRange(item.totalFloorFrom, item.totalFloorTo)
 
     const totalPriceText = formatNumber(item.totalPrice) ?? formatRange(item.totalPriceFrom, item.totalPriceTo)
@@ -70,14 +71,19 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
 
     const amenities = item.amenities?.filter(Boolean) ?? []
 
+    // مشخصات کلیدی که به‌صورت چیپ در بالای مودال نشون داده می‌شن؛
+    // به همین دلیل از لیست «مشخصات ملک» عمومی حذف شدن تا تکراری نباشن
+    const quickFacts = {
+        areaText,
+        roomCountText,
+        totalFloorText: totalFloorText ? `${totalFloorText} طبقه` : undefined,
+        direction: item.direction,
+    }
+
     const specFields: DetailField[] = [
         {label: 'آدرس', value: item.address},
         {label: 'نوع سند', value: item.documentType},
         {label: 'وضعیت تصرف', value: item.occupancyStatus},
-        {label: 'متراژ', value: areaText},
-        {label: 'تعداد خواب', value: isFilled(item.roomCount) ? `${item.roomCount} خوابه` : undefined},
-        {label: 'تعداد طبقات', value: totalFloorText},
-        {label: 'جهت', value: item.direction},
         {label: 'نما', value: item.facade},
         {label: 'کف‌پوش', value: item.flooring},
         {label: 'سیستم گرمایش', value: item.heating},
@@ -86,8 +92,8 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
     ]
 
     const financialFields: DetailField[] = [
-        {label: 'قیمت هر متر', value: formatNumber(item.pricePerMeter)},
-        {label: 'اجاره', value: formatNumber(item.rent)},
+        {label: 'قیمت هر متر', value: formatNumber(item.pricePerMeter) ? `${formatNumber(item.pricePerMeter)} تومان` : undefined},
+        {label: 'اجاره', value: formatNumber(item.rent) ? `${formatNumber(item.rent)} تومان` : undefined},
         {label: 'شرایط رهن', value: item.mortgageTerms},
     ]
 
@@ -106,7 +112,8 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
     return {
         location,
         areaText,
-        totalFloorText,
+        roomCountText,
+        quickFacts,
         priceMain,
         priceLabel,
         priceSecondary,
