@@ -13,6 +13,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import RequestPageIcon from '@mui/icons-material/RequestPage'
 import {ReactNode} from 'react'
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export type DrawerItemType = {
@@ -131,6 +132,13 @@ export const drawerItems: DrawerItemType[] = [
         link: 'requests',
         role: 'all',
         icon: (<AddCircleOutlineIcon sx={iconStyle} />
+        ),
+    },
+    {
+        title: 'یادآوری ها',
+        link: 'reminders',
+        role: 'all',
+        icon: (<NotificationsActiveIcon sx={iconStyle} />
         ),
     },
     {

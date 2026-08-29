@@ -23,6 +23,9 @@ import { FilesEdit } from '../Files/Edit/FilesEdit'
 import { RequestCreate } from '../Request/Create/RequestCreate'
 import { RequestEdit } from '../Request/Edit/RequestEdit'
 import { RequestList } from '../Request/List/RequestList'
+import { ReminderCreate } from '../Reminder/Create/ReminderCreate'
+import { ReminderList } from '../Reminder/List/ReminderList'
+import { ReminderEdit } from '../Reminder/Edit/ReminderEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -155,6 +158,13 @@ export function Home(props) {
                         />
                         <Route path="requests" element={<RequestList />} />
                         <Route path="requests/:id" element={<RequestEdit />} />
+                         {/* ...........Reminders.......... */}
+                        <Route
+                            path="reminders/create"
+                            element={<ReminderCreate data={data} setData={setData} />}
+                        />
+                        <Route path="reminders" element={<ReminderList />} />
+                        <Route path="reminders/:id" element={<ReminderEdit />} />
                     </Routes>
                 </Box>
             </Box>
