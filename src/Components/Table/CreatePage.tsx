@@ -14,6 +14,7 @@ export function CreatePage(props) {
         redirect,
         isFormData = false,
         disabled = false,
+        buttonText
     } = props
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -95,7 +96,7 @@ export function CreatePage(props) {
                             }}
                             disabled={disabled}
                         >
-                            تایید
+                            {buttonText ? buttonText : 'تایید'}
                         </Button>
                     )}
                 </Stack>

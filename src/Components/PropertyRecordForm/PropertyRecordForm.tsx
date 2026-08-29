@@ -1,8 +1,7 @@
 import {useState} from 'react'
-import {Box, Button, Step, StepLabel, Stepper, Stack, Typography} from '@mui/material'
+import {Box, Button, Stack, Tab, Tabs, Typography} from '@mui/material'
 import type {Dispatch, SetStateAction} from 'react'
 
-import {CustomStepIcon, CustomConnector} from './components/StepperElements'
 import {TypeGate} from './components/TypeGate'
 import {BaseStep} from './steps/BaseStep'
 import {FinancialStep} from './steps/FinancialStep'
@@ -24,26 +23,22 @@ export function PropertyRecordForm({
     resource: string
     mode?: RecordMode
 }) {
-    const [activeStep, setActiveStep] = useState(0)
+    const [activeTab, setActiveTab] = useState(0)
 
     const steps = STEPS_BY_MODE[mode]
 
-    const handleNext = () => {
-        setActiveStep((prev) => Math.min(prev + 1, steps.length - 1))
+    const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
+        setActiveTab(newValue)
     }
 
-    const handleBack = () => {
-        setActiveStep((prev) => Math.max(prev - 1, 0))
-    }
 
     const handleChangeType = () => {
         setProperty((prev) => ({...prev, contractType: ''}))
-        setActiveStep(0)
+        setActiveTab(0)
     }
 
     if (!property) return null
 
-    // پیش از شروع فرم (چه ثبت فایل، چه ثبت درخواست)، نوع باید مشخص شود
     if (!property.contractType) {
         return (
             <TypeGate
@@ -79,7 +74,7 @@ export function PropertyRecordForm({
         ],
     }
 
-    const renderStepContent = stepRenderers[mode][activeStep] ?? (() => null)
+    const renderStepContent = stepRenderers[mode][activeTab] ?? (() => null)
 
     return (
         <Stack spacing={3}>
@@ -93,13 +88,26 @@ export function PropertyRecordForm({
                 </Button>
             </Stack>
 
-            <Stepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />}>
+            <Tabs
+                value={activeTab}
+                onChange={handleChangeTab}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+                sx={{
+                    minHeight: 40,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    '& .MuiTab-root': {
+                        minHeight: 40,
+                        fontWeight: 600,
+                    },
+                }}
+            >
                 {steps.map((label) => (
-                    <Step key={label}>
-                        <StepLabel StepIconComponent={CustomStepIcon}>{label}</StepLabel>
-                    </Step>
+                    <Tab key={label} label={label} />
                 ))}
-            </Stepper>
+            </Tabs>
 
             <Box
                 sx={{
@@ -113,19 +121,6 @@ export function PropertyRecordForm({
                 {renderStepContent()}
             </Box>
 
-            <Stack direction="row" justifyContent="space-between">
-                <Button disabled={activeStep === 0} onClick={handleBack}>
-                    مرحله قبل
-                </Button>
-
-                <Button
-                    variant="contained"
-                    disabled={activeStep === steps.length - 1}
-                    onClick={handleNext}
-                >
-                    مرحله بعد
-                </Button>
-            </Stack>
         </Stack>
     )
 }

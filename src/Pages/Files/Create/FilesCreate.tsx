@@ -18,6 +18,7 @@ export function FilesCreate({
             isFormData={true}
             redirect={resource}
             formDetails={data}
+            buttonText={'ذخیره'}
         >
             <PropertyRecordForm mode='file' property={data} setProperty={setData} resource={resource} />
         </CreatePage>

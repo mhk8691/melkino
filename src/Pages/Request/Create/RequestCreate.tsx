@@ -18,6 +18,7 @@ export function RequestCreate({
             isFormData={true}
             redirect={resource}
             formDetails={data}
+            buttonText={'ذخیره'}
         >
             <PropertyRecordForm mode='request' property={data} setProperty={setData} resource={resource} />
         </CreatePage>
