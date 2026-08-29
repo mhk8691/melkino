@@ -1,4 +1,11 @@
-import {CITY_OPTIONS, DOCUMENT_TYPE_OPTIONS, PROPERTY_TYPE_OPTIONS, STATUS_OPTIONS} from '../constants'
+import {
+    CITY_OPTIONS,
+    CUSTOMER_OPTIONS,
+    DOCUMENT_TYPE_OPTIONS,
+    EXPERT_OPTIONS,
+    PROPERTY_TYPE_OPTIONS,
+    STATUS_OPTIONS,
+} from '../constants'
 import {MultiValueField} from '../components/MultiValueField'
 import {CustomSelectField, CustomTextField, GridProducer} from '../shared'
 import type {ModeStepProps} from '../types'
@@ -52,6 +59,17 @@ export function BaseStep({property, setProperty, resource, mode}: ModeStepProps)
                     label="شهر"
                     defaultValue={property.city}
                     options={toSelectOptions(CITY_OPTIONS)}
+                />,
+
+                // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
+                <CustomSelectField
+                    key="assignedTo"
+                    name="assignedTo"
+                    setData={setProperty}
+                    resource={resource}
+                    label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
+                    defaultValue={property.assignedTo}
+                    options={toSelectOptions(mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS)}
                 />,
 
                 mode === 'request' ? (

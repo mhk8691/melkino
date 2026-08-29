@@ -10,6 +10,8 @@ export type PropertyType = {
     documentType: string
     requesterName?:string
     requesterPhone?:string
+    // در حالت «فایل» یعنی اختصاص به مشتری و در حالت «درخواست» یعنی اختصاص به کارشناس
+    assignedTo?: string
     city: string
     // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
     district: string | string[]

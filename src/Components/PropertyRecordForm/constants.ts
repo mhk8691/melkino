@@ -36,6 +36,12 @@ export const CITY_OPTIONS = [
     'یزد',
 ]
 
+// کاربران تستی برای «اختصاص دادن» — در حالت فایل، مشتری؛ در حالت درخواست، کارشناس
+// TODO: بعداً باید از API لیست واقعی کاربران گرفته شود
+export const CUSTOMER_OPTIONS = ['محمد رضایی', 'فاطمه احمدی', 'علی حسینی', 'زهرا کریمی', 'حسین محمدی']
+
+export const EXPERT_OPTIONS = ['مهندس رضا نوری', 'مهندس سارا قاسمی', 'مهندس امیر صادقی', 'مهندس نگار یوسفی']
+
 export const OCCUPANCY_OPTIONS = ['تخلیه', 'مالک', 'مستاجر']
 
 export const HEATING_OPTIONS = [

@@ -31,7 +31,6 @@ export function PropertyRecordForm({
         setActiveTab(newValue)
     }
 
-
     const handleChangeType = () => {
         setProperty((prev) => ({...prev, contractType: ''}))
         setActiveTab(0)
@@ -39,6 +38,7 @@ export function PropertyRecordForm({
 
     if (!property) return null
 
+    // پیش از شروع فرم (چه ثبت فایل، چه ثبت درخواست)، نوع باید مشخص شود
     if (!property.contractType) {
         return (
             <TypeGate
@@ -121,6 +121,7 @@ export function PropertyRecordForm({
                 {renderStepContent()}
             </Box>
 
+         
         </Stack>
     )
 }
