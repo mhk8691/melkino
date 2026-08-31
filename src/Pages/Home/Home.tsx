@@ -26,6 +26,9 @@ import { RequestList } from '../Request/List/RequestList'
 import { ReminderCreate } from '../Reminder/Create/ReminderCreate'
 import { ReminderList } from '../Reminder/List/ReminderList'
 import { ReminderEdit } from '../Reminder/Edit/ReminderEdit'
+import { CustomersCreate } from '../Customers/Create/CustomersCreate'
+import { CustomersList } from '../Customers/List/CustomersList'
+import { CustomersEdit } from '../Customers/Edit/CustomersEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -165,6 +168,13 @@ export function Home(props) {
                         />
                         <Route path="reminders" element={<ReminderList />} />
                         <Route path="reminders/:id" element={<ReminderEdit />} />
+                        {/* ...........Announcemen.......... */}
+                        <Route
+                            path="customers/create"
+                            element={<CustomersCreate data={data} setData={setData} />}
+                        />
+                        <Route path="customers" element={<CustomersList />} />
+                        <Route path="customers/:id" element={<CustomersEdit />} />
                     </Routes>
                 </Box>
             </Box>

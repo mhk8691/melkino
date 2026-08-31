@@ -1,5 +1,4 @@
 import CreditCardIcon from '@mui/icons-material/CreditCard'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupIcon from '@mui/icons-material/Group'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import AssignmentIcon from '@mui/icons-material/Assignment'
@@ -11,11 +10,10 @@ import DiamondIcon from '@mui/icons-material/Diamond'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
 import HomeIcon from '@mui/icons-material/Home'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import RequestPageIcon from '@mui/icons-material/RequestPage'
 import {ReactNode} from 'react'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
+import HandshakeIcon from '@mui/icons-material/Handshake'
 export type DrawerItemType = {
     title: string
     link: string
@@ -105,6 +103,12 @@ export const drawerItems: DrawerItemType[] = [
         link: 'users',
         role: 'all',
         icon: <GroupIcon sx={iconStyle} />,
+    },
+       {
+        title: 'مشتریان',
+        link: 'customers',
+        role: 'all',
+        icon: <HandshakeIcon sx={iconStyle} />,
     },
 
     {
