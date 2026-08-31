@@ -30,6 +30,13 @@ function Notch({side}: {side: 'insetInlineStart' | 'insetInlineEnd'}) {
 const RESOURCE_BY_MODE: Record<RecordMode, string> = {
     file: 'files',
     request: 'requests',
+    ad: 'ads',
+}
+
+const ITEM_LABEL_BY_MODE: Record<RecordMode, string> = {
+    file: 'فایل',
+    request: 'درخواست',
+    ad: 'آگهی',
 }
 
 export type PropertyCardProps = {
@@ -79,6 +86,7 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     id={item.id}
                     resource={resolvedResource}
                     dark={Boolean(coverUrl)}
+                    itemLabel={ITEM_LABEL_BY_MODE[mode]}
                     onEdit={onEdit ? () => onEdit(item) : undefined}
                     onDelete={onDelete}
                 />

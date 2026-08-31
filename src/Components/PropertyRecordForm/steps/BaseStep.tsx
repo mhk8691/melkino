@@ -46,54 +46,65 @@ export function BaseStep({property, setProperty, resource, mode}: ModeStepProps)
                     name="documentType"
                     setData={setProperty}
                     resource={resource}
-                    label="نوع سند"
+                    // در آگهی همان فیلد به معنای «وضعیت سند» استفاده می‌شود
+                    label={mode === 'ad' ? 'وضعیت سند' : 'نوع سند'}
                     defaultValue={property.documentType}
                     options={toSelectOptions(DOCUMENT_TYPE_OPTIONS)}
                 />,
 
-                <CustomSelectField
-                    key="city"
-                    name="city"
-                    setData={setProperty}
-                    resource={resource}
-                    label="شهر"
-                    defaultValue={property.city}
-                    options={toSelectOptions(CITY_OPTIONS)}
-                />,
+                // در «آگهی» شهر و اختصاص‌دادن نمایش داده نمی‌شود (در آن فرم موقعیت از روی نقشه انتخاب می‌شود)
+                ...(mode !== 'ad'
+                    ? [
+                          <CustomSelectField
+                              key="city"
+                              name="city"
+                              setData={setProperty}
+                              resource={resource}
+                              label="شهر"
+                              defaultValue={property.city}
+                              options={toSelectOptions(CITY_OPTIONS)}
+                          />,
 
-                // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
-                <CustomSelectField
-                    key="assignedTo"
-                    name="assignedTo"
-                    setData={setProperty}
-                    resource={resource}
-                    label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
-                    defaultValue={property.assignedTo}
-                    options={toSelectOptions(mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS)}
-                />,
+                          // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
+                          <CustomSelectField
+                              key="assignedTo"
+                              name="assignedTo"
+                              setData={setProperty}
+                              resource={resource}
+                              label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
+                              defaultValue={property.assignedTo}
+                              options={toSelectOptions(mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS)}
+                          />,
+                      ]
+                    : []),
 
-                mode === 'request' ? (
-                    <MultiValueField
-                        key="district"
-                        label="منطقه"
-                        value={asStringArray(property.district)}
-                        onChange={(next) =>
-                            setProperty((prev) => ({
-                                ...prev,
-                                district: next,
-                            }))
-                        }
-                    />
-                ) : (
-                    <CustomTextField
-                        key="district"
-                        name="district"
-                        setData={setProperty}
-                        resource={resource}
-                        label="منطقه"
-                        defaultValue={property.district as string}
-                    />
-                ),
+                // در «آگهی» فقط یک فیلد «محله یا محدوده» داریم؛ منطقه‌ی جدا لازم نیست
+                ...(mode === 'ad'
+                    ? []
+                    : [
+                          mode === 'request' ? (
+                              <MultiValueField
+                                  key="district"
+                                  label="منطقه"
+                                  value={asStringArray(property.district)}
+                                  onChange={(next) =>
+                                      setProperty((prev) => ({
+                                          ...prev,
+                                          district: next,
+                                      }))
+                                  }
+                              />
+                          ) : (
+                              <CustomTextField
+                                  key="district"
+                                  name="district"
+                                  setData={setProperty}
+                                  resource={resource}
+                                  label="منطقه"
+                                  defaultValue={property.district as string}
+                              />
+                          ),
+                      ]),
 
                 mode === 'request' ? (
                     <MultiValueField
@@ -113,21 +124,27 @@ export function BaseStep({property, setProperty, resource, mode}: ModeStepProps)
                         name="neighborhood"
                         setData={setProperty}
                         resource={resource}
-                        label="محله"
+                        // در آگهی این فیلد نقش «محله یا محدوده» را دارد
+                        label={mode === 'ad' ? 'محله یا محدوده' : 'محله'}
                         defaultValue={property.neighborhood as string}
                     />
                 ),
 
-                <CustomTextField
-                    key="address"
-                    name="address"
-                    setData={setProperty}
-                    resource={resource}
-                    label="آدرس"
-                    defaultValue={property.address}
-                    multiline
-                    minRows={3}
-                />,
+                // آدرس دقیق در متن آگهی عمومی نمایش داده نمی‌شود
+                ...(mode === 'ad'
+                    ? []
+                    : [
+                          <CustomTextField
+                              key="address"
+                              name="address"
+                              setData={setProperty}
+                              resource={resource}
+                              label="آدرس"
+                              defaultValue={property.address}
+                              multiline
+                              minRows={3}
+                          />,
+                      ]),
             ]}
         />
     )

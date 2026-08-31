@@ -14,6 +14,10 @@ import {ReactNode} from 'react'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import HandshakeIcon from '@mui/icons-material/Handshake'
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+
+
+
 export type DrawerItemType = {
     title: string
     link: string
@@ -143,6 +147,13 @@ export const drawerItems: DrawerItemType[] = [
         link: 'reminders',
         role: 'all',
         icon: (<NotificationsActiveIcon sx={iconStyle} />
+        ),
+    },
+      {
+        title: 'آگهی ها',
+        link: 'advertisements',
+        role: 'all',
+        icon: (<LocalOfferIcon sx={iconStyle} />
         ),
     },
     {

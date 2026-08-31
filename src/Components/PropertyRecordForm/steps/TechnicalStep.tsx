@@ -1,4 +1,6 @@
 import {
+    AD_AMENITIES_OPTIONS,
+    BUILD_YEAR_OPTIONS,
     COOLING_OPTIONS,
     DIRECTION_OPTIONS,
     FACADE_OPTIONS,
@@ -28,24 +30,44 @@ export function TechnicalStep({property, setProperty, resource, mode}: ModeStepP
                         thousandSeparator
                     />,
 
-                    <CustomSelectField
-                        key="occupancyStatus"
-                        name="occupancyStatus"
-                        setData={setProperty}
-                        resource={resource}
-                        label="وضعیت اشتغال"
-                        defaultValue={property.occupancyStatus}
-                        options={toSelectOptions(OCCUPANCY_OPTIONS)}
-                    />,
+                    // وضعیت اشتغال و حمام در «آگهی» لازم نیستند
+                    ...(mode === 'ad'
+                        ? []
+                        : [
+                              <CustomSelectField
+                                  key="occupancyStatus"
+                                  name="occupancyStatus"
+                                  setData={setProperty}
+                                  resource={resource}
+                                  label="وضعیت اشتغال"
+                                  defaultValue={property.occupancyStatus}
+                                  options={toSelectOptions(OCCUPANCY_OPTIONS)}
+                              />,
 
-                    <CustomTextField
-                        key="bathroom"
-                        name="bathroom"
-                        setData={setProperty}
-                        resource={resource}
-                        label="حمام"
-                        defaultValue={property.bathroom}
-                    />,
+                              <CustomTextField
+                                  key="bathroom"
+                                  name="bathroom"
+                                  setData={setProperty}
+                                  resource={resource}
+                                  label="حمام"
+                                  defaultValue={property.bathroom}
+                              />,
+                          ]),
+
+                    // سال ساخت فقط برای «آگهی» لازم است
+                    ...(mode === 'ad'
+                        ? [
+                              <CustomSelectField
+                                  key="buildYear"
+                                  name="buildYear"
+                                  setData={setProperty}
+                                  resource={resource}
+                                  label="سال ساخت"
+                                  defaultValue={property.buildYear}
+                                  options={toSelectOptions(BUILD_YEAR_OPTIONS)}
+                              />,
+                          ]
+                        : []),
 
                     // گرمایش/سرمایش/کف‌پوش/نما فقط برای ثبت فایل
                     ...(mode === 'file'
@@ -133,6 +155,8 @@ export function TechnicalStep({property, setProperty, resource, mode}: ModeStepP
                         amenities: next,
                     }))
                 }
+                // در «آگهی» لیست نقاط قوت تبلیغاتی، جدا از امکانات فنی ساختمان است
+                options={mode === 'ad' ? AD_AMENITIES_OPTIONS : undefined}
             />
         </>
     )

@@ -217,16 +217,21 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                               />
                           ),
 
-                          <CustomTextField
-                              key="mortgageTerms"
-                              name="mortgageTerms"
-                              setData={setProperty}
-                              resource={resource}
-                              label="شرایط رهن و اجاره"
-                              defaultValue={property.mortgageTerms}
-                              multiline
-                              minRows={3}
-                          />,
+                          // در «آگهی» شرایط رهن و اجاره به‌صورت آزاد گرفته نمی‌شود
+                          ...(mode === 'ad'
+                              ? []
+                              : [
+                                    <CustomTextField
+                                        key="mortgageTerms"
+                                        name="mortgageTerms"
+                                        setData={setProperty}
+                                        resource={resource}
+                                        label="شرایط رهن و اجاره"
+                                        defaultValue={property.mortgageTerms}
+                                        multiline
+                                        minRows={3}
+                                    />,
+                                ]),
                       ]
                     : []),
             ]}

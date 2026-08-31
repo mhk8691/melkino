@@ -29,6 +29,9 @@ import { ReminderEdit } from '../Reminder/Edit/ReminderEdit'
 import { CustomersCreate } from '../Customers/Create/CustomersCreate'
 import { CustomersList } from '../Customers/List/CustomersList'
 import { CustomersEdit } from '../Customers/Edit/CustomersEdit'
+import { AdvertisementsCreate } from '../Advertisements/Create/AdvertisementsCreate'
+import { AdvertisementsList } from '../Advertisements/List/AdvertisementsList'
+import { AdvertisementsEdit } from '../Advertisements/Edit/AdvertisementsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -175,6 +178,13 @@ export function Home(props) {
                         />
                         <Route path="customers" element={<CustomersList />} />
                         <Route path="customers/:id" element={<CustomersEdit />} />
+                                   {/* ...........advertisements.......... */}
+                        <Route
+                            path="advertisements/create"
+                            element={<AdvertisementsCreate data={data} setData={setData} />}
+                        />
+                        <Route path="advertisements" element={<AdvertisementsList />} />
+                        <Route path="advertisements/:id" element={<AdvertisementsEdit />} />
                     </Routes>
                 </Box>
             </Box>

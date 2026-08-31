@@ -84,6 +84,8 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         {label: 'آدرس', value: item.address},
         {label: 'نوع سند', value: item.documentType},
         {label: 'وضعیت تصرف', value: item.occupancyStatus},
+        // سال ساخت مخصوص رکوردهای «آگهی» است؛ برای فایل/درخواست همیشه خالی می‌ماند و خودکار مخفی می‌شود
+        {label: 'سال ساخت', value: item.buildYear},
         {label: 'نما', value: item.facade},
         {label: 'کف‌پوش', value: item.flooring},
         {label: 'سیستم گرمایش', value: item.heating},
@@ -109,6 +111,14 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         {label: 'تلفن درخواست‌کننده', value: item.requesterPhone},
     ]
 
+    // فیلدهای مخصوص «آگهی» — فقط وقتی رکورد از فرم آگهی ثبت شده باشد پر هستند
+    const adFields: DetailField[] = [
+        {label: 'لحن آگهی', value: item.adTone},
+        {label: 'نام مشاور', value: item.advisorName},
+        {label: 'نام آژانس املاک', value: item.agencyName},
+        {label: 'شماره تماس در متن آگهی', value: item.contactPhone},
+    ]
+
     return {
         location,
         areaText,
@@ -122,6 +132,7 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         financialFields,
         ownerFields,
         requesterFields,
-        hasNotes: [item.description, item.internalNote].some(isFilled),
+        adFields,
+        hasNotes: [item.description, item.internalNote, item.strongPoint].some(isFilled),
     }
 }

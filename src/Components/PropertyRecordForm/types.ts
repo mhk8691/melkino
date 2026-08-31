@@ -1,6 +1,6 @@
 import type {Dispatch, SetStateAction} from 'react'
 
-export type RecordMode = 'file' | 'request'
+export type RecordMode = 'file' | 'request' | 'ad'
 
 export type PropertyType = {
     id: number
@@ -60,6 +60,14 @@ export type PropertyType = {
 
     description: string
     internalNote: string
+
+    // فیلدهای مخصوص «آگهی»
+    buildYear?: string
+    adTone?: string
+    strongPoint?: string
+    advisorName?: string
+    agencyName?: string
+    contactPhone?: string
 }
 
 export type FilesType = {

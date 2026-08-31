@@ -12,6 +12,8 @@ export type PropertyCardMenuProps = {
     resource?: string
     /** true وقتی پس‌زمینه‌ی زیر آیکون تصویر است (برای کنتراست بهتر) */
     dark?: boolean
+    /** برای متن دیالوگ تایید حذف — مثلاً «فایل»، «درخواست» یا «آگهی» */
+    itemLabel?: string
     onEdit?: () => void
     onDelete?: (id?: number) => void
 }
@@ -67,7 +69,7 @@ function ActionItem({
     )
 }
 
-export function PropertyCardMenu({id, resource = 'files', dark, onEdit, onDelete}: PropertyCardMenuProps) {
+export function PropertyCardMenu({id, resource = 'files', dark, itemLabel = 'فایل', onEdit, onDelete}: PropertyCardMenuProps) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [confirmOpen, setConfirmOpen] = useState(false)
@@ -172,10 +174,10 @@ export function PropertyCardMenu({id, resource = 'files', dark, onEdit, onDelete
                         <WarningRoundedIcon />
                     </Box>
                     <Typography variant="titleMd" fontWeight={700}>
-                        حذف فایل
+                        حذف {itemLabel}
                     </Typography>
                     <Typography variant="bodySm" color="text.secondary">
-                        آیا از حذف این فایل مطمئن هستید؟ این عملیات قابل بازگشت نیست.
+                        آیا از حذف این {itemLabel} مطمئن هستید؟ این عملیات قابل بازگشت نیست.
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{px: 3, pb: 2.5, gap: 1}}>

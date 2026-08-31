@@ -6,9 +6,12 @@ import {AMENITIES_OPTIONS} from '../constants'
 export function AmenitiesGrid({
     value,
     onChange,
+    options = AMENITIES_OPTIONS,
 }: {
     value: string[]
     onChange: (next: string[]) => void
+    // در حالت «آگهی» لیست دیگری از امکانات (بیشتر تبلیغاتی) نمایش داده می‌شود
+    options?: string[]
 }) {
     const selected = value ?? []
 
@@ -28,7 +31,7 @@ export function AmenitiesGrid({
                 gap: 1.5,
             }}
         >
-            {AMENITIES_OPTIONS.map((item) => {
+            {options.map((item) => {
                 const isSelected = selected.includes(item)
 
                 return (

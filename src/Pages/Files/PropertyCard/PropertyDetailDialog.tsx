@@ -13,6 +13,8 @@ import ContactPhoneRoundedIcon from '@mui/icons-material/ContactPhoneRounded'
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded'
 import StickyNote2RoundedIcon from '@mui/icons-material/StickyNote2Rounded'
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
+import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import {ImageGallery} from './ImageGallery'
 import {DetailSection} from './DetailSection'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
@@ -63,6 +65,7 @@ export function PropertyDetailDialog({
         financialFields,
         ownerFields,
         requesterFields,
+        adFields,
         hasNotes,
     } = useDerivedPropertyInfo(item)
 
@@ -234,10 +237,35 @@ export function PropertyDetailDialog({
                     icon={<ContactPhoneRoundedIcon sx={{fontSize: 16}} />}
                     fields={requesterFields}
                 />
+                {/* فقط برای رکوردهای ثبت‌شده از فرم «آگهی» پر است و نمایش داده می‌شود */}
+                <DetailSection
+                    title="اطلاعات آگهی"
+                    icon={<CampaignRoundedIcon sx={{fontSize: 16}} />}
+                    fields={adFields}
+                />
 
                 {/* توضیحات */}
                 {hasNotes && (
                     <Stack spacing={1.5}>
+                        {isFilled(item.strongPoint) && (
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="flex-start"
+                                sx={{p: 1.5, borderRadius: 2, bgcolor: 'rgba(30,97,205,0.06)'}}
+                            >
+                                <AutoAwesomeRoundedIcon sx={{fontSize: 17, color: 'primary.main', mt: '2px'}} />
+                                <Box>
+                                    <Typography variant="labelSm" fontWeight={700} color="primary.main">
+                                        نقطه قوت ویژه ملک
+                                    </Typography>
+                                    <Typography variant="bodySm" color="text.secondary">
+                                        {item.strongPoint}
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        )}
+
                         {isFilled(item.description) && (
                             <Stack direction="row" spacing={1} alignItems="flex-start">
                                 <NotesRoundedIcon sx={{fontSize: 17, color: 'text.disabled', mt: '2px'}} />

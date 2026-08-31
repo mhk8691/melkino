@@ -9,6 +9,7 @@ import {TechnicalStep} from './steps/TechnicalStep'
 import {OwnerStep} from './steps/OwnerStep'
 import {ImagesStep} from './steps/ImagesStep'
 import {DescriptionStep} from './steps/DescriptionStep'
+import {AdTextStep} from './steps/AdTextStep'
 import {MODE_TITLE, STEPS_BY_MODE, STEP_CONTENT_HEIGHT} from './constants'
 import type {PropertyType, RecordMode} from './types'
 
@@ -43,7 +44,13 @@ export function PropertyRecordForm({
         return (
             <TypeGate
                 value={property.contractType}
-                title={mode === 'request' ? 'نوع درخواست را انتخاب کنید' : 'نوع فایل را انتخاب کنید'}
+                title={
+                    mode === 'request'
+                        ? 'نوع درخواست را انتخاب کنید'
+                        : mode === 'ad'
+                        ? 'نوع معامله آگهی را انتخاب کنید'
+                        : 'نوع فایل را انتخاب کنید'
+                }
                 onSelect={(value) =>
                     setProperty((prev) => ({
                         ...prev,
@@ -71,6 +78,18 @@ export function PropertyRecordForm({
             () => <FinancialStep {...stepProps} mode={mode} />,
             () => <TechnicalStep {...stepProps} mode={mode} />,
             () => <DescriptionStep {...stepProps} />,
+        ],
+        // «آگهی» همان فیلدهای فایل/درخواست را (با حذف/اضافه شدن مواردی طبق طرح آگهی) در یک
+        // گام فشرده نشون می‌ده، به‌علاوه‌ی یک گام مجزا برای تنظیمات متن آگهی
+        ad: [
+            () => (
+                <>
+                    <BaseStep {...stepProps} mode={mode} />
+                    <FinancialStep {...stepProps} mode={mode} />
+                    <TechnicalStep {...stepProps} mode={mode} />
+                </>
+            ),
+            () => <AdTextStep {...stepProps} />,
         ],
     }
 
@@ -120,8 +139,6 @@ export function PropertyRecordForm({
             >
                 {renderStepContent()}
             </Box>
-
-         
         </Stack>
     )
 }
