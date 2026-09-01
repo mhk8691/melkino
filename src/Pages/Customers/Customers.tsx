@@ -66,8 +66,6 @@ export function Customers({
                             resource={resource}
                             label="تلفن"
                             defaultValue={customers.phone}
-                            multiline
-                            minRows={4}
                         />,
 
                         <CustomSelectField

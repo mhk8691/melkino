@@ -9,8 +9,8 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import {PropertyType} from '../../../Components/PropertyRecordForm'
-import { PropertyCard } from '../../Files/PropertyCard/PropertyCard'
-import { AdvertisementsCreate } from '../Create/AdvertisementsCreate'
+import {PropertyCard} from '../../Files/PropertyCard/PropertyCard'
+import {AdvertisementsCreate} from '../Create/AdvertisementsCreate'
 
 const RESOURCE = 'advertisements'
 
@@ -29,63 +29,84 @@ const queryNames = tableHeadCells.map((cell) => ({
 export function AdvertisementsList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-    const [requests, setRequests] = useState<{
+    const [advertisements, setAdvertisements] = useState<{
         total_results: number
         data: Partial<PropertyType>[]
     }>({
-        total_results: 3,
+        total_results: 4,
         data: [
+            // ۱) رکورد نسبتاً کامل — فروش آپارتمان
             {
                 id: 1,
                 propertyType: 'آپارتمان',
                 contractType: 'فروش',
-                city: 'تهران',
-                district: ['منطقه ۱', 'منطقه ۲'],
-                neighborhood: ['زعفرانیه', 'الهیه'],
-                areaFrom: 90,
-                areaTo: 130,
-                totalPriceFrom: 5000000000,
-                totalPriceTo: 7500000000,
+                neighborhood: 'زعفرانیه',
+                documentType: 'تک برگ',
+                area: 130,
                 roomCount: 2,
-                requesterName: 'علی محمدی',
-                requesterPhone: '09121234567',
+                direction: 'جنوبی',
+                buildYear: '1399',
+                totalPrice: 7500000000,
+                amenities: ['آسانسور', 'پارکینگ', 'بالکن', 'نورگیر'],
+                strongPoint: 'غرق در نور، نمای رومی شیک، دسترسی عالی به مترو',
+                adTone: 'حرفه‌ای و رسمی 💼',
+                advisorName: 'علی محمدی',
+                agencyName: 'املاک زعفرانیه',
+                contactPhone: '09121234567',
             },
+            // ۲) رهن و اجاره ویلایی — بدون نام آژانس (نمونه‌ی داده‌ی ناقص)
             {
                 id: 2,
                 propertyType: 'ویلایی',
                 contractType: 'رهن و اجاره',
-                city: 'کرج',
-                district: ['گوهردشت'],
-                neighborhood: ['فاز ۲', 'فاز ۳'],
-                areaFrom: 150,
-                areaTo: 220,
-                mortgagePriceFrom: 300000000,
-                mortgagePriceTo: 600000000,
-                monthlyRentFrom: 8000000,
-                monthlyRentTo: 15000000,
+                neighborhood: 'فاز ۲ گوهردشت',
+                documentType: 'مبایعه‌نامه',
+                area: 220,
                 roomCount: 3,
-                requesterName: 'سارا احمدی',
-                requesterPhone: '09351234567',
+                buildYear: '1394',
+                mortgagePrice: 400000000,
+                monthlyRent: 12000000,
+                amenities: ['پارکینگ', 'بازسازی', 'دسترسی'],
+                strongPoint: 'حیاط بزرگ، شرایط پرداخت عالی',
+                adTone: 'دوستانه و صمیمی 🙂',
+                advisorName: 'سارا احمدی',
+                contactPhone: '09351234567',
             },
+            // ۳) زمین — حداقلی، فقط فیلدهای ضروری
             {
                 id: 3,
                 propertyType: 'زمین',
                 contractType: 'فروش',
-                city: 'شیراز',
-                district: ['معالی‌آباد'],
-                neighborhood: [],
-                areaFrom: 300,
-                areaTo: 400,
-                totalPriceFrom: 10000000000,
-                totalPriceTo: 14000000000,
-                roomCount: 0,
-                requesterName: 'رضا کریمی',
-                requesterPhone: '09131234567',
+                neighborhood: 'معالی‌آباد',
+                documentType: 'قولنامه‌ای',
+                area: 350,
+                totalPrice: 12000000000,
+                strongPoint: 'موقعیت عالی برای سرمایه‌گذاری',
+                adTone: 'مختصر و مستقیم ⚡',
+                contactPhone: '09131234567',
+            },
+            // ۴) پیش‌فروش — لحن تبلیغاتی، بدون مشاور/آژانس
+            {
+                id: 4,
+                propertyType: 'پیش فروش',
+                contractType: 'رهن و اجاره',
+                neighborhood: 'وکیل‌آباد',
+                documentType: 'وکالتی',
+                area: 140,
+                roomCount: 3,
+                direction: 'شمالی',
+                buildYear: '1405',
+                mortgagePrice: 150000000,
+                monthlyRent: 9000000,
+                amenities: ['آسانسور', 'پارکینگ', 'خوش‌نقشه', 'سازنده معتبر'],
+                strongPoint: 'واحد نوساز با متریال درجه یک و امکانات کامل',
+                adTone: 'جذاب و تبلیغاتی ✨',
+                contactPhone: '09151234567',
             },
         ],
     })
     const dispatch = useDispatch()
-    // const getRequests = async () => {
+    // const getAdvertisements = async () => {
     //     setLoading(true)
     //     try {
     //         let response = await DataProvider.get<{
@@ -93,7 +114,7 @@ export function AdvertisementsList() {
     //             results: PropertyType[]
     //         }>(`${RESOURCE}/`, search)
     //         if (response) {
-    //             setRequests({
+    //             setAdvertisements({
     //                 total_results: response.data.total_results,
     //                 data: response.data.results,
     //             })
@@ -104,7 +125,7 @@ export function AdvertisementsList() {
     //     setLoading(false)
     // }
     // useDeepCompareEffect(() => {
-    //     getRequests()
+    //     getAdvertisements()
     // }, [search])
 
     return (
@@ -118,7 +139,7 @@ export function AdvertisementsList() {
             params={search}
             resource={RESOURCE}
             getList={() => {}}
-            // getList={getRequests}
+            // getList={getAdvertisements}
             filtersData={[]}
             createModal={AdvertisementsCreate}
             defaultState={{
@@ -129,14 +150,14 @@ export function AdvertisementsList() {
                 <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
                     در حال بارگذاری...
                 </Typography>
-            ) : requests.data.length === 0 ? (
+            ) : advertisements.data.length === 0 ? (
                 <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
-                    درخواستی ثبت نشده است.
+                    آگهی‌ای ثبت نشده است.
                 </Typography>
             ) : (
                 <Box sx={{pt: 1, px: 1.5}}>
                     <Grid container spacing={2.5}>
-                        {requests.data.map((item) => (
+                        {advertisements.data.map((item) => (
                             <Grid item xs={12} sm={6} md={4} key={item.id}>
                                 <PropertyCard item={item} mode="ad" />
                             </Grid>
