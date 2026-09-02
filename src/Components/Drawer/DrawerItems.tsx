@@ -16,7 +16,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import HandshakeIcon from '@mui/icons-material/Handshake'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
-
+import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
 
 export type DrawerItemType = {
     title: string
@@ -113,6 +113,12 @@ export const drawerItems: DrawerItemType[] = [
         link: 'customers',
         role: 'all',
         icon: <HandshakeIcon sx={iconStyle} />,
+    },
+        {
+        title: 'مالکان',
+        link: 'owners',
+        role: 'all',
+        icon: <HomeWorkOutlinedIcon sx={iconStyle} />,
     },
 
     {

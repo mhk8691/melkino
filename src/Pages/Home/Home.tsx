@@ -17,21 +17,24 @@ import {AnnouncementCreate} from '../Announcement/Create/AnnouncementCreate'
 import {AnnouncementList} from '../Announcement/List/AnnouncementList'
 import {AnnouncementEdit} from '../Announcement/Edit/AnnouncementEdit'
 import PanelSettings from '../Settings/PanelSettings'
-import { FilesCreate } from '../Files/Create/FilesCreate'
-import { FilesList } from '../Files/List/FilesList'
-import { FilesEdit } from '../Files/Edit/FilesEdit'
-import { RequestCreate } from '../Request/Create/RequestCreate'
-import { RequestEdit } from '../Request/Edit/RequestEdit'
-import { RequestList } from '../Request/List/RequestList'
-import { ReminderCreate } from '../Reminder/Create/ReminderCreate'
-import { ReminderList } from '../Reminder/List/ReminderList'
-import { ReminderEdit } from '../Reminder/Edit/ReminderEdit'
-import { CustomersCreate } from '../Customers/Create/CustomersCreate'
-import { CustomersList } from '../Customers/List/CustomersList'
-import { CustomersEdit } from '../Customers/Edit/CustomersEdit'
-import { AdvertisementsCreate } from '../Advertisements/Create/AdvertisementsCreate'
-import { AdvertisementsList } from '../Advertisements/List/AdvertisementsList'
-import { AdvertisementsEdit } from '../Advertisements/Edit/AdvertisementsEdit'
+import {FilesCreate} from '../Files/Create/FilesCreate'
+import {FilesList} from '../Files/List/FilesList'
+import {FilesEdit} from '../Files/Edit/FilesEdit'
+import {RequestCreate} from '../Request/Create/RequestCreate'
+import {RequestEdit} from '../Request/Edit/RequestEdit'
+import {RequestList} from '../Request/List/RequestList'
+import {ReminderCreate} from '../Reminder/Create/ReminderCreate'
+import {ReminderList} from '../Reminder/List/ReminderList'
+import {ReminderEdit} from '../Reminder/Edit/ReminderEdit'
+import {CustomersCreate} from '../Customers/Create/CustomersCreate'
+import {CustomersList} from '../Customers/List/CustomersList'
+import {CustomersEdit} from '../Customers/Edit/CustomersEdit'
+import {AdvertisementsCreate} from '../Advertisements/Create/AdvertisementsCreate'
+import {AdvertisementsList} from '../Advertisements/List/AdvertisementsList'
+import {AdvertisementsEdit} from '../Advertisements/Edit/AdvertisementsEdit'
+import {OwnersCreate} from '../Owners/Create/OwnersCreate'
+import {OwnersList} from '../Owners/List/OwnersList'
+import {OwnersEdit} from '../Owners/Edit/OwnersEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -150,35 +153,42 @@ export function Home(props) {
                         <Route path="announcements/:id" element={<AnnouncementEdit />} />
                         {/* ...........Settings.......... */}
                         <Route path="settings" element={<PanelSettings />} />
-                           {/* ...........files.......... */}
+                        {/* ...........files.......... */}
                         <Route
                             path="files/create"
                             element={<FilesCreate data={data} setData={setData} />}
                         />
                         <Route path="files" element={<FilesList />} />
                         <Route path="files/:id" element={<FilesEdit />} />
-                                {/* ...........requests.......... */}
+                        {/* ...........requests.......... */}
                         <Route
                             path="requests/create"
                             element={<RequestCreate data={data} setData={setData} />}
                         />
                         <Route path="requests" element={<RequestList />} />
                         <Route path="requests/:id" element={<RequestEdit />} />
-                         {/* ...........Reminders.......... */}
+                        {/* ...........Reminders.......... */}
                         <Route
                             path="reminders/create"
                             element={<ReminderCreate data={data} setData={setData} />}
                         />
                         <Route path="reminders" element={<ReminderList />} />
                         <Route path="reminders/:id" element={<ReminderEdit />} />
-                        {/* ...........Announcemen.......... */}
+                        {/* ...........Customers.......... */}
                         <Route
                             path="customers/create"
                             element={<CustomersCreate data={data} setData={setData} />}
                         />
                         <Route path="customers" element={<CustomersList />} />
                         <Route path="customers/:id" element={<CustomersEdit />} />
-                                   {/* ...........advertisements.......... */}
+                        {/* ...........Owners.......... */}
+                        <Route
+                            path="owners/create"
+                            element={<OwnersCreate data={data} setData={setData} />}
+                        />
+                        <Route path="owners" element={<OwnersList />} />
+                        <Route path="owners/:id" element={<OwnersEdit />} />
+                        {/* ...........advertisements.......... */}
                         <Route
                             path="advertisements/create"
                             element={<AdvertisementsCreate data={data} setData={setData} />}
