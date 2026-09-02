@@ -4,7 +4,7 @@ import StorefrontIcon from '@mui/icons-material/Storefront'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 
-import {WorkspacePremium} from '@mui/icons-material'
+import {Dashboard, WorkspacePremium} from '@mui/icons-material'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
@@ -96,12 +96,12 @@ export const drawerGroups: DrawerGroupType[] = [
 ]
 
 export const drawerItems: DrawerItemType[] = [
-    // {
-    //     title: 'پیشخوان',
-    //     link: '',
-    //     role: 'all',
-    //     icon: <DashboardIcon sx={iconStyle} />,
-    // },
+    {
+        title: 'پیشخوان',
+        link: 'dashboard',
+        role: 'all',
+        icon: <Dashboard sx={iconStyle} />,
+    },
     {
         title: 'کاربران',
         link: 'users',

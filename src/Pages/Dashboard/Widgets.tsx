@@ -1,142 +1,136 @@
 // Widgets.tsx
 
-import {Grid, Stack, Typography, Skeleton, Box} from '@mui/material'
-import {ReactNode} from 'react'
+import { Grid, Stack, Typography, Skeleton, Box, keyframes } from '@mui/material'
+import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+
+type WidgetColor = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
+
+const fadeInUp = keyframes`
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`
 
 interface Props {
     title: string
-    data?: string
-    description: {title: string; status: 'increment' | 'decrement'}
+    value?: string | number
     icon: ReactNode
     loading?: boolean
     link?: string
-}   
+    color?: WidgetColor
+}
 
 export default function Widgets({
     title,
-    data,
-    description,
+    value,
     icon,
     loading,
-    link
+    link,
+    color = 'primary',
 }: Props) {
-    // اگر loading اصلی true باشد یا data هنوز آماده/معتبر نباشد، اسکلتون نشان می‌دهد
-    const isDataInvalid = !data || data.includes('NaN') || data.includes('undefined')
+    const stringValue = value === undefined || value === null ? '' : String(value)
+    const isDataInvalid =
+        !stringValue || stringValue.includes('NaN') || stringValue.includes('undefined')
     const isLoading = loading || isDataInvalid
 
     return (
-        <Grid component={link ? Link : 'div'} to={link} item xs={12} sm={6} md={4} lg={3}>
+        <Grid
+            component={link ? Link : 'div'}
+            to={link}
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            sx={{ textDecoration: 'none' }}
+        >
             <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="stretch"
+                spacing={1.5}
+                alignItems="center"
+                textAlign="center"
                 sx={{
                     height: '100%',
-                    borderRadius: 3,
-                    overflow: 'hidden',
+                    minHeight: 168,
+                    p: 3,
+                    py: 4.5,
+                    borderRadius: '15px',
+                    bgcolor: 'background.paper',
                     position: 'relative',
-                    bgcolor: '#0f0c08',
-                    border: '1px solid rgba(212,175,55,0.25)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                        transform: 'translateY(-5px)',
-                        boxShadow: '0 20px 50px rgba(212,175,55,0.15)',
-                        borderColor: 'rgba(212,175,55,0.5)',
-                    },
+                    overflow: 'hidden',
+                    border: '1px solid',
+                    borderColor: (theme) => `${theme.palette[color].main}55`,
+                    boxShadow: '0 2px 10px rgba(17,24,39,0.06)',
+                    cursor: link ? 'pointer' : 'default',
+                    animation: `${fadeInUp} 0.4s ease-out`,
+                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    '&:hover': link
+                        ? {
+                              transform: 'translateY(-4px)',
+                              borderColor: (theme) => theme.palette[color].main,
+                              boxShadow: (theme) =>
+                                  `0 16px 32px ${theme.palette[color].main}26`,
+                          }
+                        : undefined,
+                    // نوار رنگی بالای کارت برای تفکیک بصری هر ویجت
                     '&::before': {
                         content: '""',
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
-                        height: '2px',
-                        background:
-                            'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-                        opacity: 0.8,
+                        height: 4,
+                        bgcolor: (theme) => theme.palette[color].main,
                     },
                 }}
             >
-                {/* LEFT SIDE */}
-                <Stack spacing={1.2} sx={{p: 2.5, flex: 1}}>
+                {/* آیکون بدون بک‌گراند */}
+                {isLoading ? (
+                    <Skeleton variant="circular" width={40} height={40} />
+                ) : (
+                    <Box
+                        sx={{
+                            fontSize: 34,
+                            lineHeight: 1,
+                            color: (theme) => theme.palette[color].main,
+                            filter: (theme) =>
+                                `drop-shadow(0 4px 10px ${theme.palette[color].main}40)`,
+                            '& svg': { fontSize: 34 },
+                        }}
+                    >
+                        {icon}
+                    </Box>
+                )}
+
+                {/* عنوان و مقدار */}
+                <Stack spacing={0.5} alignItems="center">
                     {isLoading ? (
-                        <Skeleton width={120} height={22} />
+                        <Skeleton width={100} height={18} />
                     ) : (
                         <Typography
-                            sx={{
-                                fontSize: 14,
-                                color: 'rgba(212,175,55,0.8)',
-                                fontWeight: 500,
-                                letterSpacing: 0.3,
-                            }}
+                            variant="labelMd"
+                            sx={{ color: 'text.secondary', fontWeight: 500 }}
                         >
                             {title}
                         </Typography>
                     )}
 
                     {isLoading ? (
-                        <Skeleton width={90} height={40} />
+                        <Skeleton width={90} height={38} />
                     ) : (
                         <Typography
-                            sx={{
-                                fontSize: 26,
-                                fontWeight: 700,
-                                color: '#F5E6C8',
-                                letterSpacing: '-0.5px',
-                            }}
+                            variant="headLineMd"
+                            sx={{ color: 'text.primary', fontWeight: 800, lineHeight: 1.15 }}
                         >
-                            {data}
-                        </Typography>
-                    )}
-
-                    {isLoading ? (
-                        <Skeleton width={140} height={18} />
-                    ) : (
-                        <Typography
-                            sx={{
-                                fontSize: 13,
-                                color:
-                                    description.status === 'increment'
-                                        ? '#C9A227'
-                                        : '#B91C1C',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                fontWeight: 500,
-                            }}
-                        >
-                            {description.status === 'increment' ? '▲' : '▼'}
-                            {description.title}
+                            {stringValue}
                         </Typography>
                     )}
                 </Stack>
-
-                {/* RIGHT ICON GOLD PANEL */}
-                <Box
-                    sx={{
-                        width: 90,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background:
-                            'linear-gradient(135deg, rgba(212,175,55,0.15), rgba(255,215,0,0.05))',
-                        borderLeft: '1px solid rgba(212,175,55,0.2)',
-                    }}
-                >
-                    {isLoading ? (
-                        <Skeleton variant="circular" width={40} height={40} />
-                    ) : (
-                        <Box
-                            sx={{
-                                color: '#D4AF37',
-                                filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.3))',
-                                transform: 'scale(1.2)',
-                            }}
-                        >
-                            {icon}
-                        </Box>
-                    )}
-                </Box>
             </Stack>
         </Grid>
     )
