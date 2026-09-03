@@ -12,7 +12,7 @@ export function AdvertisementsEdit() {
     return (
         <EditPage
             resource={resource}
-            title="جزئیات آگهی"
+            title="جزئیات دیوارکوب"
             formDetails={property}
             initialData={state.row}
             isFormData={true}

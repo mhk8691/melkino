@@ -13,7 +13,7 @@ export function AdvertisementsCreate({
 }) {
     return (
         <CreatePage
-            title={'آگهی جدید'}
+            title={'آگهی دیوارکوب'}
             resource={resource + '/'}
             isFormData={true}
             redirect={resource}

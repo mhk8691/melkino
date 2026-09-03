@@ -156,7 +156,7 @@ export const drawerItems: DrawerItemType[] = [
         ),
     },
       {
-        title: 'آگهی ها',
+        title: 'دیوارکوب',
         link: 'advertisements',
         role: 'all',
         icon: (<LocalOfferIcon sx={iconStyle} />

@@ -68,6 +68,8 @@ export type PropertyType = {
     advisorName?: string
     agencyName?: string
     contactPhone?: string
+    toneOfTheAd?:string
+
 }
 
 export type FilesType = {

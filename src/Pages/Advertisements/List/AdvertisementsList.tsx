@@ -130,7 +130,7 @@ export function AdvertisementsList() {
 
     return (
         <ListPage
-            header={'مدیریت آگهی ها'}
+            header={'مدیریت دیوارکوب'}
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
