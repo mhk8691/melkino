@@ -48,7 +48,7 @@ export function PropertyRecordForm({
                     mode === 'request'
                         ? 'نوع درخواست را انتخاب کنید'
                         : mode === 'ad'
-                        ? 'نوع معامله آگهی را انتخاب کنید'
+                        ? 'نوع معامله دیوارکوب را انتخاب کنید'
                         : 'نوع فایل را انتخاب کنید'
                 }
                 onSelect={(value) =>

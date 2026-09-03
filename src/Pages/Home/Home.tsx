@@ -35,6 +35,8 @@ import {AdvertisementsEdit} from '../Advertisements/Edit/AdvertisementsEdit'
 import {OwnersCreate} from '../Owners/Create/OwnersCreate'
 import {OwnersList} from '../Owners/List/OwnersList'
 import {OwnersEdit} from '../Owners/Edit/OwnersEdit'
+import { PartnersList } from '../Partners/List/PartnersList'
+import { PartnersEdit } from '../Partners/Edit/PartnersEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -195,6 +197,10 @@ export function Home(props) {
                         />
                         <Route path="advertisements" element={<AdvertisementsList />} />
                         <Route path="advertisements/:id" element={<AdvertisementsEdit />} />
+                          {/* ...........Partners.......... */}
+                      
+                        <Route path="partners" element={<PartnersList />} />
+                        <Route path="partners/:id" element={<PartnersEdit />} />
                     </Routes>
                 </Box>
             </Box>
