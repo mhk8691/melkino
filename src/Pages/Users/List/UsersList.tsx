@@ -350,7 +350,7 @@ export function UsersList({
                 setParams={setSearch}
                 handleSort={onGetList ?? (() => {})}
                 loading={loading}
-                hasDetail
+                hasDetail={false}
                 tableBodyCells={roleData.map((user) => (
                     <React.Fragment key={user.id}>
                         {columns.map((column) => (
