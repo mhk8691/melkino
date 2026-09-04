@@ -130,4 +130,4 @@ export const MODE_TITLE: Record<RecordMode, string> = {
 }
 
 // ارتفاع ثابت محتوای هر مرحله
-export const STEP_CONTENT_HEIGHT = 430
+export const STEP_CONTENT_HEIGHT = 550
