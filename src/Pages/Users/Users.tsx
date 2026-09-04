@@ -179,7 +179,7 @@ const CustomFormControl = styled(FormControl)(({ theme }) => ({
 // Component
 // ======================================================
 
-export function Users() {
+export function Users({user,setUser}:{user:any,setUser:React.Dispatch<React.SetStateAction<any>>}) {
 
     const [selectedRole, setSelectedRole] = useState<UserRole>(
         fakeSuperUser.role

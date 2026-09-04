@@ -319,7 +319,7 @@ export function UsersList({
             setEditMode={() => {}}
             isActiveEdit={isActiveEdit}
             header={`مدیریت ${roleLabels[role]}`}
-            href={`${resource}/create`}
+            href={`/${resource}/create`}
             searchField="title"
             searchText="نام و نام خانوادگی"
             setParams={setSearch}
