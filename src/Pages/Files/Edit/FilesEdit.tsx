@@ -17,7 +17,7 @@ export function FilesEdit() {
             initialData={state.row}
             isFormData={true}
         >
-            <PropertyRecordForm mode='file' property={property} setProperty={setProperty} resource={resource}  />
+            <PropertyRecordForm editMode={true} mode='file' property={property} setProperty={setProperty} resource={resource}  />
         </EditPage>
     )
 }

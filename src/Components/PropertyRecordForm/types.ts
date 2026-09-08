@@ -12,12 +12,13 @@ export type PropertyType = {
     requesterPhone?:string
     // در حالت «فایل» یعنی اختصاص به مشتری و در حالت «درخواست» یعنی اختصاص به کارشناس
     assignedTo?: string
+    monthlyCharge:string
     city: string
     // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
     district: string | string[]
     neighborhood: string | string[]
     address: string
-
+budgetType:string
     area: number
     totalPrice: number
     pricePerMeter: number
@@ -84,6 +85,7 @@ export type StepProps = {
     property: PropertyType
     setProperty: Dispatch<SetStateAction<PropertyType>>
     resource: string
+    editMode?:boolean
 }
 
 // مراحلی که رفتارشان بین «فایل» و «درخواست» فرق می‌کند

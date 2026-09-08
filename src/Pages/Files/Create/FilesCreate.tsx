@@ -20,7 +20,7 @@ export function FilesCreate({
             formDetails={data}
             buttonText={'ذخیره'}
         >
-            <PropertyRecordForm mode='file' property={data} setProperty={setData} resource={resource} />
+            <PropertyRecordForm mode='file'  property={data} setProperty={setData} resource={resource} />
         </CreatePage>
     )
 }

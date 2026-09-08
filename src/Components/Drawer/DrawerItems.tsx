@@ -102,6 +102,13 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <Dashboard sx={iconStyle} />,
     },
+        {
+        title: 'اطلاعیه ها',
+        link: 'announcements',
+        role: 'all',
+        icon: <CampaignIcon sx={iconStyle} />,
+        // groupId: 'silver-content',
+    },
     {
         title: 'کاربران',
         link: 'users',
@@ -121,19 +128,8 @@ export const drawerItems: DrawerItemType[] = [
         icon: <HomeWorkOutlinedIcon sx={iconStyle} />,
     },
 
-    {
-        title: 'لاگ',
-        link: 'logs',
-        role: 'all',
-        icon: <AssignmentIcon sx={iconStyle} />,
-    },
-    {
-        title: 'اطلاعیه ها',
-        link: 'announcements',
-        role: 'all',
-        icon: <CampaignIcon sx={iconStyle} />,
-        // groupId: 'silver-content',
-    },
+    
+
     {
         title: 'فایل ها',
         link: 'files',
@@ -173,5 +169,11 @@ export const drawerItems: DrawerItemType[] = [
         link: 'profile',
         role: 'all',
         icon: <AccountCircleRoundedIcon sx={iconStyle} />,
+    },
+    {
+        title: 'لاگ',
+        link: 'logs',
+        role: 'all',
+        icon: <AssignmentIcon sx={iconStyle} />,
     },
 ]

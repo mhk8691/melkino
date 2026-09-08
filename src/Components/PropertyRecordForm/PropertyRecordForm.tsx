@@ -18,11 +18,13 @@ export function PropertyRecordForm({
     setProperty,
     resource,
     mode = 'file',
+    editMode = false
 }: {
     property: PropertyType
     setProperty: Dispatch<SetStateAction<PropertyType>>
     resource: string
     mode?: RecordMode
+    editMode?:boolean
 }) {
     const [activeTab, setActiveTab] = useState(0)
 
@@ -66,7 +68,7 @@ export function PropertyRecordForm({
     // نگاشت گام‌ها بر اساس حالت فرم
     const stepRenderers: Record<RecordMode, Array<() => React.ReactNode>> = {
         file: [
-            () => <BaseStep {...stepProps} mode={mode} />,
+            () => <BaseStep {...stepProps} mode={mode} editMode={editMode} />,
             () => <FinancialStep {...stepProps} mode={mode} />,
             () => <TechnicalStep {...stepProps} mode={mode} />,
             () => <OwnerStep {...stepProps} />,

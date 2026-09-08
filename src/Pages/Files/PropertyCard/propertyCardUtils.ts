@@ -82,9 +82,7 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
 
     const specFields: DetailField[] = [
         {label: 'آدرس', value: item.address},
-        {label: 'نوع سند', value: item.documentType},
         {label: 'وضعیت تصرف', value: item.occupancyStatus},
-        // سال ساخت مخصوص رکوردهای «آگهی» است؛ برای فایل/درخواست همیشه خالی می‌ماند و خودکار مخفی می‌شود
         {label: 'سال ساخت', value: item.buildYear},
         {label: 'نما', value: item.facade},
         {label: 'کف‌پوش', value: item.flooring},

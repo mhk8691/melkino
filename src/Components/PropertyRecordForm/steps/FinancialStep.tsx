@@ -2,9 +2,26 @@ import {useEffect, useRef, useState} from 'react'
 import {InputAdornment} from '@mui/material'
 
 import {RangeField} from '../components/RangeField'
-import {CustomTextField, GridProducer} from '../shared'
+import {CustomSelectField, CustomTextField, GridProducer} from '../shared'
 import type {ModeStepProps} from '../types'
 import {priceHelperText} from '../utils'
+import { SelectOption } from '../../Input/CustomSelectField'
+
+// گزینه‌های نوع وضعیت بودجه در «ثبت فایل» برای رهن و اجاره
+type BudgetType = 'رهن کامل' | 'اجاره کامل' | 'رهن و اجاره'
+
+const budgetTypeOptions: SelectOption[] = [
+    {label: 'رهن کامل', value: 'رهن کامل'},
+    {label: 'اجاره کامل', value: 'اجاره کامل'},
+    {label: 'رهن و اجاره', value: 'رهن و اجاره'},
+]
+
+// گزینه‌های شرایط پیش‌فرض رهن و اجاره
+const mortgageTermsOptions: SelectOption[] = [
+    {label: 'چک تخلیه می‌دهم', value: 'چک تخلیه می‌دهم'},
+    {label: 'اجاره‌ها را چک می‌دهم', value: 'اجاره‌ها را چک می‌دهم'},
+    {label: 'کل اجاره را یکجا پرداخت می‌کنم', value: 'کل اجاره را یکجا پرداخت می‌کنم'},
+]
 
 export function FinancialStep({property, setProperty, resource, mode}: ModeStepProps) {
     // آخرین مقادیری که پردازش شدن (برای تشخیص اینکه واقعاً چه چیزی تغییر کرده)
@@ -90,6 +107,13 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
         }
     }, [property.area, property.totalPrice, property.pricePerMeter, property.contractType, mode, setProperty])
 
+    // نوع وضعیت بودجه فقط برای «ثبت فایل» + «رهن و اجاره» معنا داره.
+    // پیش‌فرض «رهن و اجاره» تا رفتار قبلی (نمایش هر دو فیلد) حفظ بشه.
+    const isMortgageRentFile = property.contractType === 'رهن و اجاره' && mode === 'file'
+    const budgetType: BudgetType = (property.budgetType as BudgetType) || 'رهن و اجاره'
+    const showMortgagePrice = !isMortgageRentFile || budgetType !== 'اجاره کامل'
+    const showMonthlyRent = !isMortgageRentFile || budgetType !== 'رهن کامل'
+
     return (
         <GridProducer
             sx={{marginBottom: '16px'}}
@@ -169,67 +193,97 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
 
                 ...(property.contractType === 'رهن و اجاره'
                     ? [
-                          mode === 'request' ? (
-                              <RangeField
-                                  key="mortgagePrice"
-                                  baseName="mortgagePrice"
-                                  label="قیمت رهن"
-                                  unit="تومان"
-                                  property={property}
-                                  setProperty={setProperty}
-                                  resource={resource}
-                              />
-                          ) : (
-                              <CustomTextField
-                                  key="mortgagePrice"
-                                  name="mortgagePrice"
-                                  setData={setProperty}
-                                  resource={resource}
-                                  label="قیمت رهن"
-                                  defaultValue={property.mortgagePrice}
-                                  thousandSeparator
-                                  endIcon={<InputAdornment position="end">تومان</InputAdornment>}
-                                  helperText={priceHelperText(property.mortgagePrice)}
-                              />
-                          ),
+                          // نوع وضعیت بودجه: فقط در «ثبت فایل» نمایش داده می‌شه
+                          ...(isMortgageRentFile
+                              ? [
+                                    <CustomSelectField
+                                        key="budgetType"
+                                        name="budgetType"
+                                        setData={setProperty}
+                                        resource={resource}
+                                        label="نوع وضعیت بودجه"
+                                        defaultValue={budgetType}
+                                        options={budgetTypeOptions}
+                                    />,
+                                ]
+                              : []),
 
-                          mode === 'request' ? (
-                              <RangeField
-                                  key="monthlyRent"
-                                  baseName="monthlyRent"
-                                  label="اجاره ماهانه"
-                                  unit="تومان"
-                                  property={property}
-                                  setProperty={setProperty}
-                                  resource={resource}
-                              />
-                          ) : (
-                              <CustomTextField
-                                  key="monthlyRent"
-                                  name="monthlyRent"
-                                  setData={setProperty}
-                                  resource={resource}
-                                  label="اجاره ماهانه"
-                                  defaultValue={property.monthlyRent}
-                                  thousandSeparator
-                                  endIcon={<InputAdornment position="end">تومان</InputAdornment>}
-                                  helperText={priceHelperText(property.monthlyRent)}
-                              />
-                          ),
+                          // قیمت رهن — در «رهن کامل» و «رهن و اجاره» نمایش داده می‌شه
+                          // (در حالت «اجاره کامل» فقط وقتی mode === 'file' مخفی می‌شه)
+                          ...(showMortgagePrice
+                              ? [
+                                    mode === 'request' ? (
+                                        <RangeField
+                                            key="mortgagePrice"
+                                            baseName="mortgagePrice"
+                                            label="قیمت رهن"
+                                            unit="تومان"
+                                            property={property}
+                                            setProperty={setProperty}
+                                            resource={resource}
+                                        />
+                                    ) : (
+                                        <CustomTextField
+                                            key="mortgagePrice"
+                                            name="mortgagePrice"
+                                            setData={setProperty}
+                                            resource={resource}
+                                            label="قیمت رهن"
+                                            defaultValue={property.mortgagePrice}
+                                            thousandSeparator
+                                            endIcon={
+                                                <InputAdornment position="end">تومان</InputAdornment>
+                                            }
+                                            helperText={priceHelperText(property.mortgagePrice)}
+                                        />
+                                    ),
+                                ]
+                              : []),
 
-                          // در «آگهی» شرایط رهن و اجاره به‌صورت آزاد گرفته نمی‌شود
+                          // اجاره ماهانه — در «اجاره کامل» و «رهن و اجاره» نمایش داده می‌شه
+                          // (در حالت «رهن کامل» فقط وقتی mode === 'file' مخفی می‌شه)
+                          ...(showMonthlyRent
+                              ? [
+                                    mode === 'request' ? (
+                                        <RangeField
+                                            key="monthlyRent"
+                                            baseName="monthlyRent"
+                                            label="اجاره ماهانه"
+                                            unit="تومان"
+                                            property={property}
+                                            setProperty={setProperty}
+                                            resource={resource}
+                                        />
+                                    ) : (
+                                        <CustomTextField
+                                            key="monthlyRent"
+                                            name="monthlyRent"
+                                            setData={setProperty}
+                                            resource={resource}
+                                            label="اجاره ماهانه"
+                                            defaultValue={property.monthlyRent}
+                                            thousandSeparator
+                                            endIcon={
+                                                <InputAdornment position="end">تومان</InputAdornment>
+                                            }
+                                            helperText={priceHelperText(property.monthlyRent)}
+                                        />
+                                    ),
+                                ]
+                              : []),
+
+                          // در «آگهی» شرایط رهن و اجاره گرفته نمی‌شود
                           ...(mode === 'ad'
                               ? []
                               : [
-                                    <CustomTextField
+                                    <CustomSelectField
                                         key="mortgageTerms"
                                         name="mortgageTerms"
                                         setData={setProperty}
                                         resource={resource}
-                                        label="شرایط رهن و اجاره"
+                                        label="شرایط پیش‌فرض رهن و اجاره"
                                         defaultValue={property.mortgageTerms}
-                                        multiline
-                                        minRows={3}
+                                        options={mortgageTermsOptions}
                                     />,
                                 ]),
                       ]
