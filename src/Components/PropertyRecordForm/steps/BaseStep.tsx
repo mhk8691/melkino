@@ -13,9 +13,24 @@ import {RangeField} from '../components/RangeField'
 import {CustomSelectField, CustomTextField, GridProducer} from '../shared'
 import type {ModeStepProps} from '../types'
 import {asStringArray, toSelectOptions} from '../utils'
+import {SelectOption} from '../../Input/CustomSelectField'
+import DatePickerFilter from '../../Filter/DatePicker'
 
 // در «رهن و اجاره» علاوه‌بر گزینه‌های عمومی نوع ملک، «تجاری» و «سوله» هم اضافه می‌شود
 const MORTGAGE_RENT_EXTRA_PROPERTY_TYPES = ['تجاری', 'سوله']
+
+// گزینه‌های وضعیت اشغال فایل رهن و اجاره
+const occupancyStatusOptions: SelectOption[] = [
+    {label: 'تخلیه', value: 'تخلیه'},
+    {label: 'تاریخ تخلیه', value: 'تاریخ تخلیه'},
+]
+
+// گزینه‌های شرایط پیش‌فرض رهن و اجاره
+const mortgageTermsOptions: SelectOption[] = [
+    {label: 'چک تخلیه می‌دهم', value: 'چک تخلیه می‌دهم'},
+    {label: 'اجاره‌ها را چک می‌دهم', value: 'اجاره‌ها را چک می‌دهم'},
+    {label: 'کل اجاره را یکجا پرداخت می‌کنم', value: 'کل اجاره را یکجا پرداخت می‌کنم'},
+]
 
 export function BaseStep({property, setProperty, resource, mode,editMode}: ModeStepProps) {
     const isMortgageRent = property.contractType === 'رهن و اجاره'
@@ -26,6 +41,11 @@ export function BaseStep({property, setProperty, resource, mode,editMode}: ModeS
     )
     // شارژ ماهانه فقط برای «آپارتمان» معنا دارد
     const isApartment = property.propertyType === 'آپارتمان'
+
+    // وضعیت اشغال و شرایط پیش‌فرض رهن و اجاره فقط برای «ثبت فایل» + «رهن و اجاره» معنا دارند
+    const isMortgageRentFile = isMortgageRent && mode === 'file'
+    // فیلد تاریخ تخلیه فقط وقتی وضعیت اشغال «تاریخ تخلیه» انتخاب شده باشد
+    const showVacateDate = isMortgageRentFile && property.occupancyStatus === 'تاریخ تخلیه'
 
     return (
         <GridProducer
@@ -84,6 +104,53 @@ export function BaseStep({property, setProperty, resource, mode,editMode}: ModeS
                       ]
                     : []),
 
+                // وضعیت اشغال: فقط در «ثبت فایل» + «رهن و اجاره» نمایش داده می‌شه
+                ...(isMortgageRentFile
+                    ? [
+                          <CustomSelectField
+                              key="occupancyStatus"
+                              name="occupancyStatus"
+                              setData={setProperty}
+                              resource={resource}
+                              label="وضعیت اشغال"
+                              defaultValue={property.occupancyStatus}
+                              options={occupancyStatusOptions}
+                          />,
+                      ]
+                    : []),
+
+                // فیلد تاریخ تخلیه فقط وقتی وضعیت اشغال «تاریخ تخلیه» انتخاب شده باشد
+                ...(showVacateDate
+                    ? [
+                          <DatePickerFilter
+                              key="vacateDate"
+                              mode="controlled"
+                              item={{label: 'تاریخ تخلیه'}}
+                              value={property.vacateDate ?? null}
+                              onChange={(value) =>
+                                  setProperty((prev) => ({
+                                      ...prev,
+                                      vacateDate: value ?? '',
+                                  }))
+                              }
+                          />,
+                      ]
+                    : []),
+
+                // در «آگهی» شرایط رهن و اجاره گرفته نمی‌شود
+                ...(isMortgageRent && mode !== 'ad'
+                    ? [
+                          <CustomSelectField
+                              key="mortgageTerms"
+                              name="mortgageTerms"
+                              setData={setProperty}
+                              resource={resource}
+                              label="شرایط پیش‌فرض رهن و اجاره"
+                              defaultValue={property.mortgageTerms}
+                              options={mortgageTermsOptions}
+                          />,
+                      ]
+                    : []),
 
                 // در «آگهی» شهر و اختصاص‌دادن نمایش داده نمی‌شود (در آن فرم موقعیت از روی نقشه انتخاب می‌شود)
                 ...(mode !== 'ad'

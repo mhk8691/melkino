@@ -16,13 +16,6 @@ const budgetTypeOptions: SelectOption[] = [
     {label: 'رهن و اجاره', value: 'رهن و اجاره'},
 ]
 
-// گزینه‌های شرایط پیش‌فرض رهن و اجاره
-const mortgageTermsOptions: SelectOption[] = [
-    {label: 'چک تخلیه می‌دهم', value: 'چک تخلیه می‌دهم'},
-    {label: 'اجاره‌ها را چک می‌دهم', value: 'اجاره‌ها را چک می‌دهم'},
-    {label: 'کل اجاره را یکجا پرداخت می‌کنم', value: 'کل اجاره را یکجا پرداخت می‌کنم'},
-]
-
 export function FinancialStep({property, setProperty, resource, mode}: ModeStepProps) {
     // آخرین مقادیری که پردازش شدن (برای تشخیص اینکه واقعاً چه چیزی تغییر کرده)
     const prevValues = useRef({
@@ -271,21 +264,6 @@ export function FinancialStep({property, setProperty, resource, mode}: ModeStepP
                                     ),
                                 ]
                               : []),
-
-                          // در «آگهی» شرایط رهن و اجاره گرفته نمی‌شود
-                          ...(mode === 'ad'
-                              ? []
-                              : [
-                                    <CustomSelectField
-                                        key="mortgageTerms"
-                                        name="mortgageTerms"
-                                        setData={setProperty}
-                                        resource={resource}
-                                        label="شرایط پیش‌فرض رهن و اجاره"
-                                        defaultValue={property.mortgageTerms}
-                                        options={mortgageTermsOptions}
-                                    />,
-                                ]),
                       ]
                     : []),
             ]}

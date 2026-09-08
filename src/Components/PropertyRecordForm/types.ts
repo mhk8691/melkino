@@ -10,6 +10,7 @@ export type PropertyType = {
     documentType: string
     requesterName?:string
     requesterPhone?:string
+    vacateDate?:string
     // در حالت «فایل» یعنی اختصاص به مشتری و در حالت «درخواست» یعنی اختصاص به کارشناس
     assignedTo?: string
     monthlyCharge:string
