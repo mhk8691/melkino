@@ -40,6 +40,9 @@ import { PartnersEdit } from '../Partners/Edit/PartnersEdit'
 import { SuperUsersList } from '../SuperUsers/List/SuperUsersList'
 import { SuperUsersCreate } from '../SuperUsers/Create/SuperUsersCreate'
 import { SuperUsersEdit } from '../SuperUsers/Edit/SuperUsersEdit'
+import { AgencyCreate } from '../Agency/Create/AgencyCreate'
+import { AgencyList } from '../Agency/List/AgencyList'
+import { AgencyEdit } from '../Agency/Edit/AgencyEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -111,7 +114,7 @@ export function Home(props) {
                         <Route path="/profile" element={<Profile />} />
                         {/* ...........super users.......... */}
                         <Route
-                            path="users/create"
+                            path="users/super-users/create"
                             element={<SuperUsersCreate data={data} setData={setData} />}
                         />
                         <Route
@@ -119,7 +122,16 @@ export function Home(props) {
                             element={<SuperUsersList  />}
                         />
                         <Route path="users/super-users/:id" element={<SuperUsersEdit />} />
-
+                          {/* ...........agencies.......... */}
+                        <Route
+                            path="users/agencies/create"
+                            element={<AgencyCreate data={data} setData={setData} />}
+                        />
+                        <Route
+                            path="users/agencies"
+                            element={<AgencyList  />}
+                        />
+                        <Route path="users/agencies/:id" element={<AgencyEdit />} />
 
                         <Route
                             path="users/real-estate"

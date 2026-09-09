@@ -1,16 +1,22 @@
 import EditIcon from '@mui/icons-material/Edit'
 import {Box, Stack} from '@mui/material'
-import {ChangeEvent, useState} from 'react'
+import {ChangeEvent, Dispatch, SetStateAction, useState} from 'react'
 import {CustomTextField} from '../../Components/Input/CustomTextField'
 import userImage from '../../Images/user.png'
-import { SuperUsersType } from '../SuperUsers/SuperUsers'
 
-interface Props {
-    user: SuperUsersType
-    setUser: React.Dispatch<React.SetStateAction<SuperUsersType>>
+interface ProfileUploaderProps {
+    profileImage?: string | null
 }
 
-export default function ProfileUploader({user, setUser}: Props) {
+interface Props<T extends ProfileUploaderProps> {
+    user: T
+    setUser: Dispatch<SetStateAction<T>>
+}
+
+export default function ProfileUploader<T extends ProfileUploaderProps>({
+    user,
+    setUser,
+}: Props<T>) {
     const [isHover, setIsHover] = useState(false)
     const [imagePreview, setImagePreview] = useState('')
 
@@ -18,25 +24,27 @@ export default function ProfileUploader({user, setUser}: Props) {
         const file = event.target.files?.[0]
 
         if (file) {
-            setImagePreview(URL.createObjectURL(file))
+            const previewUrl = URL.createObjectURL(file)
+
+            setImagePreview(previewUrl)
 
             setUser((prev) => ({
                 ...prev,
-                profileImage: URL.createObjectURL(file),
+                profileImage: previewUrl,
             }))
         }
     }
 
     return (
         <Stack
-            direction={'row'}
+            direction="row"
             justifyContent={{
                 xs: 'center',
                 sm: 'flex-start',
             }}
         >
             <Box
-                component={'label'}
+                component="label"
                 htmlFor="profile_image"
                 onMouseEnter={() => setIsHover(true)}
                 onMouseLeave={() => setIsHover(false)}
@@ -59,7 +67,7 @@ export default function ProfileUploader({user, setUser}: Props) {
                 }}
             >
                 <Box
-                    component={'img'}
+                    component="img"
                     src={
                         imagePreview
                             ? imagePreview
@@ -72,10 +80,13 @@ export default function ProfileUploader({user, setUser}: Props) {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        filter: isHover ? 'brightness(0.4)' : 'brightness(1)',
+                        filter: isHover
+                            ? 'brightness(0.4)'
+                            : 'brightness(1)',
                         animation: isHover
                             ? 'imageAnimation .2s ease-in-out'
                             : 'none',
+
                         '@keyframes imageAnimation': {
                             '0%': {
                                 filter: 'brightness(1)',
@@ -96,9 +107,8 @@ export default function ProfileUploader({user, setUser}: Props) {
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            animation: isHover
-                                ? 'editIcon .2s ease-in-out'
-                                : 'none',
+                            animation: 'editIcon .2s ease-in-out',
+
                             '@keyframes editIcon': {
                                 '0%': {
                                     opacity: 0,
@@ -116,7 +126,9 @@ export default function ProfileUploader({user, setUser}: Props) {
                     type="file"
                     id="profile_image"
                     onChange={handleChange}
-                    sx={{display: 'none'}}
+                    sx={{
+                        display: 'none',
+                    }}
                 />
             </Box>
         </Stack>
