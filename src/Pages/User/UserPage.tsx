@@ -41,7 +41,7 @@ const roles = [
     {
         title: 'کارشناس',
         icon: <ManageAccountsRounded />,
-        href: '/agent',
+        href: '/agents',
         iconBg: 'rgba(75, 131, 220, 0.12)',
         iconColor: '#144493',
     },

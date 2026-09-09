@@ -4,7 +4,7 @@ import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 import {GridProducer} from '../../Components/Table/GridProducer'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
-import ProfileUploader from '../Users/ProfileUploader'
+import ProfileUploader from '../User/ProfileUploader'
 import {toSelectOptions} from '../../Components/PropertyRecordForm/utils'
 
 export interface AgencyType {
@@ -48,10 +48,7 @@ export function Agency({
                             marginBottom: '16px',
                         }}
                     >
-                        <ProfileUploader
-                            user={agency}
-                            setUser={setAgency}
-                        />
+                        <ProfileUploader user={agency} setUser={setAgency} />
                     </Stack>
 
                     <GridProducer
@@ -107,10 +104,7 @@ export function Agency({
                                 resource={resource}
                                 label="وضعیت تأهل"
                                 defaultValue={agency.maritalStatus}
-                                options={toSelectOptions([
-                                    'متأهل',
-                                    'مجرد',
-                                ])}
+                                options={toSelectOptions(['متأهل', 'مجرد'])}
                             />,
                             <CustomTextField
                                 name="officeAddress"
@@ -126,10 +120,7 @@ export function Agency({
                                 resource={resource}
                                 label="وضعیت ملک دفتر"
                                 defaultValue={agency.officePropertyStatus}
-                                options={toSelectOptions([
-                                    'مالک',
-                                    'مستأجر',
-                                ])}
+                                options={toSelectOptions(['مالک', 'مستأجر'])}
                             />,
                             <DatePickerFilter
                                 key="leaseEndDate"

@@ -10,7 +10,7 @@ import {UsersType} from '../Users/Users'
 import {LogsList} from '../Logs/List/LogsList'
 import {UserRole} from '../Users/UsersType'
 import {fakeUsers} from '../Users/usersData'
-import UserPage from '../Users/UserPage'
+import UserPage from '../User/UserPage'
 import {AnnouncementCreate} from '../Announcement/Create/AnnouncementCreate'
 import {AnnouncementList} from '../Announcement/List/AnnouncementList'
 import {AnnouncementEdit} from '../Announcement/Edit/AnnouncementEdit'
@@ -44,6 +44,9 @@ import { AgencyEdit } from '../Agency/Edit/AgencyEdit'
 import { UsersCreate } from '../User/Create/UsersCreate'
 import { UsersList } from '../User/List/UsersList'
 import { UsersEdit } from '../User/Edit/UsersEdit'
+import { AgentsCreate } from '../Agent/Create/AgentsCreate'
+import { AgentsList } from '../Agent/List/AgentsList'
+import { AgentsEdit } from '../Agent/Edit/AgentsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -143,6 +146,39 @@ export function Home(props) {
                             element={<UsersList  />}
                         />
                         <Route path="users/user/:id" element={<UsersEdit />} />
+                              {/* ...........agents.......... */}
+                        <Route
+                            path="users/agents/create"
+                            element={<AgentsCreate title='افزودن کارشناس' resource='agents' data={data} setData={setData} />}
+                        />
+                        <Route
+                            path="users/agents"
+                            element={<AgentsList title='لیست کارشناسان' resource='agents'  />}
+                        />
+                        <Route path="users/agents/:id" element={<AgentsEdit title='ویرایش کارشناس' resource='agents' />} />
+
+                            {/* ...........accountant.......... */}
+                        <Route
+                            path="users/accountant/create"
+                            element={<AgentsCreate title='افزودن حسابدار' resource='accountant' data={data} setData={setData} />}
+                        />
+                        <Route
+                            path="users/accountant"
+                            element={<AgentsList title='لیست حسابداران' resource='accountant'  />}
+                        />
+                        <Route path="users/accountant/:id" element={<AgentsEdit title='ویرایش حسابدار' resource='accountant' />} />
+
+                         {/* ...........secretary.......... */}
+                        <Route
+                            path="users/secretary/create"
+                            element={<AgentsCreate title='افزودن منشی' resource='secretary' data={data} setData={setData} />}
+                        />
+                        <Route
+                            path="users/secretary"
+                            element={<AgentsList title='لیست منشی ها' resource='secretary'  />}
+                        />
+                        <Route path="users/secretary/:id" element={<AgentsEdit title='ویرایش منشی' resource='secretary' />} />
+
                         <Route path="users" element={<UserPage />} />
 
 

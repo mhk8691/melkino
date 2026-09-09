@@ -2,7 +2,7 @@ import {Stack} from '@mui/material'
 import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {GridProducer} from '../../Components/Table/GridProducer'
 import type {Dispatch, SetStateAction} from 'react'
-import ProfileUploader from '../Users/ProfileUploader'
+import ProfileUploader from '../User/ProfileUploader'
 
 export interface SuperUsersType {
     id: string
@@ -35,10 +35,7 @@ export function SuperUsers({
                             marginBottom: '16px',
                         }}
                     >
-                        <ProfileUploader
-                            user={superUsers}
-                            setUser={setSuperUsers}
-                        />
+                        <ProfileUploader user={superUsers} setUser={setSuperUsers} />
                     </Stack>
 
                     {/* سطر دوم به بعد: فیلدها */}

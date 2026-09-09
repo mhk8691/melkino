@@ -7,8 +7,8 @@ import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {UsersType} from '../Users'
-import {UserCreate} from '../../Users/Create/UserCreate'
 import profileImage from '../../../Images/user.png'
+import { UsersCreate } from '../Create/UsersCreate'
 
 const RESOURCE = 'user'
 
@@ -131,7 +131,7 @@ export function UsersList() {
             resource={RESOURCE}
             getList={() => {}}
             filtersData={[]}
-            createModal={UserCreate}
+            createModal={UsersCreate}
             defaultState={{
                 id: '',
                 firstName: '',

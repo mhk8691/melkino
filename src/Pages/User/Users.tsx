@@ -3,7 +3,7 @@ import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {GridProducer} from '../../Components/Table/GridProducer'
 import type {Dispatch, SetStateAction} from 'react'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
-import ProfileUploader from '../Users/ProfileUploader'
+import ProfileUploader from './ProfileUploader'
 
 export interface UsersType {
     id: string
@@ -44,10 +44,7 @@ export function Users({
                             marginBottom: '16px',
                         }}
                     >
-                        <ProfileUploader
-                            user={users}
-                            setUser={setUsers}
-                        />
+                        <ProfileUploader user={users} setUser={setUsers} />
                     </Stack>
 
                     <GridProducer
@@ -108,9 +105,6 @@ export function Users({
                                     }))
                                 }
                             />,
-
-                           
-                            
 
                             <CustomTextField
                                 name="city"
