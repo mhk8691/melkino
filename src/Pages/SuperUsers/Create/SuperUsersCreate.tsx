@@ -1,10 +1,10 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import { Announcement } from '../Announcement'
+import {SuperUsers} from '../SuperUsers'
 
-const resource = 'announcements'
+const resource = 'super-users'
 
-export function AnnouncementCreate({
+export function SuperUsersCreate({
     data,
     setData,
 }: {
@@ -13,13 +13,13 @@ export function AnnouncementCreate({
 }) {
     return (
         <CreatePage
-            title={'افزودن اطلاعیه'}
+            title={'افزودن سوپر ادمین'}
             resource={resource + '/'}
             isFormData={true}
             redirect={resource}
             formDetails={data}
         >
-            <Announcement announcement={data} setAnnouncement={setData} resource={resource} />
+            <SuperUsers superUsers={data} setSuperUsers={setData} resource={resource} />
         </CreatePage>
     )
 }

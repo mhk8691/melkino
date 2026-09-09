@@ -27,7 +27,7 @@ const roles = [
     {
         title: 'سوپر ادمین',
         icon: <AdminPanelSettingsRounded />,
-        href: '/super-admin',
+        href: '/super-users',
         iconBg: 'rgba(30, 97, 205, 0.10)',
         iconColor: '#1E61CD',
     },

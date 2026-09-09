@@ -37,6 +37,9 @@ import {OwnersList} from '../Owners/List/OwnersList'
 import {OwnersEdit} from '../Owners/Edit/OwnersEdit'
 import { PartnersList } from '../Partners/List/PartnersList'
 import { PartnersEdit } from '../Partners/Edit/PartnersEdit'
+import { SuperUsersList } from '../SuperUsers/List/SuperUsersList'
+import { SuperUsersCreate } from '../SuperUsers/Create/SuperUsersCreate'
+import { SuperUsersEdit } from '../SuperUsers/Edit/SuperUsersEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -106,15 +109,18 @@ export function Home(props) {
                     <Routes>
                         <Route path="dashboard" element={<DashboardLayout />} />
                         <Route path="/profile" element={<Profile />} />
-                        {/* ...........users.......... */}
+                        {/* ...........super users.......... */}
                         <Route
                             path="users/create"
-                            element={<UserCreate data={data} setData={setData} />}
+                            element={<SuperUsersCreate data={data} setData={setData} />}
                         />
                         <Route
-                            path="users/super-admin"
-                            element={<UsersList role={UserRole.SUPER_USER} data={fakeUsers} />}
+                            path="users/super-users"
+                            element={<SuperUsersList  />}
                         />
+                        <Route path="users/super-users/:id" element={<SuperUsersEdit />} />
+
+
                         <Route
                             path="users/real-estate"
                             element={

@@ -1,23 +1,32 @@
 import EditIcon from '@mui/icons-material/Edit'
 import {Box, Stack} from '@mui/material'
 import {ChangeEvent, useState} from 'react'
-import {UsersType} from './Users'
 import {CustomTextField} from '../../Components/Input/CustomTextField'
 import userImage from '../../Images/user.png'
+import { SuperUsersType } from '../SuperUsers/SuperUsers'
+
 interface Props {
-    user: UsersType
-    setUser: React.Dispatch<React.SetStateAction<UsersType>>
+    user: SuperUsersType
+    setUser: React.Dispatch<React.SetStateAction<SuperUsersType>>
 }
+
 export default function ProfileUploader({user, setUser}: Props) {
     const [isHover, setIsHover] = useState(false)
     const [imagePreview, setImagePreview] = useState('')
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
+
         if (file) {
             setImagePreview(URL.createObjectURL(file))
-            setUser((prev) => ({...prev, profile_picture: file}))
+
+            setUser((prev) => ({
+                ...prev,
+                profileImage: URL.createObjectURL(file),
+            }))
         }
     }
+
     return (
         <Stack
             direction={'row'}
@@ -54,9 +63,9 @@ export default function ProfileUploader({user, setUser}: Props) {
                     src={
                         imagePreview
                             ? imagePreview
-                            : typeof user.profile_picture === 'string' && user.profile_picture
-                            ? user.profile_picture
-                            : userImage
+                            : user.profileImage
+                              ? user.profileImage
+                              : userImage
                     }
                     sx={{
                         borderRadius: '50%',
@@ -64,9 +73,11 @@ export default function ProfileUploader({user, setUser}: Props) {
                         height: '100%',
                         objectFit: 'cover',
                         filter: isHover ? 'brightness(0.4)' : 'brightness(1)',
-                        animation: isHover ? 'imageAnimation .2s ease-in-out' : 'none',
-                        '@keyframes imageAnimation ': {
-                            ' 0%': {
+                        animation: isHover
+                            ? 'imageAnimation .2s ease-in-out'
+                            : 'none',
+                        '@keyframes imageAnimation': {
+                            '0%': {
                                 filter: 'brightness(1)',
                             },
                             '100%': {
@@ -75,6 +86,7 @@ export default function ProfileUploader({user, setUser}: Props) {
                         },
                     }}
                 />
+
                 {isHover && (
                     <EditIcon
                         fontSize="large"
@@ -84,9 +96,11 @@ export default function ProfileUploader({user, setUser}: Props) {
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            animation: isHover ? 'editIcon .2s ease-in-out' : 'none',
-                            '@keyframes editIcon ': {
-                                ' 0%': {
+                            animation: isHover
+                                ? 'editIcon .2s ease-in-out'
+                                : 'none',
+                            '@keyframes editIcon': {
+                                '0%': {
                                     opacity: 0,
                                 },
                                 '100%': {
@@ -96,8 +110,9 @@ export default function ProfileUploader({user, setUser}: Props) {
                         }}
                     />
                 )}
+
                 <CustomTextField
-                    name="name"
+                    name="profileImage"
                     type="file"
                     id="profile_image"
                     onChange={handleChange}
