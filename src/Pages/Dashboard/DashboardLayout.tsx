@@ -18,8 +18,8 @@ export interface FilterState {
     year: number
     month: string
 }
+
 const lastFileList = [
-    // ۱) رکورد کامل — تقریباً همه‌ی فیلدها پر شده
     {
         id: 1,
         status: 'فعال',
@@ -50,7 +50,6 @@ const lastFileList = [
         description: 'واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.',
         internalNote: 'مالک عجله برای فروش دارد، قابل مذاکره.',
     },
-    // ۲) ویلایی رهن و اجاره — تعدادی از فیلدها خالی
     {
         id: 2,
         status: 'فعال',
@@ -74,7 +73,6 @@ const lastFileList = [
         ownerPhone: '09351234567',
         description: 'ویلای دوبلکس با حیاط بزرگ و درخت‌های میوه.',
     },
-    // ۳) زمین — فقط حداقل اطلاعات
     {
         id: 3,
         status: 'کنسل شد',
@@ -88,7 +86,6 @@ const lastFileList = [
         totalPrice: 12000000000,
         direction: 'جنوبی',
     },
-    // ۴) آپارتمان — اطلاعات متوسط، بدون قیمت هر متر و امکانات
     {
         id: 4,
         status: 'منصرف شد',
@@ -108,7 +105,6 @@ const lastFileList = [
         ownerPhone: '09131234567',
         ownerJob: 'آزاد',
     },
-    // ۵) پیش فروش — بدون مالک و بدون امکانات، فقط یادداشت داخلی
     {
         id: 5,
         status: 'فروخته شده',
@@ -125,17 +121,52 @@ const lastFileList = [
     },
 ]
 
-// The two "featured: true" stats get more visual weight (bigger type, its own row)
-// so the numbers that matter most are visible at a glance; the rest sit underneath
-// as a quieter, denser row. Same card chrome throughout — only scale changes.
+// دو ویجت "featured" با ترند و رنگ‌بندی متفاوت بزرگ‌تر و برجسته دیده می‌شوند
 const statWidgets = [
-    { title: 'فروش این ماه', value: '۴۲۰,۰۰۰,۰۰۰ تومان', color: 'success' as const, featured: true },
-    { title: 'درآمد', value: '۶۰۵,۰۰۰,۰۰۰ تومان', color: 'primary' as const, featured: true },
-    { title: 'مشتریان', value: 1284, color: 'primary' as const },
-    { title: 'اجاره این ماه', value: '۱۸۵,۰۰۰,۰۰۰ تومان', color: 'warning' as const },
-    { title: 'قراردادهای فعال', value: 37, color: 'info' as const },
-    { title: 'فایل‌های تسویه‌شده', value: 29, color: 'secondary' as const },
-    { title: 'بازدیدها', value: 5620, color: 'primary' as const },
+    {
+        title: 'فروش این ماه',
+        value: '۴۲۰,۰۰۰,۰۰۰ تومان',
+        color: 'success' as const,
+        featured: true,
+        trend: 12,
+    },
+    {
+        title: 'درآمد',
+        value: '۶۰۵,۰۰۰,۰۰۰ تومان',
+        color: 'primary' as const,
+        featured: true,
+        trend: 8,
+    },
+    {
+        title: 'مشتریان',
+        value: 1284,
+        color: 'secondary' as const,
+        trend: 5,
+    },
+    {
+        title: 'اجاره این ماه',
+        value: '۱۸۵,۰۰۰,۰۰۰ تومان',
+        color: 'warning' as const,
+        trend: -3,
+    },
+    {
+        title: 'قراردادهای فعال',
+        value: 37,
+        color: 'info' as const,
+        trend: 7,
+    },
+    {
+        title: 'فایل‌های تسویه‌شده',
+        value: 29,
+        color: 'error' as const,
+        trend: -2,
+    },
+    {
+        title: 'بازدیدها',
+        value: 5620,
+        color: 'primary' as const,
+        trend: 14,
+    },
 ]
 
 export default function DashboardLayout() {

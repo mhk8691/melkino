@@ -17,22 +17,34 @@ const fadeInUp = keyframes`
     }
 `
 
+const floatBlob = keyframes`
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(-6px, 6px) scale(1.08);
+    }
+`
+
 interface Props {
     title: string
     value?: string | number
-    icon: ReactNode
+    icon?: ReactNode
     loading?: boolean
     link?: string
     color?: WidgetColor
+    featured?: boolean
+    trend?: number // درصد تغییر نسبت به دوره قبل، اختیاری — مثبت/منفی
 }
 
 export default function Widgets({
     title,
     value,
-    icon,
     loading,
     link,
     color = 'primary',
+    featured = false,
+    trend,
 }: Props) {
     const stringValue = value === undefined || value === null ? '' : String(value)
     const isDataInvalid =
@@ -45,92 +57,111 @@ export default function Widgets({
             to={link}
             item
             xs={12}
-            sm={6}
-            md={4}
-            lg={3}
+            sm={featured ? 6 : 6}
+            md={featured ? 6 : 4}
+            lg={featured ? 6 : 3}
             sx={{ textDecoration: 'none' }}
         >
             <Stack
-                spacing={1.5}
-                alignItems="center"
-                textAlign="center"
+                spacing={1}
+                justifyContent="center"
                 sx={{
                     height: '100%',
-                    minHeight: 168,
-                    p: 3,
-                    py: 4.5,
-                    borderRadius: '15px',
-                    bgcolor: 'background.paper',
+                    minHeight: featured ? 148 : 120,
+                    p: featured ? 3.5 : 2.75,
+                    borderRadius: '18px',
                     position: 'relative',
                     overflow: 'hidden',
-                    border: '1px solid',
-                    borderColor: (theme) => `${theme.palette[color].main}55`,
-                    boxShadow: '0 2px 10px rgba(17,24,39,0.06)',
                     cursor: link ? 'pointer' : 'default',
                     animation: `${fadeInUp} 0.4s ease-out`,
                     transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    color: '#fff',
+                    backgroundImage: (theme) =>
+                        `linear-gradient(135deg, ${theme.palette[color].main} 0%, ${theme.palette[color].dark} 100%)`,
+                    boxShadow: (theme) => `0 10px 24px ${theme.palette[color].main}3d`,
                     '&:hover': link
                         ? {
                               transform: 'translateY(-4px)',
-                              borderColor: (theme) => theme.palette[color].main,
-                              boxShadow: (theme) =>
-                                  `0 16px 32px ${theme.palette[color].main}26`,
+                              boxShadow: (theme) => `0 18px 34px ${theme.palette[color].main}55`,
                           }
                         : undefined,
-                    // نوار رنگی بالای کارت برای تفکیک بصری هر ویجت
-                    '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: 4,
-                        bgcolor: (theme) => theme.palette[color].main,
-                    },
                 }}
             >
-                {/* آیکون بدون بک‌گراند */}
-                {isLoading ? (
-                    <Skeleton variant="circular" width={40} height={40} />
-                ) : (
-                    <Box
-                        sx={{
-                            fontSize: 34,
-                            lineHeight: 1,
-                            color: (theme) => theme.palette[color].main,
-                            filter: (theme) =>
-                                `drop-shadow(0 4px 10px ${theme.palette[color].main}40)`,
-                            '& svg': { fontSize: 34 },
-                        }}
-                    >
-                        {icon}
-                    </Box>
-                )}
+                {/* بلاب‌های دکوراتیو برای حس گرافیکی، بدون آیکون */}
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: -30,
+                        insetInlineEnd: -30,
+                        width: featured ? 140 : 100,
+                        height: featured ? 140 : 100,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(255,255,255,0.14)',
+                        animation: `${floatBlob} 6s ease-in-out infinite`,
+                        pointerEvents: 'none',
+                    }}
+                />
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        bottom: -40,
+                        insetInlineStart: -20,
+                        width: featured ? 110 : 80,
+                        height: featured ? 110 : 80,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(255,255,255,0.08)',
+                        pointerEvents: 'none',
+                    }}
+                />
 
-                {/* عنوان و مقدار */}
-                <Stack spacing={0.5} alignItems="center">
+                <Box sx={{ position: 'relative', zIndex: 1 }}>
                     {isLoading ? (
-                        <Skeleton width={100} height={18} />
+                        <Skeleton
+                            width={110}
+                            height={18}
+                            sx={{ bgcolor: 'rgba(255,255,255,0.25)' }}
+                        />
                     ) : (
                         <Typography
                             variant="labelMd"
-                            sx={{ color: 'text.secondary', fontWeight: 500 }}
+                            sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}
                         >
                             {title}
                         </Typography>
                     )}
 
                     {isLoading ? (
-                        <Skeleton width={90} height={38} />
+                        <Skeleton
+                            width={130}
+                            height={featured ? 48 : 38}
+                            sx={{ bgcolor: 'rgba(255,255,255,0.25)', mt: 0.5 }}
+                        />
                     ) : (
-                        <Typography
-                            variant="headLineMd"
-                            sx={{ color: 'text.primary', fontWeight: 800, lineHeight: 1.15 }}
-                        >
-                            {stringValue}
-                        </Typography>
+                        <Stack direction="row" alignItems="baseline" spacing={1}>
+                            <Typography
+                                variant={featured ? 'headLineLg' : 'headLineMd'}
+                                sx={{ fontWeight: 800, lineHeight: 1.15, mt: 0.5 }}
+                            >
+                                {stringValue}
+                            </Typography>
+
+                            {typeof trend === 'number' && !isLoading && (
+                                <Typography
+                                    variant="labelSm"
+                                    sx={{
+                                        fontWeight: 700,
+                                        px: 0.8,
+                                        py: 0.2,
+                                        borderRadius: '8px',
+                                        bgcolor: 'rgba(255,255,255,0.18)',
+                                    }}
+                                >
+                                    {trend >= 0 ? `▲ ${trend}%` : `▼ ${Math.abs(trend)}%`}
+                                </Typography>
+                            )}
+                        </Stack>
                     )}
-                </Stack>
+                </Box>
             </Stack>
         </Grid>
     )
