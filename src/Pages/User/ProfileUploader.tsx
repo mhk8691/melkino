@@ -123,7 +123,7 @@ export default function ProfileUploader<T extends ProfileUploaderProps>({
 
                 <CustomTextField
                     name="profileImage"
-                    type="file"
+                    
                     id="profile_image"
                     onChange={handleChange}
                     sx={{

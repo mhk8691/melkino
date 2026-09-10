@@ -10,10 +10,11 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    SelectChangeEvent,
     Stack,
 } from '@mui/material'
 
-import { SettingsSection } from './SettingsSection'
+import {SettingsSection} from './SettingsSection'
 
 import type {
     PanelSettingsState,
@@ -32,7 +33,9 @@ interface ThemeSettingsProps {
     settings: PanelSettingsState
     setSettings: SettingsSetter
 
-    previewRef: React.RefObject<PanelPreviewRef | null>
+    previewRef: React.RefObject<
+        PanelPreviewRef | null
+    >
 }
 
 const colorFields: Array<{
@@ -91,14 +94,13 @@ const ColorPickerField = React.memo(
         setSettings,
         previewRef,
     }: ColorPickerFieldProps) {
-        /*
-         * این state فقط متعلق به همین ColorPicker است.
-         */
-        const [localColor, setLocalColor] =
-            useState(value)
+        const [
+            localColor,
+            setLocalColor,
+        ] = useState(value)
 
         /*
-         * Sync با settings
+         * Sync local color with settings
          */
         useEffect(() => {
             setLocalColor(value)
@@ -108,62 +110,59 @@ const ColorPickerField = React.memo(
          * ==========================================
          * COLOR PICKER CHANGE
          * ==========================================
-         *
-         * اینجا به هیچ عنوان setSettings نداریم.
-         *
-         * بنابراین والد Render نمی‌شود.
          */
-        const handleColorChange = useCallback(
-            (
-                event: React.ChangeEvent<HTMLInputElement>,
-            ) => {
-                const newColor =
-                    event.target.value
+        const handleColorChange =
+            useCallback(
+                (
+                    event: React.ChangeEvent<HTMLInputElement>,
+                ) => {
+                    const newColor =
+                        event.target.value
 
-                /*
-                 * فقط همین Component تغییر می‌کند
-                 */
-                setLocalColor(newColor)
+                    setLocalColor(
+                        newColor,
+                    )
 
-                /*
-                 * Preview مستقیماً آپدیت می‌شود
-                 *
-                 * بدون React render در Parent
-                 */
-                previewRef.current?.updateColor(
+                    /*
+                     * آپدیت لحظه‌ای Preview
+                     */
+                    previewRef.current?.updateColor(
+                        fieldKey,
+                        newColor,
+                    )
+                },
+                [
                     fieldKey,
-                    newColor,
-                )
-            },
-            [
-                fieldKey,
-                previewRef,
-            ],
-        )
+                    previewRef,
+                ],
+            )
 
         /*
          * ==========================================
          * COLOR PICKER BLUR
          * ==========================================
-         *
-         * اینجا مقدار نهایی وارد settings می‌شود.
          */
         const handleColorBlur =
             useCallback(() => {
-                if (localColor === value) {
+                if (
+                    localColor ===
+                    value
+                ) {
                     return
                 }
 
-                setSettings(prev => ({
-                    ...prev,
+                setSettings(
+                    prev => ({
+                        ...prev,
 
-                    theme: {
-                        ...prev.theme,
+                        theme: {
+                            ...prev.theme,
 
-                        [fieldKey]:
-                            localColor,
-                    },
-                }))
+                            [fieldKey]:
+                                localColor,
+                        },
+                    }),
+                )
             }, [
                 fieldKey,
                 localColor,
@@ -173,61 +172,57 @@ const ColorPickerField = React.memo(
 
         /*
          * ==========================================
-         * TEXT FIELD
+         * TEXT FIELD CHANGE
          * ==========================================
+         *
+         * به جای setData از change استفاده شده.
          */
-        const handleTextChange = useCallback(
-            (
-                data: Record<string, string>,
-            ) => {
-                const newColor =
-                    data[fieldKey]
+        const handleTextChange =
+            useCallback(
+                (
+                    event: React.ChangeEvent<
+                        HTMLInputElement |
+                            HTMLTextAreaElement
+                    >,
+                ) => {
+                    const newColor =
+                        event.target
+                            .value
 
-                if (
-                    typeof newColor !==
-                    'string'
-                ) {
-                    return
-                }
+                    setLocalColor(
+                        newColor,
+                    )
 
-                /*
-                 * Local
-                 */
-                setLocalColor(newColor)
+                    /*
+                     * Preview لحظه‌ای
+                     */
+                    previewRef.current?.updateColor(
+                        fieldKey,
+                        newColor,
+                    )
 
-                /*
-                 * Preview لحظه‌ای
-                 */
-                previewRef.current?.updateColor(
+                    /*
+                     * ذخیره در settings
+                     */
+                    setSettings(
+                        prev => ({
+                            ...prev,
+
+                            theme: {
+                                ...prev.theme,
+
+                                [fieldKey]:
+                                    newColor,
+                            },
+                        }),
+                    )
+                },
+                [
                     fieldKey,
-                    newColor,
-                )
-
-                /*
-                 * برای تایپ HEX، مقدار اصلی
-                 * نیز آپدیت می‌شود.
-                 *
-                 * این بخش روی Color Picker
-                 * تأثیری ندارد چون Color Picker
-                 * دیگر setSettings نمی‌کند.
-                 */
-                setSettings(prev => ({
-                    ...prev,
-
-                    theme: {
-                        ...prev.theme,
-
-                        [fieldKey]:
-                            newColor,
-                    },
-                }))
-            },
-            [
-                fieldKey,
-                previewRef,
-                setSettings,
-            ],
-        )
+                    previewRef,
+                    setSettings,
+                ],
+            )
 
         return (
             <Stack
@@ -300,18 +295,22 @@ const ColorPickerField = React.memo(
                 />
 
                 {/* ==================================
-                    CUSTOM TEXT FIELD
+                    TEXT FIELD
                 =================================== */}
 
                 <CustomTextField
-                    key={fieldKey}
-                    name={String(fieldKey)}
+                    key={String(
+                        fieldKey,
+                    )}
+                    name={String(
+                        fieldKey,
+                    )}
                     label={label}
                     resource=""
-                    defaultValue={
+                    value={
                         localColor
                     }
-                    setData={
+                    change={
                         handleTextChange
                     }
                 />
@@ -327,29 +326,32 @@ export function ThemeSettings({
 }: ThemeSettingsProps) {
     /*
      * ==========================================
-     * MODE
+     * MODE CHANGE
      * ==========================================
      */
     const handleModeChange = (
-        event: any,
+        event: SelectChangeEvent,
     ) => {
         const mode =
-            event.target.value as PanelSettingsState['theme']['mode']
+            event.target
+                .value as PanelSettingsState['theme']['mode']
 
         /*
-         * settings اصلی
+         * ذخیره در settings
          */
-        setSettings(prev => ({
-            ...prev,
+        setSettings(
+            prev => ({
+                ...prev,
 
-            theme: {
-                ...prev.theme,
-                mode,
-            },
-        }))
+                theme: {
+                    ...prev.theme,
+                    mode,
+                },
+            }),
+        )
 
         /*
-         * Preview
+         * آپدیت Preview
          */
         previewRef.current?.updateMode(
             mode,
@@ -374,7 +376,8 @@ export function ThemeSettings({
                     <Select
                         label="حالت نمایش"
                         value={
-                            settings.theme
+                            settings
+                                .theme
                                 .mode
                         }
                         onChange={
@@ -425,9 +428,9 @@ export function ThemeSettings({
                     {colorFields.map(
                         field => (
                             <ColorPickerField
-                                key={
-                                    field.key
-                                }
+                                key={String(
+                                    field.key,
+                                )}
                                 fieldKey={
                                     field.key
                                 }

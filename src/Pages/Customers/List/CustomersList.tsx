@@ -1,15 +1,12 @@
 import {Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
+
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
-import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
-import {setUtil} from '../../../redux/UtilSlice'
-import {useDispatch} from 'react-redux'
 import {CustomersType} from '../Customers'
 import {CustomersCreate} from '../Create/CustomersCreate'
 
@@ -17,160 +14,146 @@ const RESOURCE = 'customers'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام', 'name'),
-    createTableHeadCells('تلفن', 'phone'),
-    createTableHeadCells('نوع مشتری', 'customerType'),
+    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
+    createTableHeadCells('تلفن', 'phone_number'),
     createTableHeadCells('وضعیت', 'status'),
     createTableHeadCells('نوع ملک', 'propertyType'),
-    createTableHeadCells('نوع معامله', 'transactionType'),
-    createTableHeadCells('حداقل متراژ', 'minArea'),
-    createTableHeadCells('حداکثر متراژ', 'maxArea'),
+    createTableHeadCells('متراژ', 'areaRange'),
     createTableHeadCells('بودجه', 'budget'),
     createTableHeadCells('اتاق', 'rooms'),
-    createTableHeadCells('محله', 'neighborhood'),
+    createTableHeadCells('شهر', 'cities'),
+    createTableHeadCells('منطقه', 'area'),
+    createTableHeadCells('محله', 'neighborhoods'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.map(cell => ({
     field: cell.name,
     label: cell.label,
     type: '',
 }))
 
 export function CustomersList() {
-    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
-    const [loading, setLoading] = useState(false)
+    const [search, setSearch] = useQueryParams(
+        createQueryParam(queryNames),
+    )
 
-    const [customers, setCustomers] = useState<{
+    const [loading] = useState(false)
+
+    const [customers] = useState<{
         total_results: number
         data: CustomersType[]
     }>({
         total_results: 5,
+
         data: [
             {
                 id: 1,
-                name: 'علی رضایی',
-                phone: '09121234567',
-                customerType: 'خریدار',
+                full_name: 'علی رضایی',
+                phone_number: '09121234567',
                 status: 'فعال',
                 propertyType: 'آپارتمان',
-                transactionType: 'خرید',
                 minArea: '80',
                 maxArea: '150',
                 budget: '5000000000',
                 rooms: '2',
-                neighborhood: 'سعادت آباد',
+                neighborhoods: ['سعادت آباد'],
                 note: 'به دنبال آپارتمان دو خوابه با پارکینگ است.',
+                cities: 'قم',
+                employmentStatus: 'مالک',
+                floors: '5',
+                units: '2',
+                area: '1',
             },
             {
                 id: 2,
-                name: 'محمد احمدی',
-                phone: '09129876543',
-                customerType: 'مستاجر',
+                full_name: 'محمد احمدی',
+                phone_number: '09129876543',
                 status: 'فعال',
                 propertyType: 'آپارتمان',
-                transactionType: 'اجاره',
                 minArea: '70',
                 maxArea: '120',
                 budget: '300000000',
                 rooms: '2',
-                neighborhood: 'پونک',
+                neighborhoods: ['پونک'],
                 note: 'ترجیحاً واحد نوساز و نزدیک مترو باشد.',
+                cities: 'قم',
+                employmentStatus: 'مستاجر',
+                floors: '4',
+                units: '3',
+                area: '2',
             },
             {
                 id: 3,
-                name: 'سارا کریمی',
-                phone: '09351234567',
-                customerType: 'خریدار',
+                full_name: 'سارا کریمی',
+                phone_number: '09351234567',
                 status: 'بالقوه',
                 propertyType: 'ویلایی',
-                transactionType: 'خرید',
                 minArea: '150',
                 maxArea: '300',
                 budget: '10000000000',
                 rooms: '3',
-                neighborhood: 'لواسان',
+                neighborhoods: ['لواسان'],
                 note: 'به دنبال ویلای مستقل با حیاط بزرگ است.',
+                cities: 'قم',
+                employmentStatus: 'مالک',
+                floors: '2',
+                units: '1',
+                area: '3',
             },
             {
                 id: 4,
-                name: 'رضا مرادی',
-                phone: '09105555555',
-                customerType: 'فروشنده',
+                full_name: 'رضا مرادی',
+                phone_number: '09105555555',
                 status: 'فعال',
                 propertyType: 'آپارتمان',
-                transactionType: 'فروش',
                 minArea: '90',
                 maxArea: '130',
                 budget: '7000000000',
                 rooms: '2',
-                neighborhood: 'تهرانپارس',
+                neighborhoods: ['تهرانپارس'],
                 note: 'قصد فروش واحد مسکونی خود را دارد.',
+                cities: 'قم',
+                employmentStatus: 'مالک',
+                floors: '6',
+                units: '2',
+                area: '4',
             },
             {
                 id: 5,
-                name: 'نگار حسینی',
-                phone: '09221234567',
-                customerType: 'مستاجر',
+                full_name: 'نگار حسینی',
+                phone_number: '09221234567',
                 status: 'بسته',
                 propertyType: 'آپارتمان',
-                transactionType: 'رهن',
                 minArea: '60',
                 maxArea: '100',
                 budget: '1000000000',
                 rooms: '1',
-                neighborhood: 'جنت آباد',
+                neighborhoods: ['جنت آباد'],
                 note: 'در صورت پیدا شدن گزینه مناسب مجدداً پیگیری شود.',
+                cities: 'قم',
+                employmentStatus: 'مستاجر',
+                floors: '3',
+                units: '4',
+                area: '5',
             },
         ],
     })
 
-    const dispatch = useDispatch()
-
-    // const getCustomers = async () => {
-    //     setLoading(true)
-    //     try {
-    //         let response = await DataProvider.get<{
-    //             total_results: number
-    //             results: CustomersType[]
-    //         }>(`${RESOURCE}/`, search)
-    //         if (response) {
-    //             setCustomers({
-    //                 total_results: response.data.total_results,
-    //                 data: response.data.results,
-    //             })
-    //         }
-    //     } catch (error: any) {
-    //         dispatch(
-    //             setUtil({
-    //                 open: true,
-    //                 message: error.message,
-    //                 severity: 'error',
-    //             }),
-    //         )
-    //     }
-    //     setLoading(false)
-    // }
-
-    // useDeepCompareEffect(() => {
-    //     getCustomers()
-    // }, [search])
-
     return (
         <ListPage
             header="مدیریت مشتری ها"
-            href={RESOURCE + '/create'}
-            searchField="name"
-            searchText="نام"
+            href={`${RESOURCE}/create`}
+            searchField="full_name"
+            searchText="نام و نام خانوادگی"
             nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={() => {}}
-            // getList={getCustomers}
             filtersData={[]}
             createModal={CustomersCreate}
             defaultState={{
-                name: '',
+                full_name: '',
             }}
         >
             <CustomTable
@@ -180,221 +163,142 @@ export function CustomersList() {
                 rows={customers.data}
                 count={customers.total_results}
                 getList={() => {}}
-                // getList={getCustomers}
                 params={search}
                 setParams={setSearch}
                 handleSort={() => {}}
-                // handleSort={getCustomers}
                 loading={loading}
-                hasDetail={true}
-                tableBodyCells={customers.data.map((item) => (
+                hasDetail
+                tableBodyCells={customers.data.map(item => (
                     <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
+                        {/* شناسه */}
+                        <TableCell key={`${item.id}-id`}>
+                            <CellText>
                                 {item.id || '--'}
-                            </Typography>
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.name || '--'}
-                            </Typography>
+                        {/* نام و نام خانوادگی */}
+                        <TableCell key={`${item.id}-full_name`}>
+                            <CellText>
+                                {item.full_name || '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.phone || '--'}
-                            </Typography>
+                        {/* تلفن */}
+                        <TableCell key={`${item.id}-phone`}>
+                            <CellText>
+                                {item.phone_number || '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.customerType || '--'}
-                            </Typography>
-                        </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
+                        {/* وضعیت */}
+                        <TableCell key={`${item.id}-status`}>
+                            <CellText>
                                 {item.status || '--'}
-                            </Typography>
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
+                        {/* نوع ملک */}
+                        <TableCell key={`${item.id}-propertyType`}>
+                            <CellText>
                                 {item.propertyType || '--'}
-                            </Typography>
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.transactionType || '--'}
-                            </Typography>
+                    
+
+                        {/* متراژ */}
+                        <TableCell key={`${item.id}-areaRange`}>
+                            <CellText>
+                                {item.minArea && item.maxArea
+                                    ? `${item.minArea} تا ${item.maxArea} متر`
+                                    : item.minArea
+                                      ? `از ${item.minArea} متر`
+                                      : item.maxArea
+                                        ? `تا ${item.maxArea} متر`
+                                        : '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.minArea || '--'}
-                            </Typography>
+                        {/* بودجه */}
+                        <TableCell key={`${item.id}-budget`}>
+                            <CellText>
+                                {item.budget
+                                    ? `${formatNumber(item.budget)} تومان`
+                                    : '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.maxArea || '--'}
-                            </Typography>
+                        {/* تعداد اتاق */}
+                        <TableCell key={`${item.id}-rooms`}>
+                            <CellText>
+                                {item.rooms
+                                    ? `${item.rooms} اتاق`
+                                    : '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.budget || '--'}
-                            </Typography>
+                        {/* شهر */}
+                        <TableCell key={`${item.id}-cities`}>
+                            <CellText>
+                                {item.cities || '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.rooms || '--'}
-                            </Typography>
+                        {/* منطقه */}
+                        <TableCell key={`${item.id}-area`}>
+                            <CellText>
+                                {item.area
+                                    ? `منطقه ${item.area}`
+                                    : '--'}
+                            </CellText>
                         </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.neighborhood || '--'}
-                            </Typography>
+                        {/* محله */}
+                        <TableCell key={`${item.id}-neighborhoods`}>
+                            <CellText>
+                                {item.neighborhoods?.length
+                                    ? item.neighborhoods.join('، ')
+                                    : '--'}
+                            </CellText>
                         </TableCell>
                     </>
                 ))}
             />
         </ListPage>
+    )
+}
+
+function formatNumber(value: string): string {
+    const number = Number(value)
+
+    if (Number.isNaN(number)) {
+        return value
+    }
+
+    return new Intl.NumberFormat('fa-IR').format(number)
+}
+
+function CellText({
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    return (
+        <Typography
+            variant="body2"
+            fontSize={{
+                xs: '13px',
+                sm: '14px',
+                md: '16px',
+                xl: '17px',
+            }}
+            sx={{
+                whiteSpace: 'nowrap',
+            }}
+        >
+            {children}
+        </Typography>
     )
 }

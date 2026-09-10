@@ -2,7 +2,7 @@ import type {RecordMode} from './types'
 
 export const STATUS_OPTIONS = ['فعال', 'فروخته شده', 'منصرف شد', 'کنسل شد']
 
-export const PROPERTY_TYPE_OPTIONS = ['آپارتمان', 'ویلایی', 'زمین', 'پیش فروش']
+export const PROPERTY_TYPE_OPTIONS = ['آپارتمان', 'ویلایی', 'زمین', 'پیش فروش','تجاری','سوله']
 
 // نوع قرارداد در گام اول (گیت) فقط بین این دو گزینه انتخاب می‌شود
 export const GATE_CONTRACT_TYPE_OPTIONS = ['فروش', 'رهن و اجاره'] as const

@@ -4,33 +4,37 @@ import {GridProducer} from '../../Components/Table/GridProducer'
 import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 import {toSelectOptions} from '../../Components/PropertyRecordForm/utils'
 import {PROPERTY_TYPE_OPTIONS} from '../../Components/PropertyRecordForm/constants'
+import {CustomAutocomplete} from '../../Components/Input/CustomAutoComplete'
 
 export type CustomersType = {
     id: number
-    name: string
-    phone: string
-    customerType: string
+    full_name: string
+    phone_number: string
     status: string
     propertyType: string
-    transactionType: string
     minArea: string
     maxArea: string
     budget: string
     rooms: string
-    neighborhood: string
+    neighborhoods: string[]
     note: string
+    cities: string
+    employmentStatus: string
+    floors: string
+    units: string
+    area: string
 }
 
 export function Customers({
     customers,
     setCustomers,
     resource,
-    editMode=false
+    editMode = false,
 }: {
     customers: CustomersType
     setCustomers: React.Dispatch<React.SetStateAction<CustomersType>>
     resource: string
-    editMode?:boolean
+    editMode?: boolean
 }) {
     return (
         <Stack>
@@ -53,29 +57,19 @@ export function Customers({
                             : []),
 
                         <CustomTextField
-                            name="name"
+                            name="full_name"
                             setData={setCustomers}
                             resource={resource}
-                            label="نام"
-                            defaultValue={customers.name}
+                            label="نام و نام خانوادگی"
+                            defaultValue={customers.full_name}
                         />,
 
                         <CustomTextField
-                            name="phone"
+                            name="phone_number"
                             setData={setCustomers}
                             resource={resource}
                             label="تلفن"
-                            defaultValue={customers.phone}
-                        />,
-
-                        <CustomSelectField
-                            key="customerType"
-                            name="customerType"
-                            setData={setCustomers}
-                            resource={resource}
-                            label="نوع مشتری"
-                            defaultValue={customers.customerType}
-                            options={toSelectOptions(['خریدار', 'مستاجر', 'فروشنده'])}
+                            defaultValue={customers.phone_number}
                         />,
 
                         <CustomSelectField
@@ -85,7 +79,13 @@ export function Customers({
                             resource={resource}
                             label="وضعیت"
                             defaultValue={customers.status}
-                            options={toSelectOptions(['فعال', 'بالقوه', 'بسته'])}
+                            options={toSelectOptions([
+                                'تهاتر',
+                                'خرید نقد',
+                                'خرید با شرایط یک ماهه',
+                                'خرید با شرایط تا سه ماهه',
+                                'نقد و تهاتر',
+                            ])}
                         />,
 
                         <CustomSelectField
@@ -98,22 +98,13 @@ export function Customers({
                             options={toSelectOptions(PROPERTY_TYPE_OPTIONS)}
                         />,
 
-                        <CustomSelectField
-                            key="transactionType"
-                            name="transactionType"
-                            setData={setCustomers}
-                            resource={resource}
-                            label="نوع معامله"
-                            defaultValue={customers.transactionType}
-                            options={toSelectOptions(['خرید', 'اجاره', 'رهن'])}
-                        />,
-
                         <CustomTextField
                             name="minArea"
                             setData={setCustomers}
                             resource={resource}
                             label="حداقل متراژ"
                             defaultValue={customers.minArea}
+                            inputType="number"
                         />,
 
                         <CustomTextField
@@ -122,6 +113,7 @@ export function Customers({
                             resource={resource}
                             label="حداکثر متراژ"
                             defaultValue={customers.maxArea}
+                            inputType="number"
                         />,
 
                         <CustomTextField
@@ -136,16 +128,80 @@ export function Customers({
                             name="rooms"
                             setData={setCustomers}
                             resource={resource}
-                            label="اتاق"
+                            label="تعداد اتاق"
                             defaultValue={customers.rooms}
+                            inputType="number"
+                        />,
+                        <CustomSelectField
+                            key="cities"
+                            name="cities"
+                            setData={setCustomers}
+                            resource={resource}
+                            label="شهر"
+                            defaultValue={customers.cities}
+                            options={toSelectOptions(['قم'])}
+                        />,
+                        <CustomSelectField
+                            key="area"
+                            name="area"
+                            setData={setCustomers}
+                            resource={resource}
+                            label="منطقه"
+                            defaultValue={customers.area}
+                            options={toSelectOptions(['1', '2', '3', '4', '5', '6', '7', '8'])}
+                        />,
+                        <CustomAutocomplete
+                            key="neighborhoods"
+                            name="neighborhoods"
+                            setData={setCustomers}
+                            label="محله"
+                            multiple
+                            maxSelections={10}
+                            defaultValue={customers.neighborhoods}
+                            options={[
+                                'زنبیل آباد',
+                                'آزادگان',
+                                'سالاریه',
+                                'صفائیه',
+                                'بلوار امین',
+                                'باجک',
+                                'نیروگاه',
+                                'پردیسان',
+                                'انسجام',
+                                'شهرک قدس',
+                                'زنبیل آباد شمالی',
+                                'جمکران',
+                            ]}
+                            sx={{
+                                width: '100%',
+                            }}
+                        />,
+
+                        <CustomSelectField
+                            key="employmentStatus"
+                            name="employmentStatus"
+                            setData={setCustomers}
+                            resource={resource}
+                            label="وضعیت اشتغال"
+                            defaultValue={customers.employmentStatus}
+                            options={toSelectOptions(['تخلیه', 'مالک', 'مستاجر'])}
                         />,
 
                         <CustomTextField
-                            name="neighborhood"
+                            name="floors"
                             setData={setCustomers}
                             resource={resource}
-                            label="محله"
-                            defaultValue={customers.neighborhood}
+                            label="تعداد طبقات"
+                            defaultValue={customers.floors}
+                            inputType="number"
+                        />,
+                        <CustomTextField
+                            name="units"
+                            setData={setCustomers}
+                            resource={resource}
+                            label="تعداد واحد در طبقه"
+                            defaultValue={customers.units}
+                            inputType="number"
                         />,
 
                         <CustomTextField
@@ -154,6 +210,8 @@ export function Customers({
                             resource={resource}
                             label="یادداشت"
                             defaultValue={customers.note}
+                            multiline
+                            rows={4}
                         />,
                     ]}
                 />

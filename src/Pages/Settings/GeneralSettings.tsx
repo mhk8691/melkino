@@ -1,14 +1,35 @@
 import {Stack} from '@mui/material'
 import {SettingsSection} from './SettingsSection'
-import type {PanelSettingsState, SettingsSetter} from './types'
-import { CustomTextField } from '../../Components/Input/CustomTextField'
+import type {
+    PanelSettingsState,
+    SettingsSetter,
+} from './types'
+import {CustomTextField} from '../../Components/Input/CustomTextField'
 
 interface GeneralSettingsProps {
     settings: PanelSettingsState
     setSettings: SettingsSetter
 }
 
-export function GeneralSettings({settings, setSettings}: GeneralSettingsProps) {
+export function GeneralSettings({
+    settings,
+    setSettings,
+}: GeneralSettingsProps) {
+    const handleChange = (
+        field:
+            | 'panelName'
+            | 'description',
+        value: string,
+    ) => {
+        setSettings((prev) => ({
+            ...prev,
+            general: {
+                ...prev.general,
+                [field]: value,
+            },
+        }))
+    }
+
     return (
         <SettingsSection
             title="تنظیمات عمومی"
@@ -20,16 +41,15 @@ export function GeneralSettings({settings, setSettings}: GeneralSettingsProps) {
                     name="panelName"
                     label="نام پنل"
                     resource=""
-                    setData={(data) => {
-                        setSettings((prev) => ({
-                            ...prev,
-                            general: {
-                                ...prev.general,
-                                panelName: data.panelName,
-                            },
-                        }))
+                    value={
+                        settings.general.panelName
+                    }
+                    change={(event) => {
+                        handleChange(
+                            'panelName',
+                            event.target.value,
+                        )
                     }}
-                    defaultValue={settings.general.panelName}
                 />
 
                 <CustomTextField
@@ -37,16 +57,15 @@ export function GeneralSettings({settings, setSettings}: GeneralSettingsProps) {
                     name="description"
                     label="توضیحات پنل"
                     resource=""
-                    setData={(data) => {
-                        setSettings((prev) => ({
-                            ...prev,
-                            general: {
-                                ...prev.general,
-                                description: data.description,
-                            },
-                        }))
+                    value={
+                        settings.general.description
+                    }
+                    change={(event) => {
+                        handleChange(
+                            'description',
+                            event.target.value,
+                        )
                     }}
-                    defaultValue={settings.general.description}
                     multiline
                     minRows={3}
                 />

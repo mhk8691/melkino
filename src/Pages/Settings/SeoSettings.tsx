@@ -1,14 +1,33 @@
 import {Stack} from '@mui/material'
 import {SettingsSection} from './SettingsSection'
-import type {PanelSettingsState, SettingsSetter} from './types'
-import { CustomTextField } from '../../Components/Input/CustomTextField'
+import type {
+    PanelSettingsState,
+    SettingsSetter,
+} from './types'
+import {CustomTextField} from '../../Components/Input/CustomTextField'
 
 interface SeoSettingsProps {
     settings: PanelSettingsState
     setSettings: SettingsSetter
 }
 
-export function SeoSettings({settings, setSettings}: SeoSettingsProps) {
+export function SeoSettings({
+    settings,
+    setSettings,
+}: SeoSettingsProps) {
+    const handleChange = (
+        field: 'title' | 'description',
+        value: string,
+    ) => {
+        setSettings((prev) => ({
+            ...prev,
+            seo: {
+                ...prev.seo,
+                [field]: value,
+            },
+        }))
+    }
+
     return (
         <SettingsSection
             title="تنظیمات SEO"
@@ -20,16 +39,13 @@ export function SeoSettings({settings, setSettings}: SeoSettingsProps) {
                     name="title"
                     label="عنوان سایت"
                     resource=""
-                    setData={(data) => {
-                        setSettings((prev) => ({
-                            ...prev,
-                            seo: {
-                                ...prev.seo,
-                                title: data.title,
-                            },
-                        }))
+                    value={settings.seo.title}
+                    change={(event) => {
+                        handleChange(
+                            'title',
+                            event.target.value,
+                        )
                     }}
-                    defaultValue={settings.seo.title}
                 />
 
                 <CustomTextField
@@ -37,16 +53,15 @@ export function SeoSettings({settings, setSettings}: SeoSettingsProps) {
                     name="description"
                     label="توضیحات SEO"
                     resource=""
-                    setData={(data) => {
-                        setSettings((prev) => ({
-                            ...prev,
-                            seo: {
-                                ...prev.seo,
-                                description: data.description,
-                            },
-                        }))
+                    value={
+                        settings.seo.description
+                    }
+                    change={(event) => {
+                        handleChange(
+                            'description',
+                            event.target.value,
+                        )
                     }}
-                    defaultValue={settings.seo.description}
                     multiline
                     minRows={3}
                 />
