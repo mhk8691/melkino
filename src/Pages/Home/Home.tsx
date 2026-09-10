@@ -5,11 +5,7 @@ import MainLayout from '../../Components/MainLayout'
 
 import DashboardLayout from '../Dashboard/DashboardLayout'
 import Profile from '../Profile/Profile'
-import {UserEdit} from '../Users/Edit/UserEdit'
-import {UsersType} from '../Users/Users'
 import {LogsList} from '../Logs/List/LogsList'
-import {UserRole} from '../Users/UsersType'
-import {fakeUsers} from '../Users/usersData'
 import UserPage from '../User/UserPage'
 import {AnnouncementCreate} from '../Announcement/Create/AnnouncementCreate'
 import {AnnouncementList} from '../Announcement/List/AnnouncementList'
@@ -33,20 +29,24 @@ import {AdvertisementsEdit} from '../Advertisements/Edit/AdvertisementsEdit'
 import {OwnersCreate} from '../Owners/Create/OwnersCreate'
 import {OwnersList} from '../Owners/List/OwnersList'
 import {OwnersEdit} from '../Owners/Edit/OwnersEdit'
-import { PartnersList } from '../Partners/List/PartnersList'
-import { PartnersEdit } from '../Partners/Edit/PartnersEdit'
-import { SuperUsersList } from '../SuperUsers/List/SuperUsersList'
-import { SuperUsersCreate } from '../SuperUsers/Create/SuperUsersCreate'
-import { SuperUsersEdit } from '../SuperUsers/Edit/SuperUsersEdit'
-import { AgencyCreate } from '../Agency/Create/AgencyCreate'
-import { AgencyList } from '../Agency/List/AgencyList'
-import { AgencyEdit } from '../Agency/Edit/AgencyEdit'
-import { UsersCreate } from '../User/Create/UsersCreate'
-import { UsersList } from '../User/List/UsersList'
-import { UsersEdit } from '../User/Edit/UsersEdit'
-import { AgentsCreate } from '../Agent/Create/AgentsCreate'
-import { AgentsList } from '../Agent/List/AgentsList'
-import { AgentsEdit } from '../Agent/Edit/AgentsEdit'
+import {PartnersList} from '../Partners/List/PartnersList'
+import {PartnersEdit} from '../Partners/Edit/PartnersEdit'
+import {SuperUsersList} from '../SuperUsers/List/SuperUsersList'
+import {SuperUsersCreate} from '../SuperUsers/Create/SuperUsersCreate'
+import {SuperUsersEdit} from '../SuperUsers/Edit/SuperUsersEdit'
+import {AgencyCreate} from '../Agency/Create/AgencyCreate'
+import {AgencyList} from '../Agency/List/AgencyList'
+import {AgencyEdit} from '../Agency/Edit/AgencyEdit'
+import {UsersCreate} from '../User/Create/UsersCreate'
+import {UsersList} from '../User/List/UsersList'
+import {UsersEdit} from '../User/Edit/UsersEdit'
+import {AgentsCreate} from '../Agent/Create/AgentsCreate'
+import {AgentsList} from '../Agent/List/AgentsList'
+import {AgentsEdit} from '../Agent/Edit/AgentsEdit'
+import {UsersType} from '../User/Users'
+import {LessorsCreate} from '../Lessors/Create/LessorsCreate'
+import {LessorsList} from '../Lessors/List/LessorsList'
+import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -121,68 +121,86 @@ export function Home(props) {
                             path="users/super-users/create"
                             element={<SuperUsersCreate data={data} setData={setData} />}
                         />
-                        <Route
-                            path="users/super-users"
-                            element={<SuperUsersList  />}
-                        />
+                        <Route path="users/super-users" element={<SuperUsersList />} />
                         <Route path="users/super-users/:id" element={<SuperUsersEdit />} />
-                          {/* ...........agencies.......... */}
+                        {/* ...........agencies.......... */}
                         <Route
                             path="users/agencies/create"
                             element={<AgencyCreate data={data} setData={setData} />}
                         />
-                        <Route
-                            path="users/agencies"
-                            element={<AgencyList  />}
-                        />
+                        <Route path="users/agencies" element={<AgencyList />} />
                         <Route path="users/agencies/:id" element={<AgencyEdit />} />
-                              {/* ...........user.......... */}
+                        {/* ...........user.......... */}
                         <Route
                             path="users/user/create"
                             element={<UsersCreate data={data} setData={setData} />}
                         />
-                        <Route
-                            path="users/user"
-                            element={<UsersList  />}
-                        />
+                        <Route path="users/user" element={<UsersList />} />
                         <Route path="users/user/:id" element={<UsersEdit />} />
-                              {/* ...........agents.......... */}
+                        {/* ...........agents.......... */}
                         <Route
                             path="users/agents/create"
-                            element={<AgentsCreate title='افزودن کارشناس' resource='agents' data={data} setData={setData} />}
+                            element={
+                                <AgentsCreate
+                                    title="افزودن کارشناس"
+                                    resource="agents"
+                                    data={data}
+                                    setData={setData}
+                                />
+                            }
                         />
                         <Route
                             path="users/agents"
-                            element={<AgentsList title='لیست کارشناسان' resource='agents'  />}
+                            element={<AgentsList title="لیست کارشناسان" resource="agents" />}
                         />
-                        <Route path="users/agents/:id" element={<AgentsEdit title='ویرایش کارشناس' resource='agents' />} />
+                        <Route
+                            path="users/agents/:id"
+                            element={<AgentsEdit title="ویرایش کارشناس" resource="agents" />}
+                        />
 
-                            {/* ...........accountant.......... */}
+                        {/* ...........accountant.......... */}
                         <Route
                             path="users/accountant/create"
-                            element={<AgentsCreate title='افزودن حسابدار' resource='accountant' data={data} setData={setData} />}
+                            element={
+                                <AgentsCreate
+                                    title="افزودن حسابدار"
+                                    resource="accountant"
+                                    data={data}
+                                    setData={setData}
+                                />
+                            }
                         />
                         <Route
                             path="users/accountant"
-                            element={<AgentsList title='لیست حسابداران' resource='accountant'  />}
+                            element={<AgentsList title="لیست حسابداران" resource="accountant" />}
                         />
-                        <Route path="users/accountant/:id" element={<AgentsEdit title='ویرایش حسابدار' resource='accountant' />} />
+                        <Route
+                            path="users/accountant/:id"
+                            element={<AgentsEdit title="ویرایش حسابدار" resource="accountant" />}
+                        />
 
-                         {/* ...........secretary.......... */}
+                        {/* ...........secretary.......... */}
                         <Route
                             path="users/secretary/create"
-                            element={<AgentsCreate title='افزودن منشی' resource='secretary' data={data} setData={setData} />}
+                            element={
+                                <AgentsCreate
+                                    title="افزودن منشی"
+                                    resource="secretary"
+                                    data={data}
+                                    setData={setData}
+                                />
+                            }
                         />
                         <Route
                             path="users/secretary"
-                            element={<AgentsList title='لیست منشی ها' resource='secretary'  />}
+                            element={<AgentsList title="لیست منشی ها" resource="secretary" />}
                         />
-                        <Route path="users/secretary/:id" element={<AgentsEdit title='ویرایش منشی' resource='secretary' />} />
+                        <Route
+                            path="users/secretary/:id"
+                            element={<AgentsEdit title="ویرایش منشی" resource="secretary" />}
+                        />
 
                         <Route path="users" element={<UserPage />} />
-
-
-                    
 
                         {/* ...........logs.......... */}
 
@@ -239,10 +257,17 @@ export function Home(props) {
                         />
                         <Route path="advertisements" element={<AdvertisementsList />} />
                         <Route path="advertisements/:id" element={<AdvertisementsEdit />} />
-                          {/* ...........Partners.......... */}
-                      
+                        {/* ...........Partners.......... */}
+
                         <Route path="partners" element={<PartnersList />} />
                         <Route path="partners/:id" element={<PartnersEdit />} />
+                        {/* ...........lessors.......... */}
+                        <Route
+                            path="lessors/create"
+                            element={<LessorsCreate data={data} setData={setData} />}
+                        />
+                        <Route path="lessors" element={<LessorsList />} />
+                        <Route path="lessors/:id" element={<LessorsEdit />} />
                     </Routes>
                 </Box>
             </Box>

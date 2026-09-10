@@ -3,8 +3,8 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {setUtil} from '../../redux/UtilSlice'
-import {Users, UsersType} from '../Users/Users'
 import { ParamType } from '../../Components/Filter/CustomFilter'
+import { UsersType } from '../User/Users'
 
 export default function Profile() {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
