@@ -17,9 +17,10 @@ const RESOURCE = 'owners'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام', 'name'),
-    createTableHeadCells('تلفن', 'phone'),
-    createTableHeadCells('منطقه', 'area'),
+    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
+    createTableHeadCells('تلفن', 'phone_number'),
+    createTableHeadCells('شهر', 'cities'),
+    createTableHeadCells('محله', 'neighborhoods'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -40,34 +41,19 @@ export function OwnersList() {
         data: [
             {
                 id: 1,
-                name: 'علی رضایی',
-                phone: '09121234567',
-                area: 'منطقه 2',
+                full_name: 'علی رضایی',
+                phone_number: '09121234567',
+                cities: 'قم',
+                neighborhoods:'آزادگان'
             },
             {
                 id: 2,
-                name: 'محمد احمدی',
-                phone: '09129876543',
-                area: 'منطقه 5',
+                full_name: 'محمد احمدی',
+                phone_number: '09129876543',
+                cities: 'تهران',
+                neighborhoods:'پیروزی'
             },
-            {
-                id: 3,
-                name: 'سارا کریمی',
-                phone: '09351234567',
-                area: 'منطقه 1',
-            },
-            {
-                id: 4,
-                name: 'رضا مرادی',
-                phone: '09105555555',
-                area: 'منطقه 4',
-            },
-            {
-                id: 5,
-                name: 'نگار حسینی',
-                phone: '09221234567',
-                area: 'منطقه 7',
-            },
+        
         ],
     })
     const dispatch = useDispatch()
@@ -105,7 +91,7 @@ export function OwnersList() {
         <ListPage
             header="مدیریت مالکین"
             href={RESOURCE + '/create'}
-            searchField="name"
+            searchField="full_name"
             searchText="نام"
             nofilter
             setParams={setSearch}
@@ -116,7 +102,7 @@ export function OwnersList() {
             filtersData={[]}
             createModal={OwnersCreate}
             defaultState={{
-                name: '',
+                full_name: '',
             }}
         >
             <CustomTable
@@ -165,7 +151,7 @@ export function OwnersList() {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                {item.name || '--'}
+                                {item.full_name || '--'}
                             </Typography>
                         </TableCell>
 
@@ -182,7 +168,7 @@ export function OwnersList() {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                {item.phone || '--'}
+                                {item.phone_number || '--'}
                             </Typography>
                         </TableCell>
 
@@ -199,7 +185,23 @@ export function OwnersList() {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                {item.area || '--'}
+                                {item.cities || '--'}
+                            </Typography>
+                        </TableCell>
+                              <TableCell>
+                            <Typography
+                                variant="body2"
+                                fontSize={{
+                                    xs: '13px',
+                                    sm: '14px',
+                                    md: '16px',
+                                    xl: '17px',
+                                }}
+                                sx={{
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {item.neighborhoods || '--'}
                             </Typography>
                         </TableCell>
                     </>
