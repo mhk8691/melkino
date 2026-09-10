@@ -1,10 +1,12 @@
 import {Stack} from '@mui/material'
+
 import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {GridProducer} from '../../Components/Table/GridProducer'
 import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 import {toSelectOptions} from '../../Components/PropertyRecordForm/utils'
 import {PROPERTY_TYPE_OPTIONS} from '../../Components/PropertyRecordForm/constants'
 import {CustomAutocomplete} from '../../Components/Input/CustomAutoComplete'
+import DatePickerFilter from '../../Components/Filter/DatePicker'
 
 export type CustomersType = {
     id: number
@@ -14,7 +16,6 @@ export type CustomersType = {
     propertyType: string
     minArea: string
     maxArea: string
-    budget: string
     rooms: string
     neighborhoods: string[]
     note: string
@@ -23,6 +24,32 @@ export type CustomersType = {
     floors: string
     units: string
     area: string
+
+    // =========================
+    // اطلاعات مالی
+    // =========================
+
+    barterAmount: string
+    cashAmount: string
+    initialPayment: string
+
+    remainingAmount1: string
+    remainingDate1: string
+
+    remainingAmount2: string
+    remainingDate2: string
+
+    remainingAmount3: string
+    remainingDate3: string
+
+    remainingAmount4: string
+    remainingDate4: string
+
+    remainingAmount5: string
+    remainingDate5: string
+
+    remainingAmount6: string
+    remainingDate6: string
 }
 
 export function Customers({
@@ -36,6 +63,382 @@ export function Customers({
     resource: string
     editMode?: boolean
 }) {
+    const budgetFields = () => {
+        switch (customers.status) {
+            // ============================================
+            // تهاتر
+            // ============================================
+            case 'تهاتر':
+                return [
+                    <CustomTextField
+                        key="barterAmount"
+                        name="barterAmount"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان تهاتر"
+                        defaultValue={customers.barterAmount}
+                    />,
+
+                    <CustomTextField
+                        key="cashAmount"
+                        name="cashAmount"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان نقد / اختلاف تهاتر"
+                        defaultValue={customers.cashAmount}
+                    />,
+                ]
+
+            // ============================================
+            // خرید نقد
+            // ============================================
+            case 'خرید نقد':
+                return [
+                    <CustomTextField
+                        key="cashAmount"
+                        name="cashAmount"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان نقدینگی"
+                        defaultValue={customers.cashAmount}
+                    />,
+                ]
+
+            // ============================================
+            // خرید با شرایط یک ماهه
+            // ============================================
+            case 'خرید با شرایط یک ماهه':
+                return [
+                    <CustomTextField
+                        key="initialPayment"
+                        name="initialPayment"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان پرداخت اولیه"
+                        defaultValue={customers.initialPayment}
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount1"
+                        name="remainingAmount1"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۱"
+                        defaultValue={customers.remainingAmount1}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate1"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت باقی‌مانده ۱'}}
+                        value={customers.remainingDate1}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate1: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount2"
+                        name="remainingAmount2"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۲"
+                        defaultValue={customers.remainingAmount2}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate2"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت باقی‌مانده ۲'}}
+                        value={customers.remainingDate2}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate2: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount3"
+                        name="remainingAmount3"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۳"
+                        defaultValue={customers.remainingAmount3}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate3"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت باقی‌مانده ۳'}}
+                        value={customers.remainingDate3}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate3: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+                ]
+
+            // ============================================
+            // خرید با شرایط تا سه ماهه
+            // ============================================
+            case 'خرید با شرایط تا سه ماهه':
+                return [
+                    <CustomTextField
+                        key="initialPayment"
+                        name="initialPayment"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان پرداخت اولیه"
+                        defaultValue={customers.initialPayment}
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount1"
+                        name="remainingAmount1"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۱"
+                        defaultValue={customers.remainingAmount1}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate1"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۱'}}
+                        value={customers.remainingDate1}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate1: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount2"
+                        name="remainingAmount2"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۲"
+                        defaultValue={customers.remainingAmount2}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate2"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۲'}}
+                        value={customers.remainingDate2}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate2: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount3"
+                        name="remainingAmount3"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۳"
+                        defaultValue={customers.remainingAmount3}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate3"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۳'}}
+                        value={customers.remainingDate3}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate3: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount4"
+                        name="remainingAmount4"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۴"
+                        defaultValue={customers.remainingAmount4}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate4"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۴'}}
+                        value={customers.remainingDate4}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate4: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount5"
+                        name="remainingAmount5"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۵"
+                        defaultValue={customers.remainingAmount5}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate5"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۵'}}
+                        value={customers.remainingDate5}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate5: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount6"
+                        name="remainingAmount6"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۶"
+                        defaultValue={customers.remainingAmount6}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate6"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۶'}}
+                        value={customers.remainingDate6}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate6: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+                ]
+
+            // ============================================
+            // نقد و تهاتر
+            // ============================================
+            case 'نقد و تهاتر':
+                return [
+                    <CustomTextField
+                        key="barterAmount"
+                        name="barterAmount"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان تهاتر"
+                        defaultValue={customers.barterAmount}
+                    />,
+
+                    <CustomTextField
+                        key="cashAmount"
+                        name="cashAmount"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="میزان نقدینگی"
+                        defaultValue={customers.cashAmount}
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount1"
+                        name="remainingAmount1"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۱"
+                        defaultValue={customers.remainingAmount1}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate1"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۱'}}
+                        value={customers.remainingDate1}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate1: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount2"
+                        name="remainingAmount2"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۲"
+                        defaultValue={customers.remainingAmount2}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate2"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۲'}}
+                        value={customers.remainingDate2}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate2: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+
+                    <CustomTextField
+                        key="remainingAmount3"
+                        name="remainingAmount3"
+                        setData={setCustomers}
+                        resource={resource}
+                        label="مبلغ باقی‌مانده ۳"
+                        defaultValue={customers.remainingAmount3}
+                    />,
+
+                    <DatePickerFilter
+                        key="remainingDate3"
+                        mode="controlled"
+                        item={{label: 'تاریخ پرداخت ۳'}}
+                        value={customers.remainingDate3}
+                        onChange={(value) =>
+                            setCustomers((prev) => ({
+                                ...prev,
+                                remainingDate3: value ?? '',
+                            }))
+                        }
+                        withTime
+                    />,
+                ]
+
+            default:
+                return []
+        }
+    }
+
     return (
         <Stack>
             {customers && (
@@ -57,6 +460,7 @@ export function Customers({
                             : []),
 
                         <CustomTextField
+                            key="full_name"
                             name="full_name"
                             setData={setCustomers}
                             resource={resource}
@@ -65,6 +469,7 @@ export function Customers({
                         />,
 
                         <CustomTextField
+                            key="phone_number"
                             name="phone_number"
                             setData={setCustomers}
                             resource={resource}
@@ -77,7 +482,7 @@ export function Customers({
                             name="status"
                             setData={setCustomers}
                             resource={resource}
-                            label="وضعیت"
+                            label="وضعیت خرید"
                             defaultValue={customers.status}
                             options={toSelectOptions([
                                 'تهاتر',
@@ -87,6 +492,12 @@ export function Customers({
                                 'نقد و تهاتر',
                             ])}
                         />,
+
+                        // ============================================
+                        // فیلدهای مالی Dynamic
+                        // ============================================
+
+                        ...budgetFields(),
 
                         <CustomSelectField
                             key="propertyType"
@@ -99,6 +510,7 @@ export function Customers({
                         />,
 
                         <CustomTextField
+                            key="minArea"
                             name="minArea"
                             setData={setCustomers}
                             resource={resource}
@@ -108,6 +520,7 @@ export function Customers({
                         />,
 
                         <CustomTextField
+                            key="maxArea"
                             name="maxArea"
                             setData={setCustomers}
                             resource={resource}
@@ -117,14 +530,7 @@ export function Customers({
                         />,
 
                         <CustomTextField
-                            name="budget"
-                            setData={setCustomers}
-                            resource={resource}
-                            label="بودجه"
-                            defaultValue={customers.budget}
-                        />,
-
-                        <CustomTextField
+                            key="rooms"
                             name="rooms"
                             setData={setCustomers}
                             resource={resource}
@@ -132,6 +538,7 @@ export function Customers({
                             defaultValue={customers.rooms}
                             inputType="number"
                         />,
+
                         <CustomSelectField
                             key="cities"
                             name="cities"
@@ -141,6 +548,7 @@ export function Customers({
                             defaultValue={customers.cities}
                             options={toSelectOptions(['قم'])}
                         />,
+
                         <CustomSelectField
                             key="area"
                             name="area"
@@ -148,8 +556,18 @@ export function Customers({
                             resource={resource}
                             label="منطقه"
                             defaultValue={customers.area}
-                            options={toSelectOptions(['1', '2', '3', '4', '5', '6', '7', '8'])}
+                            options={toSelectOptions([
+                                '1',
+                                '2',
+                                '3',
+                                '4',
+                                '5',
+                                '6',
+                                '7',
+                                '8',
+                            ])}
                         />,
+
                         <CustomAutocomplete
                             key="neighborhoods"
                             name="neighborhoods"
@@ -184,10 +602,15 @@ export function Customers({
                             resource={resource}
                             label="وضعیت اشتغال"
                             defaultValue={customers.employmentStatus}
-                            options={toSelectOptions(['تخلیه', 'مالک', 'مستاجر'])}
+                            options={toSelectOptions([
+                                'تخلیه',
+                                'مالک',
+                                'مستاجر',
+                            ])}
                         />,
 
                         <CustomTextField
+                            key="floors"
                             name="floors"
                             setData={setCustomers}
                             resource={resource}
@@ -195,7 +618,9 @@ export function Customers({
                             defaultValue={customers.floors}
                             inputType="number"
                         />,
+
                         <CustomTextField
+                            key="units"
                             name="units"
                             setData={setCustomers}
                             resource={resource}
@@ -205,6 +630,7 @@ export function Customers({
                         />,
 
                         <CustomTextField
+                            key="note"
                             name="note"
                             setData={setCustomers}
                             resource={resource}

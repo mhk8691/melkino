@@ -19,7 +19,7 @@ const tableHeadCells = [
     createTableHeadCells('وضعیت', 'status'),
     createTableHeadCells('نوع ملک', 'propertyType'),
     createTableHeadCells('متراژ', 'areaRange'),
-    createTableHeadCells('بودجه', 'budget'),
+    createTableHeadCells('شرایط مالی', 'financial'),
     createTableHeadCells('اتاق', 'rooms'),
     createTableHeadCells('شهر', 'cities'),
     createTableHeadCells('منطقه', 'area'),
@@ -34,7 +34,7 @@ const queryNames = tableHeadCells.map(cell => ({
 
 export function CustomersList() {
     const [search, setSearch] = useQueryParams(
-        createQueryParam(queryNames),
+        createQueryParam(queryNames)
     )
 
     const [loading] = useState(false)
@@ -50,11 +50,10 @@ export function CustomersList() {
                 id: 1,
                 full_name: 'علی رضایی',
                 phone_number: '09121234567',
-                status: 'فعال',
+                status: 'تهاتر',
                 propertyType: 'آپارتمان',
                 minArea: '80',
                 maxArea: '150',
-                budget: '5000000000',
                 rooms: '2',
                 neighborhoods: ['سعادت آباد'],
                 note: 'به دنبال آپارتمان دو خوابه با پارکینگ است.',
@@ -63,16 +62,33 @@ export function CustomersList() {
                 floors: '5',
                 units: '2',
                 area: '1',
+
+                barterAmount: '3000000000',
+                cashAmount: '2000000000',
+                initialPayment: '',
+
+                remainingAmount1: '',
+                remainingDate1: '',
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
+
             {
                 id: 2,
                 full_name: 'محمد احمدی',
                 phone_number: '09129876543',
-                status: 'فعال',
+                status: 'خرید نقد',
                 propertyType: 'آپارتمان',
                 minArea: '70',
                 maxArea: '120',
-                budget: '300000000',
                 rooms: '2',
                 neighborhoods: ['پونک'],
                 note: 'ترجیحاً واحد نوساز و نزدیک مترو باشد.',
@@ -81,16 +97,33 @@ export function CustomersList() {
                 floors: '4',
                 units: '3',
                 area: '2',
+
+                barterAmount: '',
+                cashAmount: '5000000000',
+                initialPayment: '',
+
+                remainingAmount1: '',
+                remainingDate1: '',
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
+
             {
                 id: 3,
                 full_name: 'سارا کریمی',
                 phone_number: '09351234567',
-                status: 'بالقوه',
+                status: 'خرید با شرایط یک ماهه',
                 propertyType: 'ویلایی',
                 minArea: '150',
                 maxArea: '300',
-                budget: '10000000000',
                 rooms: '3',
                 neighborhoods: ['لواسان'],
                 note: 'به دنبال ویلای مستقل با حیاط بزرگ است.',
@@ -99,16 +132,36 @@ export function CustomersList() {
                 floors: '2',
                 units: '1',
                 area: '3',
+
+                barterAmount: '',
+                cashAmount: '',
+                initialPayment: '4000000000',
+
+                remainingAmount1: '2000000000',
+                remainingDate1: '1405/07/01',
+
+                remainingAmount2: '2000000000',
+                remainingDate2: '1405/07/15',
+
+                remainingAmount3: '1000000000',
+                remainingDate3: '1405/07/30',
+
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
+
             {
                 id: 4,
                 full_name: 'رضا مرادی',
                 phone_number: '09105555555',
-                status: 'فعال',
+                status: 'خرید با شرایط تا سه ماهه',
                 propertyType: 'آپارتمان',
                 minArea: '90',
                 maxArea: '130',
-                budget: '7000000000',
                 rooms: '2',
                 neighborhoods: ['تهرانپارس'],
                 note: 'قصد فروش واحد مسکونی خود را دارد.',
@@ -117,16 +170,38 @@ export function CustomersList() {
                 floors: '6',
                 units: '2',
                 area: '4',
+
+                barterAmount: '',
+                cashAmount: '',
+                initialPayment: '3000000000',
+
+                remainingAmount1: '1000000000',
+                remainingDate1: '1405/07/01',
+
+                remainingAmount2: '1000000000',
+                remainingDate2: '1405/07/15',
+
+                remainingAmount3: '1000000000',
+                remainingDate3: '1405/08/01',
+
+                remainingAmount4: '1000000000',
+                remainingDate4: '1405/08/15',
+
+                remainingAmount5: '1000000000',
+                remainingDate5: '1405/09/01',
+
+                remainingAmount6: '1000000000',
+                remainingDate6: '1405/09/15',
             },
+
             {
                 id: 5,
                 full_name: 'نگار حسینی',
                 phone_number: '09221234567',
-                status: 'بسته',
+                status: 'نقد و تهاتر',
                 propertyType: 'آپارتمان',
                 minArea: '60',
                 maxArea: '100',
-                budget: '1000000000',
                 rooms: '1',
                 neighborhoods: ['جنت آباد'],
                 note: 'در صورت پیدا شدن گزینه مناسب مجدداً پیگیری شود.',
@@ -135,6 +210,26 @@ export function CustomersList() {
                 floors: '3',
                 units: '4',
                 area: '5',
+
+                barterAmount: '1500000000',
+                cashAmount: '1000000000',
+                initialPayment: '',
+
+                remainingAmount1: '500000000',
+                remainingDate1: '1405/07/10',
+
+                remainingAmount2: '500000000',
+                remainingDate2: '1405/08/10',
+
+                remainingAmount3: '500000000',
+                remainingDate3: '1405/09/10',
+
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
         ],
     })
@@ -191,7 +286,6 @@ export function CustomersList() {
                             </CellText>
                         </TableCell>
 
-
                         {/* وضعیت */}
                         <TableCell key={`${item.id}-status`}>
                             <CellText>
@@ -206,8 +300,6 @@ export function CustomersList() {
                             </CellText>
                         </TableCell>
 
-                    
-
                         {/* متراژ */}
                         <TableCell key={`${item.id}-areaRange`}>
                             <CellText>
@@ -221,13 +313,9 @@ export function CustomersList() {
                             </CellText>
                         </TableCell>
 
-                        {/* بودجه */}
-                        <TableCell key={`${item.id}-budget`}>
-                            <CellText>
-                                {item.budget
-                                    ? `${formatNumber(item.budget)} تومان`
-                                    : '--'}
-                            </CellText>
+                        {/* شرایط مالی */}
+                        <TableCell key={`${item.id}-financial`}>
+                            <FinancialCell customer={item} />
                         </TableCell>
 
                         {/* تعداد اتاق */}
@@ -268,6 +356,68 @@ export function CustomersList() {
             />
         </ListPage>
     )
+}
+
+function FinancialCell({
+    customer,
+}: {
+    customer: CustomersType
+}) {
+    switch (customer.status) {
+        case 'تهاتر':
+            return (
+                <CellText>
+                    {customer.barterAmount
+                        ? `تهاتر: ${formatNumber(customer.barterAmount)} تومان`
+                        : '--'}
+                    {customer.cashAmount
+                        ? ` | نقد: ${formatNumber(customer.cashAmount)} تومان`
+                        : ''}
+                </CellText>
+            )
+
+        case 'خرید نقد':
+            return (
+                <CellText>
+                    {customer.cashAmount
+                        ? `نقدینگی: ${formatNumber(customer.cashAmount)} تومان`
+                        : '--'}
+                </CellText>
+            )
+
+        case 'خرید با شرایط یک ماهه':
+            return (
+                <CellText>
+                    {customer.initialPayment
+                        ? `اولیه: ${formatNumber(customer.initialPayment)} تومان`
+                        : '--'}
+                </CellText>
+            )
+
+        case 'خرید با شرایط تا سه ماهه':
+            return (
+                <CellText>
+                    {customer.initialPayment
+                        ? `اولیه: ${formatNumber(customer.initialPayment)} تومان`
+                        : '--'}
+                </CellText>
+            )
+
+        case 'نقد و تهاتر':
+            return (
+                <CellText>
+                    {customer.barterAmount
+                        ? `تهاتر: ${formatNumber(customer.barterAmount)} تومان`
+                        : '--'}
+                    {customer.cashAmount
+                        ? ` | نقد: ${formatNumber(customer.cashAmount)} تومان`
+                        : ''}
+                </CellText>
+            )
+
+        default:
+            return <CellText>--</CellText>
+    }
 }
 
 function formatNumber(value: string): string {
