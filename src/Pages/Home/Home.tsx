@@ -47,6 +47,9 @@ import {UsersType} from '../User/Users'
 import {LessorsCreate} from '../Lessors/Create/LessorsCreate'
 import {LessorsList} from '../Lessors/List/LessorsList'
 import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
+import { TenantsCreate } from '../Tenants/Create/TenantsCreate'
+import { TenantsList } from '../Tenants/List/TenantsList'
+import { TenantsEdit } from '../Tenants/Edit/TenantsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -268,6 +271,13 @@ export function Home(props) {
                         />
                         <Route path="lessors" element={<LessorsList />} />
                         <Route path="lessors/:id" element={<LessorsEdit />} />
+                          {/* ...........tenants.......... */}
+                        <Route
+                            path="tenants/create"
+                            element={<TenantsCreate data={data} setData={setData} />}
+                        />
+                        <Route path="tenants" element={<TenantsList />} />
+                        <Route path="tenants/:id" element={<TenantsEdit />} />
                     </Routes>
                 </Box>
             </Box>
