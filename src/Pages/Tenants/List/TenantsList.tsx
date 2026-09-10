@@ -188,7 +188,7 @@ export function TenantsList() {
     return (
         <ListPage
             header="مدیریت مستأجرها"
-            href={`/${RESOURCE}/create`}
+            href={`/landlord-tenant/tenants/create`}
             searchField="full_name"
             searchText="نام"
             nofilter

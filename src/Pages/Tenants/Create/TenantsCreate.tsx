@@ -16,8 +16,8 @@ export function TenantsCreate({
             title={'افزودن مستاجر'}
             resource={resource + '/'}
             isFormData={true}
-            redirect={resource}
             formDetails={data}
+            redirect={'/landlord-tenant/tenants'}
         >
             <Tenants tenants={data} setTenants={setData} resource={resource} />
         </CreatePage>

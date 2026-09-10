@@ -79,7 +79,7 @@ export function LessorsList() {
     return (
         <ListPage
             header={'مدیریت موجر ها'}
-            href={RESOURCE + '/create'}
+            href={ '/landlord-tenant/lessors/create'}
             searchField="title"
             searchText="نام"
             nofilter

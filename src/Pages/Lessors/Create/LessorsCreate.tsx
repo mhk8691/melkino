@@ -16,7 +16,7 @@ export function LessorsCreate({
             title={'افزودن موجر'}
             resource={resource + '/'}
             isFormData={true}
-            redirect={resource}
+            redirect={'landlord-tenant/lessors'}
             formDetails={data}
         >
             <Lessors lessors={data} setLessors={setData} resource={resource} />

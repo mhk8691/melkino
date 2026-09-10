@@ -16,6 +16,7 @@ export function LessorsEdit() {
             formDetails={lessors}
             initialData={state.row}
             isFormData={true}
+            redirect={'/landlord-tenant/lessors'}
         >
             <Lessors lessors={lessors} setLessors={setLessors} resource={resource} editMode  />
         </EditPage>

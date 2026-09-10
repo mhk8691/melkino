@@ -16,6 +16,7 @@ export function TenantsEdit() {
             formDetails={tenants}
             initialData={state.row}
             isFormData={true}
+            redirect={'/landlord-tenant/tenants'}
         >
             <Tenants tenants={tenants} setTenants={setTenants} resource={resource} editMode />
         </EditPage>

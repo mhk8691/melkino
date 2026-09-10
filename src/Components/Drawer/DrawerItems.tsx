@@ -15,7 +15,7 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import HandshakeIcon from '@mui/icons-material/Handshake'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-
+import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
 
 export type DrawerItemType = {
@@ -156,6 +156,13 @@ export const drawerItems: DrawerItemType[] = [
         link: 'advertisements',
         role: 'all',
         icon: (<LocalOfferIcon sx={iconStyle} />
+        ),
+    },
+     {
+        title: 'موجر و مستاجر',
+        link: 'landlord-tenant',
+        role: 'all',
+        icon: (<VpnKeyIcon sx={iconStyle} />
         ),
     },
     {

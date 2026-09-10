@@ -50,6 +50,7 @@ import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
 import { TenantsCreate } from '../Tenants/Create/TenantsCreate'
 import { TenantsList } from '../Tenants/List/TenantsList'
 import { TenantsEdit } from '../Tenants/Edit/TenantsEdit'
+import RoleSelectPage from '../Lessors/RoleCard'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -266,18 +267,19 @@ export function Home(props) {
                         <Route path="partners/:id" element={<PartnersEdit />} />
                         {/* ...........lessors.......... */}
                         <Route
-                            path="lessors/create"
+                            path="landlord-tenant/lessors/create"
                             element={<LessorsCreate data={data} setData={setData} />}
                         />
-                        <Route path="lessors" element={<LessorsList />} />
-                        <Route path="lessors/:id" element={<LessorsEdit />} />
+                        <Route path="landlord-tenant/lessors" element={<LessorsList />} />
+                        <Route path="landlord-tenant/lessors/:id" element={<LessorsEdit />} />
                           {/* ...........tenants.......... */}
                         <Route
-                            path="tenants/create"
+                            path="landlord-tenant/tenants/create"
                             element={<TenantsCreate data={data} setData={setData} />}
                         />
-                        <Route path="tenants" element={<TenantsList />} />
-                        <Route path="tenants/:id" element={<TenantsEdit />} />
+                        <Route path="landlord-tenant/tenants" element={<TenantsList />} />
+                        <Route path="landlord-tenant/tenants/:id" element={<TenantsEdit />} />
+                        <Route path="landlord-tenant" element={<RoleSelectPage />} />
                     </Routes>
                 </Box>
             </Box>
