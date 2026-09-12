@@ -130,6 +130,7 @@ export function UsersList() {
             nofilter
             setParams={setSearch}
             params={search}
+            isCsvExport
             resource={RESOURCE}
             getList={() => {}}
             filtersData={[]}

@@ -131,6 +131,7 @@ export function SuperUsersList() {
     return (
         <ListPage
             header={'مدیریت سوپر ادمین'}
+            isCsvExport
             href={RESOURCE + '/create'}
             searchField="firstName"
             searchText="نام"

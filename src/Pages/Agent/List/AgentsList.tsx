@@ -152,6 +152,7 @@ export function AgentsList({title, resource}: {title: string; resource: string})
             getList={() => {}}
             filtersData={[]}
             createModal={AgentsCreate}
+            isCsvExport
             defaultState={{
                 firstName: '',
             }}

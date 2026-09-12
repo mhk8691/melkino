@@ -222,6 +222,7 @@ export function AgencyList() {
             params={search}
             resource={RESOURCE}
             getList={() => {}}
+            isCsvExport
             // getList={getAgency}
             filtersData={[]}
             createModal={AgencyCreate}

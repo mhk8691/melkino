@@ -194,7 +194,8 @@ export function LogsList() {
             setParams={setSearch}
             params={search}
             resource={resource}
-            // getList={getLogs}
+            // getList={getLogs}\
+            isCsvExport
             getList={()=>{}}
             filtersData={queryNames}
             noCreate
