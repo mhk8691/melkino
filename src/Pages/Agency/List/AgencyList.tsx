@@ -1,4 +1,4 @@
-import {Avatar, Typography} from '@mui/material'
+import {Avatar, Box, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -14,7 +14,10 @@ import {setUtil} from '../../../redux/UtilSlice'
 import profileImage from '../../../Images/user.png'
 
 import {AgencyType} from '../Agency'
-import { AgencyCreate } from '../Create/AgencyCreate'
+import {AgencyCreate} from '../Create/AgencyCreate'
+import {ViewModeToggle} from '../../User/ViewModeToggle'
+import {UserCardGrid} from '../../User/UserCardGrid'
+import { useViewMode } from '../../../Core/useViewMode'
 
 const RESOURCE = 'agencies'
 
@@ -37,11 +40,10 @@ const queryNames = tableHeadCells.map((cell) => ({
 }))
 
 export function AgencyList() {
-    const [search, setSearch] = useQueryParams(
-        createQueryParam(queryNames),
-    )
+    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
 
     const [loading, setLoading] = useState(false)
+    const [viewMode, setViewMode] = useViewMode(RESOURCE)
 
     const [agency, setAgency] = useState<{
         total_results: number
@@ -227,179 +229,186 @@ export function AgencyList() {
                 agencyName: '',
             }}
         >
-            <CustomTable
-                title="املاک"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={agency.data}
-                count={agency.total_results}
-                getList={() => {}}
-                // getList={getAgency}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                // handleSort={getAgency}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={agency.data.map((item) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end',  my: 2 , px:1}}>
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </Box>
+            {viewMode === 'card' ? (
+                <UserCardGrid rows={agency.data} />
+            ) : (
+                <CustomTable
+                    title="املاک"
+                    resource={RESOURCE}
+                    headCells={tableHeadCells}
+                    rows={agency.data}
+                    count={agency.total_results}
+                    getList={() => {}}
+                    // getList={getAgency}
+                    params={search}
+                    setParams={setSearch}
+                    handleSort={() => {}}
+                    // handleSort={getAgency}
+                    loading={loading}
+                    hasDetail={true}
+                    tableBodyCells={agency.data.map((item) => (
+                        <>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.id || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Avatar
-                                src={item.logo || item.profileImage || ''}
-                                alt={item.agencyName}
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                }}
-                            />
-                        </TableCell>
+                            <TableCell>
+                                <Avatar
+                                    src={item.logo || item.profileImage || ''}
+                                    alt={item.agencyName}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                    }}
+                                />
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.agencyName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.agencyName || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.firstName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.firstName || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.lastName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.lastName || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.phoneNumber || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.phoneNumber || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.postalCode || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.postalCode || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.maritalStatus === 'married'
-                                    ? 'متأهل'
-                                    : item.maritalStatus === 'single'
-                                      ? 'مجرد'
-                                      : '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.maritalStatus === 'married'
+                                        ? 'متأهل'
+                                        : item.maritalStatus === 'single'
+                                          ? 'مجرد'
+                                          : '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.officePropertyStatus === 'owner'
-                                    ? 'مالک'
-                                    : item.officePropertyStatus === 'tenant'
-                                      ? 'مستأجر'
-                                      : '--'}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.officePropertyStatus === 'owner'
+                                        ? 'مالک'
+                                        : item.officePropertyStatus === 'tenant'
+                                          ? 'مستأجر'
+                                          : '--'}
+                                </Typography>
+                            </TableCell>
+                        </>
+                    ))}
+                />
+            )}
         </ListPage>
     )
 }

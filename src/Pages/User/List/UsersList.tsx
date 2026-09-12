@@ -1,4 +1,4 @@
-import {Avatar, Typography} from '@mui/material'
+import {Avatar, Box, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -8,7 +8,10 @@ import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {UsersType} from '../Users'
 import profileImage from '../../../Images/user.png'
-import { UsersCreate } from '../Create/UsersCreate'
+import {UsersCreate} from '../Create/UsersCreate'
+import {UserCardGrid} from '../UserCardGrid'
+import {ViewModeToggle} from '../ViewModeToggle'
+import {useViewMode} from '../../../Core/useViewMode'
 
 const RESOURCE = 'user'
 
@@ -34,11 +37,10 @@ const queryNames = tableHeadCells.map((cell) => ({
 }))
 
 export function UsersList() {
-    const [search, setSearch] = useQueryParams(
-        createQueryParam(queryNames),
-    )
+    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
 
     const [loading] = useState(false)
+    const [viewMode, setViewMode] = useViewMode(RESOURCE)
 
     const [users] = useState<{
         total_results: number
@@ -147,224 +149,230 @@ export function UsersList() {
                 role: 'regular_user',
             }}
         >
-            <CustomTable
-                title="کاربران عادی"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={users.data}
-                count={users.total_results}
-                getList={() => {}}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={users.data.map((item) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2 , px:1}}>
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </Box>
+
+            {viewMode === 'card' ? (
+                <UserCardGrid rows={users.data} />
+            ) : (
+                <CustomTable
+                    title="کاربران عادی"
+                    resource={RESOURCE}
+                    headCells={tableHeadCells}
+                    rows={users.data}
+                    count={users.total_results}
+                    getList={() => {}}
+                    params={search}
+                    setParams={setSearch}
+                    handleSort={() => {}}
+                    loading={loading}
+                    hasDetail={true}
+                    tableBodyCells={users.data.map((item) => (
+                        <>
                             <TableCell>
-                            <Avatar
-                                src={item.profileImage || ''}
-                                alt={`${item.firstName} ${item.lastName}`}
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                }}
-                            />
-                        </TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.id || '--'}
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Avatar
+                                    src={item.profileImage || ''}
+                                    alt={`${item.firstName} ${item.lastName}`}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                    }}
+                                />
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.firstName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.firstName || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.lastName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.lastName || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.phoneNumber || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.phoneNumber || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.nationalId || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.nationalId || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.birthDate || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.birthDate || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.city || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.city || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    maxWidth: '300px',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
-                                {item.address || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        maxWidth: '300px',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                    }}
+                                >
+                                    {item.address || '--'}
+                                </Typography>
+                            </TableCell>
 
-                    
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.createdAt || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.createdAt || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.updatedAt || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.updatedAt || '--'}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.role || '--'}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.role || '--'}
+                                </Typography>
+                            </TableCell>
+                        </>
+                    ))}
+                />
+            )}
         </ListPage>
     )
 }

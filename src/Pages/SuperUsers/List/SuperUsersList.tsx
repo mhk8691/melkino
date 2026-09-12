@@ -13,6 +13,9 @@ import {useDispatch} from 'react-redux'
 import {SuperUsersType} from '../SuperUsers'
 import {SuperUsersCreate} from '../Create/SuperUsersCreate'
 import profileImage from '../../../Images/user.png'
+import { useViewMode } from '../../../Core/useViewMode'
+import { ViewModeToggle } from '../../User/ViewModeToggle'
+import { UserCardGrid } from '../../User/UserCardGrid'
 const RESOURCE = 'super-users'
 
 const tableHeadCells = [
@@ -33,6 +36,7 @@ const queryNames = tableHeadCells.map((cell) => ({
 export function SuperUsersList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
+    const [viewMode, setViewMode] = useViewMode(RESOURCE)
 
     const [superUsers, setSuperUsers] = useState<{
         total_results: number
@@ -142,6 +146,11 @@ export function SuperUsersList() {
                 name: '',
             }}
         >
+              <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2 , px:1}}>
+                            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+                        </Box>
+            {
+                viewMode === 'card' ? <UserCardGrid rows={superUsers.data} />:
             <CustomTable
                 title="سوپر یوزر"
                 resource={RESOURCE}
@@ -158,7 +167,6 @@ export function SuperUsersList() {
                 hasDetail={true}
                 tableBodyCells={superUsers.data.map((item, index) => (
                     <>
-                       
                         <TableCell>
                             <Typography
                                 variant="body2"
@@ -175,7 +183,7 @@ export function SuperUsersList() {
                                 {item.id || '--'}
                             </Typography>
                         </TableCell>
- <TableCell>
+                        <TableCell>
                             <Avatar
                                 src={item.profileImage || ''}
                                 alt={`${item.firstName} ${item.lastName}`}
@@ -255,6 +263,8 @@ export function SuperUsersList() {
                     </>
                 ))}
             />
+            }
+
         </ListPage>
     )
 }
