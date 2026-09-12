@@ -106,7 +106,7 @@ function CsvExportButton<T extends Record<string, unknown>>(
     cursor: "pointer",
     textAlign: "right",
     display: "block",
-    color: "white",
+    color: "black",
     fontSize: "0.875rem",
   };
 
@@ -136,8 +136,8 @@ function CsvExportButton<T extends Record<string, unknown>>(
             top: "calc(100% + 4px)",
             right: 0,
             minWidth: "170px",
-            background: "#1E1E1E",
-            border: "1px solid #3f3f3f",
+            background: "#ffffff",
+            border: "1px solid #9fbcee",
             borderRadius: "8px",
             zIndex: 1000,
             overflow: "hidden",
@@ -151,7 +151,7 @@ function CsvExportButton<T extends Record<string, unknown>>(
               onClick={() => handleExportCount(count)}
               style={menuItemStyle}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#2a2a2a";
+                (e.currentTarget as HTMLButtonElement).style.background = "#F5F8FD";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = "transparent";
@@ -161,14 +161,14 @@ function CsvExportButton<T extends Record<string, unknown>>(
             </button>
           ))}
 
-          <div style={{ borderTop: "1px solid #3f3f3f" }}>
+          <div style={{ borderTop: "1px solid #9fbcee" }}>
             <button
               type="button"
               role="menuitem"
               onClick={handleExportAll}
               style={{ ...menuItemStyle, color: "#60a5fa", fontWeight: 600 }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#2a2a2a";
+                (e.currentTarget as HTMLButtonElement).style.background = "#F5F8FD";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = "transparent";

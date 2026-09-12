@@ -1,12 +1,15 @@
-import { Box, Grid } from '@mui/material'
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import {Box, Grid} from '@mui/material'
+import {useState} from 'react'
+import {useDispatch} from 'react-redux'
 
-import { DataProvider } from '../../Core/DataProvider'
-import { setUtil } from '../../redux/UtilSlice'
+import {DataProvider} from '../../Core/DataProvider'
+import {setUtil} from '../../redux/UtilSlice'
 import Widgets from './Widgets'
-import { PropertyCard } from '../Files/PropertyCard/PropertyCard'
+import {PropertyCard} from '../Files/PropertyCard/PropertyCard'
 import SectionTitle from './SectionTitle'
+import TodayControlCenter from './TodayControlCenter'
+import TodayImportantTasks from './TodayImportantTasks'
+import { useNavigate } from 'react-router-dom'
 
 interface DashboardStatsType {
     users: number
@@ -172,6 +175,7 @@ const statWidgets = [
 export default function DashboardLayout() {
     const [data, setData] = useState<DashboardStatsType | null>(null)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     // useEffect(() => {
     //     const getData = async () => {
@@ -186,8 +190,23 @@ export default function DashboardLayout() {
     // }, [dispatch])
 
     return (
-        <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
-            <Box sx={{ p: 3 }}>
+        <Box sx={{width: '100%', minHeight: '100vh', bgcolor: 'background.default'}}>
+            <Box sx={{p: 3}}>
+                <TodayControlCenter
+                    onRegisterFile={() => {
+                        /* مسیر ثبت فایل */
+                        navigate('/files')
+
+                    }}
+                    onViewCustomers={() => {
+                        navigate('/customers')
+                    }}
+                />
+
+                <Box sx={{my: 4}}>
+                    <SectionTitle title="کارهای مهم امروز" />
+                    <TodayImportantTasks />
+                </Box>
                 <SectionTitle title="نمای کلی" />
                 <Grid container spacing={2}>
                     {statWidgets.map((widget) => (
@@ -195,8 +214,12 @@ export default function DashboardLayout() {
                     ))}
                 </Grid>
 
-                <Box sx={{ mt: 4 }}>
-                    <SectionTitle title="آخرین فایل‌ها" actionLabel="مشاهده همه" actionHref="/files" />
+                <Box sx={{mt: 4}}>
+                    <SectionTitle
+                        title="آخرین فایل‌ها"
+                        actionLabel="مشاهده همه"
+                        actionHref="/files"
+                    />
                     <Grid container spacing={2}>
                         {lastFileList.map((item) => (
                             <Grid item xs={12} sm={6} md={4} key={item.id}>
