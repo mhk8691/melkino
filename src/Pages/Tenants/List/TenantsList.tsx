@@ -21,7 +21,7 @@ const tableHeadCells = [
     createTableHeadCells('وضعیت بودجه', 'budgetStatus'),
     createTableHeadCells('بازه رهن', 'budget.mortgage'),
     createTableHeadCells('بازه اجاره', 'budget.rent'),
-    createTableHeadCells('ملیت', 'nationality'),
+    createTableHeadCells('ملیت', 'budget.rent'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -30,10 +30,7 @@ const queryNames = tableHeadCells.map((cell) => ({
     type: '',
 }))
 
-const formatRange = (
-    min: string,
-    max: string
-) => {
+const formatRange = (min: string, max: string) => {
     if (!min && !max) {
         return '--'
     }
@@ -50,9 +47,7 @@ const formatRange = (
 }
 
 export function TenantsList() {
-    const [search, setSearch] = useQueryParams(
-        createQueryParam(queryNames)
-    )
+    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
 
     const [loading] = useState(false)
 
@@ -61,14 +56,14 @@ export function TenantsList() {
         data: TenantsType[]
     }>({
         total_results: 5,
-
         data: [
             {
                 id: 1,
                 full_name: 'علی رضایی',
                 phone_number: '09125463121',
+
                 cities: 'قم',
-                neighborhoods: 'زنبیل آباد',
+                neighborhoods: ['زنبیل آباد', 'سالاریه'],
 
                 budgetStatus: 'رهن کامل',
 
@@ -85,14 +80,44 @@ export function TenantsList() {
 
                 defaultConditions: 'چک تخلیه می‌دهم',
                 nationality: 'ایرانی',
+
+                // فیلدهای مشتری
+                status: 'خرید نقد',
+                propertyType: 'آپارتمان',
+                minArea: '80',
+                maxArea: '120',
+                rooms: '2',
+                area: '1',
+                employmentStatus: 'مالک',
+                floors: '4',
+                units: '2',
+                note: 'واحد نورگیر و نزدیک مرکز شهر',
+
+                barterAmount: '',
+                cashAmount: '1 میلیارد',
+                initialPayment: '',
+
+                remainingAmount1: '',
+                remainingDate1: '',
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
 
             {
                 id: 2,
                 full_name: 'محمد احمدی',
                 phone_number: '09105463121',
+
                 cities: 'قم',
-                neighborhoods: 'آزادگان',
+                neighborhoods: ['آزادگان'],
 
                 budgetStatus: 'اجاره کامل',
 
@@ -109,14 +134,44 @@ export function TenantsList() {
 
                 defaultConditions: 'اجاره‌ها را چک می‌دهم',
                 nationality: 'ایرانی',
+
+                status: 'خرید با شرایط یک ماهه',
+                propertyType: 'آپارتمان',
+                minArea: '70',
+                maxArea: '100',
+                rooms: '2',
+                area: '3',
+                employmentStatus: 'مستاجر',
+                floors: '5',
+                units: '3',
+                note: 'ترجیحاً پارکینگ و آسانسور داشته باشد',
+
+                barterAmount: '',
+                cashAmount: '',
+                initialPayment: '500 میلیون',
+
+                remainingAmount1: '300 میلیون',
+                remainingDate1: '1405/07/15',
+
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
 
             {
                 id: 3,
                 full_name: 'رضا کریمی',
                 phone_number: '09123456789',
+
                 cities: 'قم',
-                neighborhoods: 'زنبیل آباد',
+                neighborhoods: ['صفائیه', 'بلوار امین'],
 
                 budgetStatus: 'رهن و اجاره',
 
@@ -133,14 +188,44 @@ export function TenantsList() {
 
                 defaultConditions: 'کل اجاره را یکجا پرداخت می‌کنم',
                 nationality: 'ایرانی',
+
+                status: 'نقد و تهاتر',
+                propertyType: 'آپارتمان',
+                minArea: '100',
+                maxArea: '150',
+                rooms: '3',
+                area: '2',
+                employmentStatus: 'مالک',
+                floors: '6',
+                units: '2',
+                note: 'واحد نوساز اولویت دارد',
+
+                barterAmount: '700 میلیون',
+                cashAmount: '500 میلیون',
+                initialPayment: '',
+
+                remainingAmount1: '200 میلیون',
+                remainingDate1: '1405/08/01',
+
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
 
             {
                 id: 4,
                 full_name: 'سجاد موسوی',
                 phone_number: '09351234567',
+
                 cities: 'قم',
-                neighborhoods: 'آزادگان',
+                neighborhoods: ['پردیسان'],
 
                 budgetStatus: 'رهن کامل',
 
@@ -157,14 +242,43 @@ export function TenantsList() {
 
                 defaultConditions: 'چک تخلیه می‌دهم',
                 nationality: 'اتباع',
+
+                status: 'خرید نقد',
+                propertyType: 'ویلایی',
+                minArea: '150',
+                maxArea: '250',
+                rooms: '3',
+                area: '7',
+                employmentStatus: 'مالک',
+                floors: '2',
+                units: '1',
+                note: 'حیاط مستقل داشته باشد',
+
+                barterAmount: '',
+                cashAmount: '2 میلیارد',
+                initialPayment: '',
+
+                remainingAmount1: '',
+                remainingDate1: '',
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
 
             {
                 id: 5,
                 full_name: 'حسین محمدی',
                 phone_number: '09191234567',
+
                 cities: 'قم',
-                neighborhoods: 'زنبیل آباد',
+                neighborhoods: ['جمکران', 'انسجام'],
 
                 budgetStatus: 'رهن و اجاره',
 
@@ -181,6 +295,34 @@ export function TenantsList() {
 
                 defaultConditions: 'اجاره‌ها را چک می‌دهم',
                 nationality: 'ایرانی',
+
+                status: 'تهاتر',
+                propertyType: 'آپارتمان',
+                minArea: '60',
+                maxArea: '90',
+                rooms: '2',
+                area: '4',
+                employmentStatus: 'مستاجر',
+                floors: '4',
+                units: '3',
+                note: 'نزدیک مدرسه و امکانات شهری',
+
+                barterAmount: '400 میلیون',
+                cashAmount: '200 میلیون',
+                initialPayment: '',
+
+                remainingAmount1: '',
+                remainingDate1: '',
+                remainingAmount2: '',
+                remainingDate2: '',
+                remainingAmount3: '',
+                remainingDate3: '',
+                remainingAmount4: '',
+                remainingDate4: '',
+                remainingAmount5: '',
+                remainingDate5: '',
+                remainingAmount6: '',
+                remainingDate6: '',
             },
         ],
     })
@@ -338,10 +480,7 @@ export function TenantsList() {
                                     },
                                 }}
                             >
-                                {formatRange(
-                                    item.budget.mortgage.min,
-                                    item.budget.mortgage.max
-                                )}
+                                {formatRange(item.budget.mortgage.min, item.budget.mortgage.max)}
                             </Typography>
                         </TableCell>
 
@@ -359,10 +498,7 @@ export function TenantsList() {
                                     },
                                 }}
                             >
-                                {formatRange(
-                                    item.budget.rent.min,
-                                    item.budget.rent.max
-                                )}
+                                {formatRange(item.budget.rent.min, item.budget.rent.max)}
                             </Typography>
                         </TableCell>
 
