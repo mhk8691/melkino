@@ -50,6 +50,8 @@ import RoleSelectPage from '../Lessors/RoleCard'
 import {TicketsList} from '../Tickets/List/TicketsList'
 import {TicketsEdit} from '../Tickets/Edit/TicketsEdit'
 import {TicketsCreate} from '../Tickets/Create/TicketsCreate'
+import {Button, IconButton, Tooltip} from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -112,10 +114,39 @@ export function Home(props) {
                     style={{
                         boxShadow: !location.pathname.includes('dashboard')
                             ? `0px 2px 8px rgba(0, 0, 0, 0.04),
-           0px 4px 16px rgba(0, 0, 0, 0.03)`
+       0px 4px 16px rgba(0, 0, 0, 0.03)`
                             : 'unset',
                     }}
                 >
+                    {!location.pathname.includes('dashboard') && (
+    <Box sx={{p: 1.5, pb: 3, display: 'flex', justifyContent: 'flex-end'}}>
+        <Button
+            onClick={() => navigate(-1)}
+            endIcon={<ArrowBackIcon fontSize="small" />}
+            size="small"
+            sx={{
+                gap: 0.5,
+                px: 1.75,
+                py: 0.6,
+                borderRadius: '10px',
+                color: 'text.secondary',
+                bgcolor: 'background.paper',
+                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.04), 0px 4px 16px rgba(0, 0, 0, 0.03)',
+                textTransform: 'none',
+                fontSize: '13px',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                    bgcolor: 'action.hover',
+                    color: 'text.primary',
+                    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.06), 0px 4px 18px rgba(0, 0, 0, 0.05)',
+                },
+            }}
+        >
+            بازگشت
+        </Button>
+    </Box>
+)}
+
                     <Routes>
                         <Route path="dashboard" element={<DashboardLayout />} />
                         <Route path="/profile" element={<Profile />} />
