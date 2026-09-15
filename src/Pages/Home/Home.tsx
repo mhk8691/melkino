@@ -47,6 +47,9 @@ import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
 import {TenantsList} from '../Tenants/List/TenantsList'
 import {TenantsEdit} from '../Tenants/Edit/TenantsEdit'
 import RoleSelectPage from '../Lessors/RoleCard'
+import {TicketsList} from '../Tickets/List/TicketsList'
+import {TicketsEdit} from '../Tickets/Edit/TicketsEdit'
+import {TicketsCreate} from '../Tickets/Create/TicketsCreate'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -264,6 +267,15 @@ export function Home(props) {
                         <Route path="landlord-tenant/tenants" element={<TenantsList />} />
                         <Route path="landlord-tenant/tenants/:id" element={<TenantsEdit />} />
                         <Route path="landlord-tenant" element={<RoleSelectPage />} />
+
+                        {/* ...........tickets.......... */}
+
+                        <Route path="tickets" element={<TicketsList />} />
+                        <Route path="tickets/:id" element={<TicketsEdit />} />
+                        <Route
+                            path="tickets/create"
+                            element={<TicketsCreate data={data} setData={setData} />}
+                        />
                     </Routes>
                 </Box>
             </Box>

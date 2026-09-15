@@ -17,7 +17,7 @@ import HandshakeIcon from '@mui/icons-material/Handshake'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
-
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 export type DrawerItemType = {
     title: string
     link: string
@@ -177,5 +177,11 @@ export const drawerItems: DrawerItemType[] = [
         link: 'logs',
         role: 'all',
         icon: <AssignmentIcon sx={iconStyle} />,
+    },
+       {
+        title: 'ثبت تیکت',
+        link: 'tickets',
+        role: 'all',
+        icon: <SupportAgentIcon sx={iconStyle} />,
     },
 ]
