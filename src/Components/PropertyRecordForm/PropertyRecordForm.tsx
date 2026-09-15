@@ -65,7 +65,6 @@ export function PropertyRecordForm({
 
     const stepProps = {property, setProperty, resource}
 
-    // نگاشت گام‌ها بر اساس حالت فرم
     const stepRenderers: Record<RecordMode, Array<() => React.ReactNode>> = {
         file: [
             () => <BaseStep {...stepProps} mode={mode} editMode={editMode} />,

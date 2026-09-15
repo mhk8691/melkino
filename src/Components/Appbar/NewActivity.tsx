@@ -1,6 +1,7 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import HomeIcon from '@mui/icons-material/Home'
 
 import {
     Box,
@@ -22,7 +23,12 @@ const addOptions = [
         link: 'users/create',
         icon: <PersonAddAltRoundedIcon />,
     },
-
+        {
+        title: 'ثبت فایل',
+        description: 'ایجاد فایل جدید',
+        link: 'files/create',
+        icon: <HomeIcon  />,
+    },
 ]
 
 const NewActivity = () => {
