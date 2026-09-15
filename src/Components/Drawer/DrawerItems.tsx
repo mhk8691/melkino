@@ -11,10 +11,10 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
 import HomeIcon from '@mui/icons-material/Home'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {ReactNode} from 'react'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import HandshakeIcon from '@mui/icons-material/Handshake'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
 
@@ -102,7 +102,7 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <Dashboard sx={iconStyle} />,
     },
-        {
+    {
         title: 'اطلاعیه ها',
         link: 'announcements',
         role: 'all',
@@ -115,20 +115,24 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <GroupIcon sx={iconStyle} />,
     },
-       {
-        title: 'مشتریان',
+    {
+        title: 'خریداران',
         link: 'customers',
         role: 'all',
         icon: <HandshakeIcon sx={iconStyle} />,
     },
-        {
-        title: 'مالکان',
+    {
+        title: 'مالکین',
         link: 'owners',
         role: 'all',
         icon: <HomeWorkOutlinedIcon sx={iconStyle} />,
     },
-
-    
+    {
+        title: 'موجر و مستاجر',
+        link: 'landlord-tenant',
+        role: 'all',
+        icon: <VpnKeyIcon sx={iconStyle} />,
+    },
 
     {
         title: 'فایل ها',
@@ -141,30 +145,21 @@ export const drawerItems: DrawerItemType[] = [
         title: 'درخواست ها',
         link: 'requests',
         role: 'all',
-        icon: (<AddCircleOutlineIcon sx={iconStyle} />
-        ),
+        icon: <AddCircleOutlineIcon sx={iconStyle} />,
     },
     {
         title: 'یادآوری ها',
         link: 'reminders',
         role: 'all',
-        icon: (<NotificationsActiveIcon sx={iconStyle} />
-        ),
+        icon: <NotificationsActiveIcon sx={iconStyle} />,
     },
-      {
+    {
         title: 'دیوارکوب',
         link: 'advertisements',
         role: 'all',
-        icon: (<LocalOfferIcon sx={iconStyle} />
-        ),
+        icon: <LocalOfferIcon sx={iconStyle} />,
     },
-     {
-        title: 'موجر و مستاجر',
-        link: 'landlord-tenant',
-        role: 'all',
-        icon: (<VpnKeyIcon sx={iconStyle} />
-        ),
-    },
+
     {
         title: 'تنظیمات',
         link: 'settings',
