@@ -11,7 +11,6 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import {CustomersType} from '../Owners'
-import {OwnersCreate} from '../Create/OwnersCreate'
 
 const RESOURCE = 'owners'
 
@@ -100,7 +99,7 @@ export function OwnersList() {
             getList={() => {}}
             // getList={getOwners}
             filtersData={[]}
-            createModal={OwnersCreate}
+            noCreate
             defaultState={{
                 full_name: '',
             }}

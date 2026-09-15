@@ -11,7 +11,6 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import { LessorsType } from '../Lessors'
-import { LessorsCreate } from '../Create/LessorsCreate'
 
 const RESOURCE = 'lessors'
 
@@ -89,7 +88,7 @@ export function LessorsList() {
             getList={()=>{}}
             // getList={getLessors}
             filtersData={[]}
-            createModal={LessorsCreate}
+            noCreate
             defaultState={{
                 name: '',
             }}

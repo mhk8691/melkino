@@ -20,13 +20,11 @@ import {RequestList} from '../Request/List/RequestList'
 import {ReminderCreate} from '../Reminder/Create/ReminderCreate'
 import {ReminderList} from '../Reminder/List/ReminderList'
 import {ReminderEdit} from '../Reminder/Edit/ReminderEdit'
-import {CustomersCreate} from '../Customers/Create/CustomersCreate'
 import {CustomersList} from '../Customers/List/CustomersList'
 import {CustomersEdit} from '../Customers/Edit/CustomersEdit'
 import {AdvertisementsCreate} from '../Advertisements/Create/AdvertisementsCreate'
 import {AdvertisementsList} from '../Advertisements/List/AdvertisementsList'
 import {AdvertisementsEdit} from '../Advertisements/Edit/AdvertisementsEdit'
-import {OwnersCreate} from '../Owners/Create/OwnersCreate'
 import {OwnersList} from '../Owners/List/OwnersList'
 import {OwnersEdit} from '../Owners/Edit/OwnersEdit'
 import {PartnersList} from '../Partners/List/PartnersList'
@@ -44,12 +42,10 @@ import {AgentsCreate} from '../Agent/Create/AgentsCreate'
 import {AgentsList} from '../Agent/List/AgentsList'
 import {AgentsEdit} from '../Agent/Edit/AgentsEdit'
 import {UsersType} from '../User/Users'
-import {LessorsCreate} from '../Lessors/Create/LessorsCreate'
 import {LessorsList} from '../Lessors/List/LessorsList'
 import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
-import { TenantsCreate } from '../Tenants/Create/TenantsCreate'
-import { TenantsList } from '../Tenants/List/TenantsList'
-import { TenantsEdit } from '../Tenants/Edit/TenantsEdit'
+import {TenantsList} from '../Tenants/List/TenantsList'
+import {TenantsEdit} from '../Tenants/Edit/TenantsEdit'
 import RoleSelectPage from '../Lessors/RoleCard'
 
 export function Home(props) {
@@ -241,17 +237,11 @@ export function Home(props) {
                         <Route path="reminders" element={<ReminderList />} />
                         <Route path="reminders/:id" element={<ReminderEdit />} />
                         {/* ...........Customers.......... */}
-                        <Route
-                            path="customers/create"
-                            element={<CustomersCreate data={data} setData={setData} />}
-                        />
+
                         <Route path="customers" element={<CustomersList />} />
                         <Route path="customers/:id" element={<CustomersEdit />} />
                         {/* ...........Owners.......... */}
-                        <Route
-                            path="owners/create"
-                            element={<OwnersCreate data={data} setData={setData} />}
-                        />
+
                         <Route path="owners" element={<OwnersList />} />
                         <Route path="owners/:id" element={<OwnersEdit />} />
                         {/* ...........advertisements.......... */}
@@ -266,17 +256,11 @@ export function Home(props) {
                         <Route path="partners" element={<PartnersList />} />
                         <Route path="partners/:id" element={<PartnersEdit />} />
                         {/* ...........lessors.......... */}
-                        <Route
-                            path="landlord-tenant/lessors/create"
-                            element={<LessorsCreate data={data} setData={setData} />}
-                        />
+
                         <Route path="landlord-tenant/lessors" element={<LessorsList />} />
                         <Route path="landlord-tenant/lessors/:id" element={<LessorsEdit />} />
-                          {/* ...........tenants.......... */}
-                        <Route
-                            path="landlord-tenant/tenants/create"
-                            element={<TenantsCreate data={data} setData={setData} />}
-                        />
+                        {/* ...........tenants.......... */}
+
                         <Route path="landlord-tenant/tenants" element={<TenantsList />} />
                         <Route path="landlord-tenant/tenants/:id" element={<TenantsEdit />} />
                         <Route path="landlord-tenant" element={<RoleSelectPage />} />

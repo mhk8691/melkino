@@ -8,7 +8,6 @@ import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {CustomersType} from '../Customers'
-import {CustomersCreate} from '../Create/CustomersCreate'
 
 const RESOURCE = 'customers'
 
@@ -246,7 +245,7 @@ export function CustomersList() {
             resource={RESOURCE}
             getList={() => {}}
             filtersData={[]}
-            createModal={CustomersCreate}
+            noCreate
             defaultState={{
                 full_name: '',
             }}

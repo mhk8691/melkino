@@ -8,7 +8,6 @@ import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {TenantsType} from '../Tenants'
-import {TenantsCreate} from '../Create/TenantsCreate'
 
 const RESOURCE = 'tenants'
 
@@ -339,7 +338,7 @@ export function TenantsList() {
             resource={RESOURCE}
             getList={() => {}}
             filtersData={[]}
-            createModal={TenantsCreate}
+            noCreate
             defaultState={{
                 name: '',
             }}
