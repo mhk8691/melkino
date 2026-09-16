@@ -1,18 +1,16 @@
-import {Box, Typography} from '@mui/material'
+import {Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
+import {createCardField} from '../../../Components/Card/CustomCard'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
-import {DataProvider} from '../../../Core/DataProvider'
+import {formatDate} from '../../../Core/FormatDate'
 import {createQueryParam} from '../../../Core/QueryParams'
-import {setUtil} from '../../../redux/UtilSlice'
-import {useDispatch} from 'react-redux'
-import {ReminderType} from '../Reminder'
 import {ReminderCreate} from '../Create/ReminderCreate'
-import { formatDate } from '../../../Core/FormatDate'
+import {ReminderType} from '../Reminder'
 
 const RESOURCE = 'reminders'
 
@@ -22,11 +20,30 @@ const tableHeadCells = [
     createTableHeadCells('توضیحات', 'description'),
     createTableHeadCells('تاریخ', 'date'),
 ]
+
+/** همان ستون‌ها، اما برای بدنه‌ی کارت. عنوان در renderers.title می‌آید پس اینجا تکرار نشده */
+const cardFields = [
+    createCardField('شناسه', 'id'),
+    createCardField('تاریخ', 'date', {render: (row) => formatDate(row.date)}),
+    createCardField('توضیحات', 'description', {fullWidth: true}),
+]
+
 const queryNames = tableHeadCells.map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
 }))
+
+const cellText = (value: any) => (
+    <Typography
+        variant="body2"
+        fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
+        sx={{whiteSpace: 'nowrap'}}
+    >
+        {value || '--'}
+    </Typography>
+)
+
 export function ReminderList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
@@ -71,31 +88,26 @@ export function ReminderList() {
             },
         ],
     })
-    const dispatch = useDispatch()
-    // const getReminders = async () => {
-    //     setLoading(true)
-    //     try {
-    //         let response = await DataProvider.get<{
-    //             total_results: number
-    //             results: ReminderType[]
-    //         }>(`${RESOURCE}/`, search)
-    //         if (response) {
-    //             setReminders({
-    //                 total_results: response.data.total_results,
-    //                 data: response.data.results,
-    //             })
-    //         }
-    //     } catch (error: any) {
-    //         dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
-    //     }
-    //     setLoading(false)
-    // }
-    // useDeepCompareEffect(() => {
-    //     getReminders()
-    // }, [search])
+
+    const getReminders = () => {}
+
+    // پراپ‌های مشترک بین جدول و کارت
+    const shared = {
+        title: 'اطلاعیه',
+        resource: RESOURCE,
+        rows: reminders.data,
+        count: reminders.total_results,
+        params: search,
+        setParams: setSearch,
+        loading,
+        getList: getReminders,
+        hasDetail: true,
+    }
 
     return (
         <ListPage
+            viewKey={RESOURCE}
+            defaultView="list"
             header={'مدیریت اطلاعیه ها'}
             href={RESOURCE + '/create'}
             searchField="title"
@@ -104,86 +116,42 @@ export function ReminderList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
-            // getList={getReminders}
+            getList={getReminders}
             filtersData={[]}
             createModal={ReminderCreate}
-            defaultState={{
-                name: '',
-            }}
+            defaultState={{name: ''}}
         >
-            <CustomTable
-                title="اطلاعیه"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={reminders.data}
-                count={reminders.total_results}
-                getList={() => {}}
-                // getList={getReminders}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                // handleSort={getReminders}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={reminders.data.map((item, index) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.title || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.description || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography sx={{whiteSpace: 'nowrap'}}>
-                                {formatDate(item.date)}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+            {(view) =>
+                view === 'card' ? (
+                    <CustomCardList
+                        {...shared}
+                        fields={cardFields}
+                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                        renderers={{
+                            title: (row) => row.title || '--',
+                            subtitle: (row) => formatDate(row.date),
+                        }}
+                    />
+                ) : (
+                    <CustomTable
+                        {...shared}
+                        headCells={tableHeadCells}
+                        handleSort={getReminders}
+                        tableBodyCells={reminders.data.map((item) => (
+                            <>
+                                <TableCell>{cellText(item.id)}</TableCell>
+                                <TableCell>{cellText(item.title)}</TableCell>
+                                <TableCell>{cellText(item.description)}</TableCell>
+                                <TableCell>
+                                    <Typography sx={{whiteSpace: 'nowrap'}}>
+                                        {formatDate(item.date)}
+                                    </Typography>
+                                </TableCell>
+                            </>
+                        ))}
+                    />
+                )
+            }
         </ListPage>
     )
 }

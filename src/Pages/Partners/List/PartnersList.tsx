@@ -110,6 +110,8 @@ export function PartnersList() {
 
     return (
         <ListPage
+        viewKey={RESOURCE}
+        defaultView='list'
             header={'مدیریت درخواست ها'}
             href={RESOURCE + '/create'}
             searchField="fullName"

@@ -9,6 +9,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import CsvExportButton from '../../Pages/Logs/List/CsvExportButton'
 import {LogsType} from '../../Pages/Logs/List/LogsList'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import {useViewMode, ViewMode} from '../../Core/useViewMode'
+import { ViewToggle } from '../Card/ViewToggle'
 
 export function ListPage({
     setEditMode,
@@ -31,6 +33,8 @@ export function ListPage({
     href,
     nofilter = false,
     setOpenModal,
+    viewKey,
+    defaultView = 'list',
 }: {
     setEditMode?: Dispatch<SetStateAction<'fee' | 'referral' | null>>
 
@@ -48,14 +52,19 @@ export function ListPage({
     getList: () => void
     href: string
     noCreate?: boolean
-    children: React.ReactNode
+    /** یا نود ساده، یا تابعی که نمای فعلی را می‌گیرد و جدول/کارت را برمی‌گرداند */
+    children: React.ReactNode | ((view: ViewMode) => React.ReactNode)
     nofilter?: boolean
     isActiveEdit?: boolean
     setOpenModal?: Dispatch<SetStateAction<boolean>>
+    /** اگر داده شود، دکمه‌ی تغییر نما نمایش داده و انتخاب کاربر با همین کلید ذخیره می‌شود */
+    viewKey?: string
+    defaultView?: ViewMode
 }) {
     const CreaterModal = createModal
     const [open, setOpen] = useState(false)
     const [data, setData] = useState(defaultState)
+    const [view, setView] = useViewMode(viewKey ?? resource, defaultView)
 
     async function update() {
         if (data._id) {
@@ -66,18 +75,7 @@ export function ListPage({
             }
         }
     }
-    // async function cancel() {
-    //     if (data._id) {
-    //         let result = await DataProvider.delete(`${resource}/${data._id}`)
-    //     }
-    //     setOpen(false)
-    // }
 
-    // useEffect(() => {
-    //     if (open) {
-    //         create()
-    //     }
-    // }, [open])
     return (
         <Box>
             {open && (
@@ -134,61 +132,62 @@ export function ListPage({
                     </Typography>
 
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        {viewKey !== undefined && <ViewToggle view={view} onChange={setView} />}
 
-{noCreate ? null : (
-    <AddButton
-        href={href}
-        text="جدید"
-        startIcon={<AddRoundedIcon />}
-        sx={{
-            height: 44,
-            minWidth: 105,
-            px: 1.2,
-            borderRadius: '12px',
+                        {noCreate ? null : (
+                            <AddButton
+                                href={href}
+                                text="جدید"
+                                startIcon={<AddRoundedIcon />}
+                                sx={{
+                                    height: 44,
+                                    minWidth: 105,
+                                    px: 1.2,
+                                    borderRadius: '12px',
 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.8,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 0.8,
 
-            fontSize: {
-                xs: '13px',
-                sm: '14px',
-            },
-            fontWeight: 600,
+                                    fontSize: {
+                                        xs: '13px',
+                                        sm: '14px',
+                                    },
+                                    fontWeight: 600,
 
-            color: '#fff',
-            backgroundColor: 'primary.main',
+                                    color: '#fff',
+                                    backgroundColor: 'primary.main',
 
-            border: '1px solid',
-            borderColor: 'primary.main',
+                                    border: '1px solid',
+                                    borderColor: 'primary.main',
 
-            boxShadow: 'none',
+                                    boxShadow: 'none',
 
-            transition:
-                'background-color .2s ease, border-color .2s ease, transform .2s ease',
+                                    transition:
+                                        'background-color .2s ease, border-color .2s ease, transform .2s ease',
 
-            '& .MuiSvgIcon-root': {
-                fontSize: 21,
-                transition: 'transform .2s ease',
-            },
+                                    '& .MuiSvgIcon-root': {
+                                        fontSize: 21,
+                                        transition: 'transform .2s ease',
+                                    },
 
-            '&:hover': {
-                backgroundColor: 'primary.dark',
-                borderColor: 'primary.dark',
-                boxShadow: 'none',
+                                    '&:hover': {
+                                        backgroundColor: 'primary.dark',
+                                        borderColor: 'primary.dark',
+                                        boxShadow: 'none',
 
-                '& .MuiSvgIcon-root': {
-                    transform: 'rotate(90deg)',
-                },
-            },
+                                        '& .MuiSvgIcon-root': {
+                                            transform: 'rotate(90deg)',
+                                        },
+                                    },
 
-            '&:active': {
-                transform: 'scale(.97)',
-            },
-        }}
-    />
-)}
+                                    '&:active': {
+                                        transform: 'scale(.97)',
+                                    },
+                                }}
+                            />
+                        )}
                         {isActiveEdit && (
                             <>
                                 <Button
@@ -250,7 +249,9 @@ export function ListPage({
                     />
                 )}
             </Stack>
-            <Stack minHeight={'60vh'}>{children}</Stack>
+            <Stack minHeight={'60vh'}>
+                {typeof children === 'function' ? children(view) : children}
+            </Stack>
         </Box>
     )
 }

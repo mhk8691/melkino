@@ -3,6 +3,8 @@ import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
 
+import {createCardField} from '../../../Components/Card/CustomCard'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
@@ -31,11 +33,62 @@ const queryNames = tableHeadCells.map(cell => ({
     type: '',
 }))
 
-export function CustomersList() {
-    const [search, setSearch] = useQueryParams(
-        createQueryParam(queryNames)
-    )
+function formatNumber(value: string): string {
+    const number = Number(value)
+    if (Number.isNaN(number)) return value
+    return new Intl.NumberFormat('fa-IR').format(number)
+}
 
+/** متن شرایط مالی — بدون هیچ Typography/Wrapperی، تا هم در سلول جدول و هم در کارت قابل استفاده باشد */
+function financialText(customer: CustomersType): string {
+    switch (customer.status) {
+        case 'تهاتر':
+        case 'نقد و تهاتر': {
+            const parts: string[] = []
+            if (customer.barterAmount) parts.push(`تهاتر: ${formatNumber(customer.barterAmount)} تومان`)
+            if (customer.cashAmount) parts.push(`نقد: ${formatNumber(customer.cashAmount)} تومان`)
+            return parts.length ? parts.join(' | ') : '--'
+        }
+        case 'خرید نقد':
+            return customer.cashAmount
+                ? `نقدینگی: ${formatNumber(customer.cashAmount)} تومان`
+                : '--'
+        case 'خرید با شرایط یک ماهه':
+        case 'خرید با شرایط تا سه ماهه':
+            return customer.initialPayment
+                ? `اولیه: ${formatNumber(customer.initialPayment)} تومان`
+                : '--'
+        default:
+            return '--'
+    }
+}
+
+function areaRangeText(item: CustomersType): string {
+    if (item.minArea && item.maxArea) return `${item.minArea} تا ${item.maxArea} متر`
+    if (item.minArea) return `از ${item.minArea} متر`
+    if (item.maxArea) return `تا ${item.maxArea} متر`
+    return '--'
+}
+
+/** فیلدهای بدنه‌ی کارت. نام و تلفن در سربرگ کارت (renderers.title/subtitle) می‌آیند */
+const cardFields = [
+    createCardField('وضعیت', 'status'),
+    createCardField('نوع ملک', 'propertyType'),
+    createCardField('متراژ', 'areaRange', {render: (row) => areaRangeText(row)}),
+    createCardField('اتاق', 'rooms', {render: (row) => (row.rooms ? `${row.rooms} اتاق` : '--')}),
+    createCardField('شهر', 'cities'),
+    createCardField('منطقه', 'area', {render: (row) => (row.area ? `منطقه ${row.area}` : '--')}),
+    createCardField('محله', 'neighborhoods', {
+        render: (row) => row.neighborhoods?.join('، ') || '--',
+    }),
+    createCardField('شرایط مالی', 'financial', {
+        render: (row) => financialText(row),
+        fullWidth: true,
+    }),
+]
+
+export function CustomersList() {
+    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading] = useState(false)
 
     const [customers] = useState<{
@@ -233,8 +286,25 @@ export function CustomersList() {
         ],
     })
 
+    const getCustomers = () => {}
+
+    // پراپ‌های مشترک بین جدول و کارت
+    const shared = {
+        title: 'مشتری ها',
+        resource: RESOURCE,
+        rows: customers.data,
+        count: customers.total_results,
+        params: search,
+        setParams: setSearch,
+        loading,
+        getList: getCustomers,
+        hasDetail: true,
+    }
+
     return (
         <ListPage
+            viewKey={RESOURCE}
+            defaultView="list"
             header="مدیریت مشتری ها"
             href={`${RESOURCE}/create`}
             searchField="full_name"
@@ -243,197 +313,86 @@ export function CustomersList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
+            getList={getCustomers}
             filtersData={[]}
             noCreate
-            defaultState={{
-                full_name: '',
-            }}
+            defaultState={{full_name: ''}}
         >
-            <CustomTable
-                title="مشتری ها"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={customers.data}
-                count={customers.total_results}
-                getList={() => {}}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                loading={loading}
-                hasDetail
-                tableBodyCells={customers.data.map(item => (
-                    <>
-                        {/* شناسه */}
-                        <TableCell key={`${item.id}-id`}>
-                            <CellText>
-                                {item.id || '--'}
-                            </CellText>
-                        </TableCell>
+            {(view) =>
+                view === 'card' ? (
+                    <CustomCardList
+                        {...shared}
+                        fields={cardFields}
+                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                        renderers={{
+                            title: (row) => row.full_name || '--',
+                            subtitle: (row) => row.phone_number || '--',
+                        }}
+                    />
+                ) : (
+                    <CustomTable
+                        {...shared}
+                        headCells={tableHeadCells}
+                        handleSort={getCustomers}
+                        tableBodyCells={customers.data.map(item => (
+                            <>
+                                <TableCell key={`${item.id}-id`}>
+                                    <CellText>{item.id || '--'}</CellText>
+                                </TableCell>
 
-                        {/* نام و نام خانوادگی */}
-                        <TableCell key={`${item.id}-full_name`}>
-                            <CellText>
-                                {item.full_name || '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-full_name`}>
+                                    <CellText>{item.full_name || '--'}</CellText>
+                                </TableCell>
 
-                        {/* تلفن */}
-                        <TableCell key={`${item.id}-phone`}>
-                            <CellText>
-                                {item.phone_number || '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-phone`}>
+                                    <CellText>{item.phone_number || '--'}</CellText>
+                                </TableCell>
 
-                        {/* وضعیت */}
-                        <TableCell key={`${item.id}-status`}>
-                            <CellText>
-                                {item.status || '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-status`}>
+                                    <CellText>{item.status || '--'}</CellText>
+                                </TableCell>
 
-                        {/* نوع ملک */}
-                        <TableCell key={`${item.id}-propertyType`}>
-                            <CellText>
-                                {item.propertyType || '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-propertyType`}>
+                                    <CellText>{item.propertyType || '--'}</CellText>
+                                </TableCell>
 
-                        {/* متراژ */}
-                        <TableCell key={`${item.id}-areaRange`}>
-                            <CellText>
-                                {item.minArea && item.maxArea
-                                    ? `${item.minArea} تا ${item.maxArea} متر`
-                                    : item.minArea
-                                      ? `از ${item.minArea} متر`
-                                      : item.maxArea
-                                        ? `تا ${item.maxArea} متر`
-                                        : '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-areaRange`}>
+                                    <CellText>{areaRangeText(item)}</CellText>
+                                </TableCell>
 
-                        {/* شرایط مالی */}
-                        <TableCell key={`${item.id}-financial`}>
-                            <FinancialCell customer={item} />
-                        </TableCell>
+                                <TableCell key={`${item.id}-financial`}>
+                                    <CellText>{financialText(item)}</CellText>
+                                </TableCell>
 
-                        {/* تعداد اتاق */}
-                        <TableCell key={`${item.id}-rooms`}>
-                            <CellText>
-                                {item.rooms
-                                    ? `${item.rooms} اتاق`
-                                    : '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-rooms`}>
+                                    <CellText>{item.rooms ? `${item.rooms} اتاق` : '--'}</CellText>
+                                </TableCell>
 
-                        {/* شهر */}
-                        <TableCell key={`${item.id}-cities`}>
-                            <CellText>
-                                {item.cities || '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-cities`}>
+                                    <CellText>{item.cities || '--'}</CellText>
+                                </TableCell>
 
-                        {/* منطقه */}
-                        <TableCell key={`${item.id}-area`}>
-                            <CellText>
-                                {item.area
-                                    ? `منطقه ${item.area}`
-                                    : '--'}
-                            </CellText>
-                        </TableCell>
+                                <TableCell key={`${item.id}-area`}>
+                                    <CellText>{item.area ? `منطقه ${item.area}` : '--'}</CellText>
+                                </TableCell>
 
-                        {/* محله */}
-                        <TableCell key={`${item.id}-neighborhoods`}>
-                            <CellText>
-                                {item.neighborhoods?.length
-                                    ? item.neighborhoods.join('، ')
-                                    : '--'}
-                            </CellText>
-                        </TableCell>
-                    </>
-                ))}
-            />
+                                <TableCell key={`${item.id}-neighborhoods`}>
+                                    <CellText>
+                                        {item.neighborhoods?.length
+                                            ? item.neighborhoods.join('، ')
+                                            : '--'}
+                                    </CellText>
+                                </TableCell>
+                            </>
+                        ))}
+                    />
+                )
+            }
         </ListPage>
     )
 }
 
-function FinancialCell({
-    customer,
-}: {
-    customer: CustomersType
-}) {
-    switch (customer.status) {
-        case 'تهاتر':
-            return (
-                <CellText>
-                    {customer.barterAmount
-                        ? `تهاتر: ${formatNumber(customer.barterAmount)} تومان`
-                        : '--'}
-                    {customer.cashAmount
-                        ? ` | نقد: ${formatNumber(customer.cashAmount)} تومان`
-                        : ''}
-                </CellText>
-            )
-
-        case 'خرید نقد':
-            return (
-                <CellText>
-                    {customer.cashAmount
-                        ? `نقدینگی: ${formatNumber(customer.cashAmount)} تومان`
-                        : '--'}
-                </CellText>
-            )
-
-        case 'خرید با شرایط یک ماهه':
-            return (
-                <CellText>
-                    {customer.initialPayment
-                        ? `اولیه: ${formatNumber(customer.initialPayment)} تومان`
-                        : '--'}
-                </CellText>
-            )
-
-        case 'خرید با شرایط تا سه ماهه':
-            return (
-                <CellText>
-                    {customer.initialPayment
-                        ? `اولیه: ${formatNumber(customer.initialPayment)} تومان`
-                        : '--'}
-                </CellText>
-            )
-
-        case 'نقد و تهاتر':
-            return (
-                <CellText>
-                    {customer.barterAmount
-                        ? `تهاتر: ${formatNumber(customer.barterAmount)} تومان`
-                        : '--'}
-                    {customer.cashAmount
-                        ? ` | نقد: ${formatNumber(customer.cashAmount)} تومان`
-                        : ''}
-                </CellText>
-            )
-
-        default:
-            return <CellText>--</CellText>
-    }
-}
-
-function formatNumber(value: string): string {
-    const number = Number(value)
-
-    if (Number.isNaN(number)) {
-        return value
-    }
-
-    return new Intl.NumberFormat('fa-IR').format(number)
-}
-
-function CellText({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+function CellText({children}: {children: React.ReactNode}) {
     return (
         <Typography
             variant="body2"

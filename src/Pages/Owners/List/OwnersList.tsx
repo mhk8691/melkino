@@ -1,15 +1,13 @@
 import {Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
+import {createCardField} from '../../../Components/Card/CustomCard'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
-import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
-import {setUtil} from '../../../redux/UtilSlice'
-import {useDispatch} from 'react-redux'
 import {CustomersType} from '../Owners'
 
 const RESOURCE = 'owners'
@@ -22,11 +20,27 @@ const tableHeadCells = [
     createTableHeadCells('محله', 'neighborhoods'),
 ]
 
+/** همان ستون‌ها، اما برای بدنه‌ی کارت. نام و تلفن در سربرگ کارت می‌آیند پس اینجا تکرار نشده */
+const cardFields = [
+    createCardField('شهر', 'cities'),
+    createCardField('محله', 'neighborhoods'),
+]
+
 const queryNames = tableHeadCells.map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
 }))
+
+const cellText = (value: any) => (
+    <Typography
+        variant="body2"
+        fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
+        sx={{whiteSpace: 'nowrap'}}
+    >
+        {value || '--'}
+    </Typography>
+)
 
 export function OwnersList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
@@ -43,51 +57,37 @@ export function OwnersList() {
                 full_name: 'علی رضایی',
                 phone_number: '09121234567',
                 cities: 'قم',
-                neighborhoods:'آزادگان'
+                neighborhoods: 'آزادگان',
             },
             {
                 id: 2,
                 full_name: 'محمد احمدی',
                 phone_number: '09129876543',
                 cities: 'تهران',
-                neighborhoods:'پیروزی'
+                neighborhoods: 'پیروزی',
             },
-        
         ],
     })
-    const dispatch = useDispatch()
 
-    // const getOwners = async () => {
-    //     setLoading(true)
-    //     try {
-    //         let response = await DataProvider.get<{
-    //             total_results: number
-    //             results: CustomersType[]
-    //         }>(`${RESOURCE}/`, search)
-    //         if (response) {
-    //             setOwners({
-    //                 total_results: response.data.total_results,
-    //                 data: response.data.results,
-    //             })
-    //         }
-    //     } catch (error: any) {
-    //         dispatch(
-    //             setUtil({
-    //                 open: true,
-    //                 message: error.message,
-    //                 severity: 'error',
-    //             }),
-    //         )
-    //     }
-    //     setLoading(false)
-    // }
+    const getOwners = () => {}
 
-    // useDeepCompareEffect(() => {
-    //     getOwners()
-    // }, [search])
+    // پراپ‌های مشترک بین جدول و کارت
+    const shared = {
+        title: 'مالکین',
+        resource: RESOURCE,
+        rows: owners.data,
+        count: owners.total_results,
+        params: search,
+        setParams: setSearch,
+        loading,
+        getList: getOwners,
+        hasDetail: true,
+    }
 
     return (
         <ListPage
+            viewKey={RESOURCE}
+            defaultView="list"
             header="مدیریت مالکین"
             href={RESOURCE + '/create'}
             searchField="full_name"
@@ -96,116 +96,39 @@ export function OwnersList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
-            // getList={getOwners}
+            getList={getOwners}
             filtersData={[]}
             noCreate
-            defaultState={{
-                full_name: '',
-            }}
+            defaultState={{full_name: ''}}
         >
-            <CustomTable
-                title="مالکین"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={owners.data}
-                count={owners.total_results}
-                getList={() => {}}
-                // getList={getOwners}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                // handleSort={getOwners}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={owners.data.map((item) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.full_name || '--'}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.phone_number || '--'}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.cities || '--'}
-                            </Typography>
-                        </TableCell>
-                              <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.neighborhoods || '--'}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+            {(view) =>
+                view === 'card' ? (
+                    <CustomCardList
+                        {...shared}
+                        fields={cardFields}
+                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                        renderers={{
+                            title: (row) => row.full_name || '--',
+                            subtitle: (row) => row.phone_number || '--',
+                        }}
+                    />
+                ) : (
+                    <CustomTable
+                        {...shared}
+                        headCells={tableHeadCells}
+                        handleSort={getOwners}
+                        tableBodyCells={owners.data.map((item) => (
+                            <>
+                                <TableCell>{cellText(item.id)}</TableCell>
+                                <TableCell>{cellText(item.full_name)}</TableCell>
+                                <TableCell>{cellText(item.phone_number)}</TableCell>
+                                <TableCell>{cellText(item.cities)}</TableCell>
+                                <TableCell>{cellText(item.neighborhoods)}</TableCell>
+                            </>
+                        ))}
+                    />
+                )
+            }
         </ListPage>
     )
 }

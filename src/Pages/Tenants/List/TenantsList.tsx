@@ -3,6 +3,8 @@ import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
 
+import {createCardField} from '../../../Components/Card/CustomCard'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
@@ -30,20 +32,40 @@ const queryNames = tableHeadCells.map((cell) => ({
 }))
 
 const formatRange = (min: string, max: string) => {
-    if (!min && !max) {
-        return '--'
-    }
-
-    if (!min) {
-        return `تا ${max}`
-    }
-
-    if (!max) {
-        return `از ${min}`
-    }
-
+    if (!min && !max) return '--'
+    if (!min) return `تا ${max}`
+    if (!max) return `از ${min}`
     return `${min} - ${max}`
 }
+
+const neighborhoodsText = (item: TenantsType) =>
+    Array.isArray(item.neighborhoods) ? item.neighborhoods.join('، ') : item.neighborhoods || '--'
+
+const cellText = (value: any) => (
+    <Typography
+        variant="body2"
+        sx={{
+            whiteSpace: 'nowrap',
+            fontSize: {xs: '13px', sm: '14px', md: '16px', xl: '17px'},
+        }}
+    >
+        {value || '--'}
+    </Typography>
+)
+
+/** همان ستون‌ها، اما برای بدنه‌ی کارت. نام و تلفن در سربرگ کارت می‌آیند پس اینجا تکرار نشده */
+const cardFields = [
+    createCardField('شهر', 'cities'),
+    createCardField('محله', 'neighborhoods', {render: (row) => neighborhoodsText(row)}),
+    createCardField('وضعیت بودجه', 'budgetStatus'),
+    createCardField('ملیت', 'nationality'),
+    createCardField('بازه رهن', 'mortgage', {
+        render: (row) => formatRange(row.budget.mortgage.min, row.budget.mortgage.max),
+    }),
+    createCardField('بازه اجاره', 'rent', {
+        render: (row) => formatRange(row.budget.rent.min, row.budget.rent.max),
+    }),
+]
 
 export function TenantsList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
@@ -80,7 +102,6 @@ export function TenantsList() {
                 defaultConditions: 'چک تخلیه می‌دهم',
                 nationality: 'ایرانی',
 
-                // فیلدهای مشتری
                 status: 'خرید نقد',
                 propertyType: 'آپارتمان',
                 minArea: '80',
@@ -326,8 +347,25 @@ export function TenantsList() {
         ],
     })
 
+    const getTenants = () => {}
+
+    // پراپ‌های مشترک بین جدول و کارت
+    const shared = {
+        title: 'مستأجر',
+        resource: RESOURCE,
+        rows: tenants.data,
+        count: tenants.total_results,
+        params: search,
+        setParams: setSearch,
+        loading,
+        getList: getTenants,
+        hasDetail: true,
+    }
+
     return (
         <ListPage
+            viewKey={RESOURCE}
+            defaultView="list"
             header="مدیریت مستأجرها"
             href={`/landlord-tenant/tenants/create`}
             searchField="full_name"
@@ -336,191 +374,74 @@ export function TenantsList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
+            getList={getTenants}
             filtersData={[]}
             noCreate
-            defaultState={{
-                name: '',
-            }}
+            defaultState={{name: ''}}
         >
-            <CustomTable
-                title="مستأجر"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={tenants.data}
-                count={tenants.total_results}
-                getList={() => {}}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                loading={loading}
-                hasDetail
-                tableBodyCells={tenants.data.map((item) => (
-                    <>
-                        {/* شناسه */}
-                        <TableCell key={`${item.id}-id`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
+            {(view) =>
+                view === 'card' ? (
+                    <CustomCardList
+                        {...shared}
+                        fields={cardFields}
+                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                        renderers={{
+                            title: (row) => row.full_name || '--',
+                            subtitle: (row) => row.phone_number || '--',
+                        }}
+                    />
+                ) : (
+                    <CustomTable
+                        {...shared}
+                        headCells={tableHeadCells}
+                        handleSort={getTenants}
+                        tableBodyCells={tenants.data.map((item) => (
+                            <>
+                                <TableCell key={`${item.id}-id`}>{cellText(item.id)}</TableCell>
 
-                        {/* نام و نام خانوادگی */}
-                        <TableCell key={`${item.id}-full_name`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.full_name || '--'}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-full_name`}>
+                                    {cellText(item.full_name)}
+                                </TableCell>
 
-                        {/* تلفن */}
-                        <TableCell key={`${item.id}-phone_number`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.phone_number || '--'}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-phone_number`}>
+                                    {cellText(item.phone_number)}
+                                </TableCell>
 
-                        {/* شهر */}
-                        <TableCell key={`${item.id}-cities`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.cities || '--'}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-cities`}>
+                                    {cellText(item.cities)}
+                                </TableCell>
 
-                        {/* محله */}
-                        <TableCell key={`${item.id}-neighborhoods`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.neighborhoods || '--'}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-neighborhoods`}>
+                                    {cellText(neighborhoodsText(item))}
+                                </TableCell>
 
-                        {/* وضعیت بودجه */}
-                        <TableCell key={`${item.id}-budgetStatus`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.budgetStatus || '--'}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-budgetStatus`}>
+                                    {cellText(item.budgetStatus)}
+                                </TableCell>
 
-                        {/* بازه رهن */}
-                        <TableCell key={`${item.id}-mortgage`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {formatRange(item.budget.mortgage.min, item.budget.mortgage.max)}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-mortgage`}>
+                                    {cellText(
+                                        formatRange(
+                                            item.budget.mortgage.min,
+                                            item.budget.mortgage.max,
+                                        ),
+                                    )}
+                                </TableCell>
 
-                        {/* بازه اجاره */}
-                        <TableCell key={`${item.id}-rent`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {formatRange(item.budget.rent.min, item.budget.rent.max)}
-                            </Typography>
-                        </TableCell>
+                                <TableCell key={`${item.id}-rent`}>
+                                    {cellText(
+                                        formatRange(item.budget.rent.min, item.budget.rent.max),
+                                    )}
+                                </TableCell>
 
-                        {/* ملیت */}
-                        <TableCell key={`${item.id}-nationality`}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    fontSize: {
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    },
-                                }}
-                            >
-                                {item.nationality || '--'}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+                                <TableCell key={`${item.id}-nationality`}>
+                                    {cellText(item.nationality)}
+                                </TableCell>
+                            </>
+                        ))}
+                    />
+                )
+            }
         </ListPage>
     )
 }

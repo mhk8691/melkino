@@ -1,13 +1,15 @@
-import {Typography, Chip} from '@mui/material'
+import {Chip, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
+import {createCardField} from '../../../Components/Card/CustomCard'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
-import {TicketsType} from '../Tickets'
 import {TicketsCreate} from '../Create/TicketsCreate'
+import {TicketsType} from '../Tickets'
 
 const RESOURCE = 'tickets'
 
@@ -18,6 +20,7 @@ const tableHeadCells = [
     createTableHeadCells('میزان اهمیت', 'priority'),
     createTableHeadCells('دسته‌بندی', 'category'),
 ]
+
 const queryNames = tableHeadCells.map((cell) => ({
     field: cell.name,
     label: cell.label,
@@ -41,6 +44,37 @@ const categoryLabel: Record<string, string> = {
     technical: 'سوالات فنی درمورد ملکینو',
     other: 'متفرقه',
 }
+
+function PriorityChip({priority}: {priority: string}) {
+    return (
+        <Chip
+            label={priorityLabel[priority] || '--'}
+            color={priorityColor[priority] || 'default'}
+            size="small"
+        />
+    )
+}
+
+const cellText = (value: any) => (
+    <Typography
+        variant="body2"
+        fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
+        sx={{whiteSpace: 'nowrap'}}
+    >
+        {value || '--'}
+    </Typography>
+)
+
+/** همان ستون‌ها، اما برای بدنه‌ی کارت. عنوان در سربرگ می‌آید و اهمیت به‌صورت Chip در گوشه‌ی کارت */
+const cardFields = [
+    createCardField('دسته‌بندی', 'category', {
+        render: (row) => categoryLabel[row.category] || '--',
+    }),
+    createCardField('فایل', 'file', {
+        render: (row) => (typeof row.file === 'string' ? row.file : '--'),
+    }),
+    createCardField('توضیحات', 'description', {fullWidth: true}),
+]
 
 export function TicketsList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
@@ -96,8 +130,25 @@ export function TicketsList() {
         ],
     })
 
+    const getTickets = () => {}
+
+    // پراپ‌های مشترک بین جدول و کارت
+    const shared = {
+        title: 'تیکت',
+        resource: RESOURCE,
+        rows: tickets.data,
+        count: tickets.total_results,
+        params: search,
+        setParams: setSearch,
+        loading,
+        getList: getTickets,
+        hasDetail: true,
+    }
+
     return (
         <ListPage
+            viewKey={RESOURCE}
+            defaultView="list"
             header={'مدیریت تیکت‌ها'}
             href={RESOURCE + '/create'}
             searchField="title"
@@ -106,78 +157,62 @@ export function TicketsList() {
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
+            getList={getTickets}
             filtersData={[]}
             createModal={TicketsCreate}
-            defaultState={{
-                name: '',
-            }}
+            defaultState={{name: ''}}
         >
-            <CustomTable
-                title="تیکت"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={tickets.data}
-                count={tickets.total_results}
-                getList={() => {}}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={tickets.data.map((item, index) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-                                sx={{whiteSpace: 'nowrap'}}
-                            >
-                                {item.title || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                    maxWidth: '250px',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
-                                {item.description || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-                                sx={{whiteSpace: 'nowrap'}}
-                            >
-                                {typeof item.file === 'string' ? item.file : '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Chip
-                                label={priorityLabel[item.priority] || '--'}
-                                color={priorityColor[item.priority] || 'default'}
-                                size="small"
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-                                sx={{whiteSpace: 'nowrap'}}
-                            >
-                                {categoryLabel[item.category] || '--'}
-                            </Typography>
-                        </TableCell>
-                    </>
-                ))}
-            />
+            {(view) =>
+                view === 'card' ? (
+                    <CustomCardList
+                        {...shared}
+                        fields={cardFields}
+                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                        renderers={{
+                            title: (row) => row.title || '--',
+                            subtitle: (row) => categoryLabel[row.category] || '--',
+                            status: (row) => <PriorityChip priority={row.priority} />,
+                        }}
+                    />
+                ) : (
+                    <CustomTable
+                        {...shared}
+                        headCells={tableHeadCells}
+                        handleSort={getTickets}
+                        tableBodyCells={tickets.data.map((item) => (
+                            <>
+                                <TableCell>{cellText(item.title)}</TableCell>
+                                <TableCell>
+                                    <Typography
+                                        variant="body2"
+                                        fontSize={{
+                                            xs: '13px',
+                                            sm: '14px',
+                                            md: '16px',
+                                            xl: '17px',
+                                        }}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                            maxWidth: '250px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                    >
+                                        {item.description || '--'}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    {cellText(typeof item.file === 'string' ? item.file : '--')}
+                                </TableCell>
+                                <TableCell>
+                                    <PriorityChip priority={item.priority} />
+                                </TableCell>
+                                <TableCell>{cellText(categoryLabel[item.category])}</TableCell>
+                            </>
+                        ))}
+                    />
+                )
+            }
         </ListPage>
     )
 }
