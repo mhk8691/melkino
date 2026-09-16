@@ -89,6 +89,7 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     itemLabel={ITEM_LABEL_BY_MODE[mode]}
                     onEdit={onEdit ? () => onEdit(item) : undefined}
                     onDelete={onDelete}
+                    mode={mode}
                 />
 
                 {/* تصویر اول به‌صورت ثابت؛ اسلایدر فقط داخل مودال است */}
@@ -133,7 +134,7 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                         )}
                     </Stack>
 
-                    <Typography variant="titleMd" fontWeight={700} noWrap>
+                    <Typography variant="titleMd" fontWeight={700} color={mode === 'request' ? 'success.light':'black'} noWrap>
                         {item.propertyType || '--'}
                     </Typography>
 

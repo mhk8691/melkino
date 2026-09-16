@@ -1,21 +1,52 @@
 import {useState} from 'react'
-import type {MouseEvent} from 'react'
+import type {MouseEvent, ReactNode} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {Box, Button, Dialog, DialogActions, DialogContent, IconButton, Menu, Stack, Typography} from '@mui/material'
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    IconButton,
+    Menu,
+    Stack,
+    Typography,
+} from '@mui/material'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
+import {RecordMode} from '../../../Components/PropertyRecordForm'
+
+type ActionColor = 'primary' | 'error' | 'success' | 'warning'
+
+const COLORS: Record<ActionColor, {main: string; soft: string; hover: string}> = {
+    primary: {main: 'primary.main', soft: 'rgba(30,97,205,0.1)', hover: 'rgba(30,97,205,0.08)'},
+    error: {main: 'error.main', soft: 'rgba(211,47,47,0.1)', hover: 'rgba(211,47,47,0.08)'},
+    success: {main: 'success.main', soft: 'rgba(46,125,50,0.1)', hover: 'rgba(46,125,50,0.08)'},
+    warning: {main: 'warning.main', soft: 'rgba(237,108,2,0.1)', hover: 'rgba(237,108,2,0.08)'},
+}
+
+type ConfirmType = 'delete' | 'approve' | 'reject'
 
 export type PropertyCardMenuProps = {
     id?: number
     resource?: string
+    mode?: RecordMode
     /** true وقتی پس‌زمینه‌ی زیر آیکون تصویر است (برای کنتراست بهتر) */
     dark?: boolean
     /** برای متن دیالوگ تایید حذف — مثلاً «فایل»، «درخواست» یا «آگهی» */
     itemLabel?: string
     onEdit?: () => void
     onDelete?: (id?: number) => void
+    /** با دادن این هندلرها گزینه‌ی «تایید» / «رد کردن» در منو نمایش داده می‌شود */
+    onApprove?: (id?: number) => void
+    onReject?: (id?: number) => void
+    /** اگر بخواهی گزینه‌ها را دستی مخفی/نمایان کنی */
+    showEdit?: boolean
+    showDelete?: boolean
 }
 
 /** یک آیتم منو با آیکون داخل باکس رنگی؛ کاملاً جدا از MenuItem پیش‌فرض MUI طراحی شده */
@@ -25,11 +56,12 @@ function ActionItem({
     color,
     onClick,
 }: {
-    icon: React.ReactNode
+    icon: ReactNode
     label: string
-    color: 'primary' | 'error'
+    color: ActionColor
     onClick: () => void
 }) {
+    const c = COLORS[color]
     return (
         <Stack
             direction="row"
@@ -42,9 +74,7 @@ function ActionItem({
                 borderRadius: 2,
                 cursor: 'pointer',
                 transition: 'background-color .12s ease',
-                '&:hover': {
-                    bgcolor: color === 'error' ? 'rgba(211,47,47,0.08)' : 'rgba(30,97,205,0.08)',
-                },
+                '&:hover': {bgcolor: c.hover},
             }}
         >
             <Box
@@ -56,23 +86,39 @@ function ActionItem({
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    bgcolor: color === 'error' ? 'rgba(211,47,47,0.1)' : 'rgba(30,97,205,0.1)',
-                    color: color === 'error' ? 'error.main' : 'primary.main',
+                    bgcolor: c.soft,
+                    color: c.main,
                 }}
             >
                 {icon}
             </Box>
-            <Typography variant="bodySm" fontWeight={600} sx={{color: color === 'error' ? 'error.main' : 'text.primary'}}>
+            <Typography
+                variant="bodySm"
+                fontWeight={600}
+                sx={{color: color === 'primary' ? 'text.primary' : c.main}}
+            >
                 {label}
             </Typography>
         </Stack>
     )
 }
 
-export function PropertyCardMenu({id, resource = 'files', dark, itemLabel = 'فایل', onEdit, onDelete}: PropertyCardMenuProps) {
+export function PropertyCardMenu({
+    id,
+    resource = 'files',
+    dark,
+    itemLabel = 'فایل',
+    onEdit,
+    onDelete,
+    onApprove,
+    onReject,
+    showEdit = true,
+    showDelete = true,
+    mode,
+}: PropertyCardMenuProps) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const [confirmOpen, setConfirmOpen] = useState(false)
+    const [confirm, setConfirm] = useState<ConfirmType | null>(null)
 
     const handleOpen = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation()
@@ -86,15 +132,47 @@ export function PropertyCardMenu({id, resource = 'files', dark, itemLabel = 'ف�
         else navigate(`/${resource}/${id}/edit`)
     }
 
-    const handleAskDelete = () => {
+    const ask = (type: ConfirmType) => {
         handleClose()
-        setConfirmOpen(true)
+        setConfirm(type)
     }
 
-    const handleConfirmDelete = () => {
-        onDelete?.(id)
-        setConfirmOpen(false)
+    const handleConfirm = () => {
+        if (confirm === 'delete') onDelete?.(id)
+        else if (confirm === 'approve') onApprove?.(id)
+        else if (confirm === 'reject') onReject?.(id)
+        setConfirm(null)
     }
+
+    const CONFIRM_CONTENT: Record<
+        ConfirmType,
+        {icon: ReactNode; title: string; text: string; button: string; color: ActionColor}
+    > = {
+        delete: {
+            icon: <WarningRoundedIcon />,
+            title: `حذف ${itemLabel}`,
+            text: `آیا از حذف این ${itemLabel} مطمئن هستید؟ این عملیات قابل بازگشت نیست.`,
+            button: 'حذف',
+            color: 'error',
+        },
+        approve: {
+            icon: <CheckCircleRoundedIcon />,
+            title: `تایید ${itemLabel}`,
+            text: `آیا این ${itemLabel} تایید شود؟ پس از تایید برای کاربران نمایش داده می‌شود.`,
+            button: 'تایید',
+            color: 'success',
+        },
+        reject: {
+            icon: <CancelRoundedIcon />,
+            title: `رد کردن ${itemLabel}`,
+            text: `آیا از رد کردن این ${itemLabel} مطمئن هستید؟`,
+            button: 'رد کردن',
+            color: 'warning',
+        },
+    }
+
+    const active = confirm ? CONFIRM_CONTENT[confirm] : null
+    const activeColor = active ? COLORS[active.color] : null
 
     return (
         <>
@@ -136,56 +214,96 @@ export function PropertyCardMenu({id, resource = 'files', dark, itemLabel = 'ف�
                 }}
                 MenuListProps={{sx: {p: 0, display: 'flex', flexDirection: 'column', gap: 0.25}}}
             >
-                <ActionItem
-                    icon={<EditRoundedIcon sx={{fontSize: 17}} />}
-                    label="ویرایش"
-                    color="primary"
-                    onClick={handleEdit}
-                />
-                <ActionItem
-                    icon={<DeleteRoundedIcon sx={{fontSize: 17}} />}
-                    label="حذف"
-                    color="error"
-                    onClick={handleAskDelete}
-                />
+                {mode === 'request' && (
+                    <ActionItem
+                        icon={<CheckCircleRoundedIcon sx={{fontSize: 17}} />}
+                        label="تایید"
+                        color="success"
+                        onClick={() => ask('approve')}
+                    />
+                )}
+                {mode === 'request' && (
+                    <ActionItem
+                        icon={<CancelRoundedIcon sx={{fontSize: 17}} />}
+                        label="رد کردن"
+                        color="warning"
+                        onClick={() => ask('reject')}
+                    />
+                )}
+                {showEdit && (
+                    <ActionItem
+                        icon={<EditRoundedIcon sx={{fontSize: 17}} />}
+                        label="ویرایش"
+                        color="primary"
+                        onClick={handleEdit}
+                    />
+                )}
+                {showDelete && (
+                    <ActionItem
+                        icon={<DeleteRoundedIcon sx={{fontSize: 17}} />}
+                        label="حذف"
+                        color="error"
+                        onClick={() => ask('delete')}
+                    />
+                )}
             </Menu>
 
             <Dialog
-                open={confirmOpen}
-                onClose={() => setConfirmOpen(false)}
+                open={Boolean(confirm)}
+                onClose={() => setConfirm(null)}
                 maxWidth="xs"
                 fullWidth
                 onClick={(e) => e.stopPropagation()}
                 PaperProps={{sx: {borderRadius: 3}}}
             >
-                <DialogContent sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 1.5, pt: 3.5}}>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        gap: 1.5,
+                        pt: 3.5,
+                    }}
+                >
                     <Box
                         sx={{
                             width: 52,
                             height: 52,
                             borderRadius: '50%',
-                            bgcolor: 'rgba(211,47,47,0.1)',
+                            bgcolor: activeColor?.soft,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'error.main',
+                            color: activeColor?.main,
                         }}
                     >
-                        <WarningRoundedIcon />
+                        {active?.icon}
                     </Box>
                     <Typography variant="titleMd" fontWeight={700}>
-                        حذف {itemLabel}
+                        {active?.title}
                     </Typography>
                     <Typography variant="bodySm" color="text.secondary">
-                        آیا از حذف این {itemLabel} مطمئن هستید؟ این عملیات قابل بازگشت نیست.
+                        {active?.text}
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{px: 3, pb: 2.5, gap: 1}}>
-                    <Button fullWidth variant="outlined" onClick={() => setConfirmOpen(false)}>
+                    <Button fullWidth variant="outlined" onClick={() => setConfirm(null)}>
                         انصراف
                     </Button>
-                    <Button fullWidth color="error" variant="contained" onClick={handleConfirmDelete}>
-                        حذف
+                    <Button
+                        fullWidth
+                        color={
+                            active?.color === 'warning'
+                                ? 'warning'
+                                : active?.color === 'success'
+                                  ? 'success'
+                                  : 'error'
+                        }
+                        variant="contained"
+                        onClick={handleConfirm}
+                    >
+                        {active?.button}
                     </Button>
                 </DialogActions>
             </Dialog>
