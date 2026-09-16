@@ -1,4 +1,4 @@
-import {Avatar, Box, Typography} from '@mui/material'
+import {Avatar, Box, Typography, Button} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -17,7 +17,7 @@ import {AgencyType} from '../Agency'
 import {AgencyCreate} from '../Create/AgencyCreate'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
 import {UserCardGrid} from '../../User/UserCardGrid'
-import { useViewMode } from '../../../Core/useViewMode'
+import {useViewMode} from '../../../Core/useViewMode'
 
 const RESOURCE = 'agencies'
 
@@ -31,6 +31,7 @@ const tableHeadCells = [
     createTableHeadCells('کد پستی', 'postalCode'),
     createTableHeadCells('وضعیت تأهل', 'maritalStatus'),
     createTableHeadCells('وضعیت ملک دفتر', 'officePropertyStatus'),
+    createTableHeadCells('عملیات', 'action'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -230,11 +231,11 @@ export function AgencyList() {
                 agencyName: '',
             }}
         >
-            <Box sx={{display: 'flex', justifyContent: 'flex-end',  my: 2 , px:1}}>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2, px: 1}}>
                 <ViewModeToggle value={viewMode} onChange={setViewMode} />
             </Box>
             {viewMode === 'card' ? (
-                <UserCardGrid rows={agency.data} />
+                <UserCardGrid rows={agency.data} resource={RESOURCE} getList={()=>{}} title='املاک'  />
             ) : (
                 <CustomTable
                     title="املاک"
@@ -405,6 +406,11 @@ export function AgencyList() {
                                           ? 'مستأجر'
                                           : '--'}
                                 </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Button variant="outlined" color="success">
+                                    ورود به پنل کاربری
+                                </Button>
                             </TableCell>
                         </>
                     ))}

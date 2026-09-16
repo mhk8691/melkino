@@ -1,4 +1,4 @@
-import {Avatar, Box, Typography} from '@mui/material'
+import {Avatar, Box, Button, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -18,16 +18,14 @@ const RESOURCE = 'user'
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('پروفایل', 'profileImage'),
-    createTableHeadCells('نام', 'firstName'),
-    createTableHeadCells('نام خانوادگی', 'lastName'),
+    createTableHeadCells('نام و نام خانوادگی', 'fullname'),
     createTableHeadCells('شماره تماس', 'phoneNumber'),
     createTableHeadCells('کد ملی', 'nationalId'),
-    createTableHeadCells('تاریخ تولد', 'birthDate'),
     createTableHeadCells('شهر', 'city'),
     createTableHeadCells('آدرس', 'address'),
     createTableHeadCells('تاریخ ایجاد', 'createdAt'),
-    createTableHeadCells('آخرین بروزرسانی', 'updatedAt'),
     createTableHeadCells('نقش', 'role'),
+    createTableHeadCells('عملیات', 'action'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -150,12 +148,12 @@ export function UsersList() {
                 role: 'regular_user',
             }}
         >
-            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2 , px:1}}>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2, px: 1}}>
                 <ViewModeToggle value={viewMode} onChange={setViewMode} />
             </Box>
 
             {viewMode === 'card' ? (
-                <UserCardGrid rows={users.data} />
+                <UserCardGrid rows={users.data} resource={RESOURCE} getList={()=>{}} title='کاربر عادی'  />
             ) : (
                 <CustomTable
                     title="کاربران عادی"
@@ -211,26 +209,11 @@ export function UsersList() {
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {item.firstName || '--'}
+{`${item.firstName} ${item.lastName}`}
                                 </Typography>
                             </TableCell>
 
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {item.lastName || '--'}
-                                </Typography>
-                            </TableCell>
+                         
 
                             <TableCell>
                                 <Typography
@@ -266,22 +249,7 @@ export function UsersList() {
                                 </Typography>
                             </TableCell>
 
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {item.birthDate || '--'}
-                                </Typography>
-                            </TableCell>
+               
 
                             <TableCell>
                                 <Typography
@@ -337,22 +305,7 @@ export function UsersList() {
                                 </Typography>
                             </TableCell>
 
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {item.updatedAt || '--'}
-                                </Typography>
-                            </TableCell>
+                           
 
                             <TableCell>
                                 <Typography
@@ -369,6 +322,11 @@ export function UsersList() {
                                 >
                                     {item.role || '--'}
                                 </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Button variant="outlined" color="success">
+                                    ورود به پنل کاربری
+                                </Button>
                             </TableCell>
                         </>
                     ))}

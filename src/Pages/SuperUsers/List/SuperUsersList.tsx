@@ -1,4 +1,4 @@
-import {Avatar, Box, Typography} from '@mui/material'
+import {Avatar, Box, Button, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -25,6 +25,7 @@ const tableHeadCells = [
     createTableHeadCells('نام خانوادگی', 'lastName'),
     createTableHeadCells('شماره تلفن', 'phoneNumber'),
     createTableHeadCells('نقش', 'role'),
+    createTableHeadCells('عملیات', 'action'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -151,7 +152,7 @@ export function SuperUsersList() {
                             <ViewModeToggle value={viewMode} onChange={setViewMode} />
                         </Box>
             {
-                viewMode === 'card' ? <UserCardGrid rows={superUsers.data} />:
+                viewMode === 'card' ? <UserCardGrid rows={superUsers.data} resource={RESOURCE} getList={()=>{}} title='سوپر ادمین' />:
             <CustomTable
                 title="سوپر یوزر"
                 resource={RESOURCE}
@@ -261,6 +262,11 @@ export function SuperUsersList() {
                                 {item.role || '--'}
                             </Typography>
                         </TableCell>
+                               <TableCell>
+                                                        <Button variant="outlined" color="success">
+                                                            ورود به پنل کاربری
+                                                        </Button>
+                                                    </TableCell>
                     </>
                 ))}
             />

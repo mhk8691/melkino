@@ -1,4 +1,4 @@
-import {Avatar, Box, Typography} from '@mui/material'
+import {Avatar, Box, Button, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -12,20 +12,20 @@ import {AgentsType} from '../Agents'
 import {AgentsCreate} from '../Create/AgentsCreate'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
 import {UserCardGrid} from '../../User/UserCardGrid'
-import { useViewMode } from '../../../Core/useViewMode'
+import {useViewMode} from '../../../Core/useViewMode'
 
 const resource = 'agents'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('پروفایل', 'profileImage'),
-    createTableHeadCells('نام', 'firstName'),
-    createTableHeadCells('نام خانوادگی', 'lastName'),
+    createTableHeadCells('نام و نام خانوادگی', 'fullname'),
     createTableHeadCells('شماره تلفن', 'phoneNumber'),
     createTableHeadCells('نقش', 'role'),
     createTableHeadCells('نام املاکی', 'agencyName'),
     createTableHeadCells('آدرس منزل', 'homeAddress'),
     createTableHeadCells('آدرس محل کار', 'workAddress'),
+    createTableHeadCells('عملیات', 'action'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -157,11 +157,11 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                 firstName: '',
             }}
         >
-            <Box sx={{display: 'flex', justifyContent: 'flex-end',  my: 2 , px:1}}>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2, px: 1}}>
                 <ViewModeToggle value={viewMode} onChange={setViewMode} />
             </Box>
             {viewMode === 'card' ? (
-                <UserCardGrid rows={agents.data} />
+                <UserCardGrid rows={agents.data} resource={resource} getList={()=>{}} title='کارشناس'  />
             ) : (
                 <CustomTable
                     title={title}
@@ -218,26 +218,11 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {item.firstName || '--'}
+                                  {`${item.firstName} ${item.lastName}`}
                                 </Typography>
                             </TableCell>
 
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {item.lastName || '--'}
-                                </Typography>
-                            </TableCell>
+                         
 
                             <TableCell>
                                 <Typography
@@ -322,6 +307,11 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                                 >
                                     {item.workAddress || '--'}
                                 </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Button variant="outlined" color="success">
+                                    ورود به پنل کاربری
+                                </Button>
                             </TableCell>
                         </>
                     ))}
