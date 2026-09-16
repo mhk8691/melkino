@@ -15,6 +15,7 @@ export type PropertyType = {
     assignedTo?: string
     monthlyCharge:string
     city: string
+    virtualTourLink:string
     // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
     district: string | string[]
     neighborhood: string | string[]

@@ -27,6 +27,7 @@ export function DescriptionStep({property, setProperty, resource}: StepProps) {
                     multiline
                     minRows={4}
                 />,
+                
             ]}
         />
     )

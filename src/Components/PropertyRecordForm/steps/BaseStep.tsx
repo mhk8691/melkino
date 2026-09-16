@@ -32,7 +32,7 @@ const mortgageTermsOptions: SelectOption[] = [
     {label: 'کل اجاره را یکجا پرداخت می‌کنم', value: 'کل اجاره را یکجا پرداخت می‌کنم'},
 ]
 
-export function BaseStep({property, setProperty, resource, mode,editMode}: ModeStepProps) {
+export function BaseStep({property, setProperty, resource, mode, editMode}: ModeStepProps) {
     const isMortgageRent = property.contractType === 'رهن و اجاره'
     const propertyTypeOptions = toSelectOptions(
         isMortgageRent
@@ -173,7 +173,9 @@ export function BaseStep({property, setProperty, resource, mode,editMode}: ModeS
                               resource={resource}
                               label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
                               defaultValue={property.assignedTo}
-                              options={toSelectOptions(mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS)}
+                              options={toSelectOptions(
+                                  mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS,
+                              )}
                           />,
                       ]
                     : []),
@@ -245,6 +247,18 @@ export function BaseStep({property, setProperty, resource, mode,editMode}: ModeS
                               minRows={3}
                           />,
                       ]),
+                ...(mode === 'file'
+                    ? [
+                          <CustomTextField
+                              key="virtualTourLink"
+                              name="virtualTourLink"
+                              setData={setProperty}
+                              resource={resource}
+                              label="لینک تور مجازی"
+                              defaultValue={property.virtualTourLink}
+                          />,
+                      ]
+                    : []),
             ]}
         />
     )
