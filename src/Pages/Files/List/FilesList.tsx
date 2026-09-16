@@ -12,6 +12,13 @@ import {FilesCreate} from '../Create/FilesCreate'
 import { PropertyType } from '../../../Components/PropertyRecordForm'
 import { PropertyCard } from '../PropertyCard/PropertyCard'
 
+// تصاویر نمونه برای نمایش در کارت‌ها
+import img1 from '../../../Images/file/1.jpg'
+import img2 from '../../../Images/file/2.jpg'
+import img3 from '../../../Images/file/3.jpg'
+import img4 from '../../../Images/file/4.jpg'
+import img5 from '../../../Images/file/5.jpg'
+
 const RESOURCE = 'files'
 
 const tableHeadCells = [
@@ -65,6 +72,7 @@ export function FilesList() {
                 ownerJob: 'مهندس',
                 description: 'واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.',
                 internalNote: 'مالک عجله برای فروش دارد، قابل مذاکره.',
+                images: [img1],
             },
             // ۲) ویلایی رهن و اجاره — تعدادی از فیلدها خالی
             {
@@ -89,6 +97,7 @@ export function FilesList() {
                 ownerName: 'محمد کریمی',
                 ownerPhone: '09351234567',
                 description: 'ویلای دوبلکس با حیاط بزرگ و درخت‌های میوه.',
+                images: [img2],
             },
             // ۳) زمین — فقط حداقل اطلاعات
             {
@@ -103,6 +112,7 @@ export function FilesList() {
                 area: 350,
                 totalPrice: 12000000000,
                 direction: 'جنوبی',
+                images: [img3],
             },
             // ۴) آپارتمان — اطلاعات متوسط، بدون قیمت هر متر و امکانات
             {
@@ -123,6 +133,7 @@ export function FilesList() {
                 ownerName: 'زهرا احمدی',
                 ownerPhone: '09131234567',
                 ownerJob: 'آزاد',
+                images: [img4],
             },
             // ۵) پیش فروش — بدون مالک و بدون امکانات، فقط یادداشت داخلی
             {
@@ -138,6 +149,7 @@ export function FilesList() {
                 roomCount: 3,
                 flooring: 'پارکت',
                 internalNote: 'فایل به مشتری قبلی فروخته شد، آرشیو شود.',
+                images: [img5],
             },
         ],
     })

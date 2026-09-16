@@ -1,19 +1,28 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import type {Swiper as SwiperClass} from 'swiper'
 import {Swiper, SwiperSlide} from 'swiper/react'
-// import 'swiper/css'
+import './swiper.css'
 import {Box, IconButton, Stack, Typography} from '@mui/material'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 
-export function ImageGallery({images, height}: {images: File[]; height: number}) {
+export function ImageGallery({images, height}: {images: (string | File)[]; height: number}) {
     const [activeIndex, setActiveIndex] = useState(0)
     const swiperRef = useRef<SwiperClass | null>(null)
 
-    const urls = useMemo(() => images.map((file) => URL.createObjectURL(file)), [images])
+    // اگر آیتم از قبل رشته (مسیر import شده یا URL) است همون رو استفاده کن،
+    // اگر File بود با createObjectURL تبدیلش کن
+    const urls = useMemo(() => images.map((img) => (typeof img === 'string' ? img : URL.createObjectURL(img))), [images])
 
     useEffect(() => {
-        return () => urls.forEach((url) => URL.revokeObjectURL(url))
+        // فقط URLهایی که از File ساخته شدن (blob:) باید revoke بشن، نه رشته‌های معمولی
+        return () => {
+            urls.forEach((url) => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url)
+                }
+            })
+        }
     }, [urls])
 
     if (urls.length === 0) return null

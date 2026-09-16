@@ -1,7 +1,6 @@
 import type {Dispatch, SetStateAction} from 'react'
 
 export type RecordMode = 'file' | 'request' | 'ad'
-
 export type PropertyType = {
     id: number
     status: string
@@ -59,7 +58,8 @@ budgetType:string
     ownerPhone2: string
     ownerJob: string
 
-    images: File[]
+    // پشتیبانی از هر دو حالت: فایل آپلودی (File) یا مسیر/URL تصویر (string) برای دیتای نمونه یا تصاویر از سرور
+    images: (string | File)[]
 
     description: string
     internalNote: string
@@ -74,7 +74,6 @@ budgetType:string
     toneOfTheAd?:string
 
 }
-
 export type FilesType = {
     id: number
     title: string

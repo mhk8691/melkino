@@ -54,7 +54,12 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
 
     const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
     const coverImage = item.images?.[0]
-    const coverUrl = useMemo(() => (coverImage ? URL.createObjectURL(coverImage) : undefined), [coverImage])
+
+    // پشتیبانی از هر دو حالت: رشته (import شده / URL) یا File آپلود شده
+    const coverUrl = useMemo(() => {
+        if (!coverImage) return undefined
+        return typeof coverImage === 'string' ? coverImage : URL.createObjectURL(coverImage)
+    }, [coverImage])
 
     const {location, areaText, priceMain, priceLabel, priceSecondary} = useDerivedPropertyInfo(item)
 
@@ -95,7 +100,8 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 {/* تصویر اول به‌صورت ثابت؛ اسلایدر فقط داخل مودال است */}
                 <Box
                     sx={{
-                        height: 150,
+                        width: '100%',
+                        aspectRatio: '16 / 10',
                         bgcolor: 'background.default',
                         display: 'flex',
                         alignItems: 'center',
