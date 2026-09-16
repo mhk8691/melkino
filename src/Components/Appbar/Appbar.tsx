@@ -2,7 +2,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 
-import {Box, IconButton, Stack, Typography, useMediaQuery, useTheme} from '@mui/material'
+import {Box, IconButton, Stack, Typography, useMediaQuery, useTheme, Button} from '@mui/material'
 
 import {useEffect, useState} from 'react'
 
@@ -12,6 +12,7 @@ import {drawerWidth} from '../Drawer/AppDrawer'
 import AppbarProfile from './AppbarProfile'
 import AppbarSearch from './AppbarSearch'
 import NewActivity from './NewActivity'
+import {Link} from 'react-router-dom'
 
 type AppbarProps = {
     selectedTitle: string
@@ -193,9 +194,17 @@ const Appbar = ({selectedTitle, drawerOpen, user, setDrawerOpen}: AppbarProps) =
                             {searchOpen ? <CloseRoundedIcon /> : <SearchRoundedIcon />}
                         </IconButton>
                     )}
-
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        component={Link}
+                        to="/test"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        ورود به لندینگ
+                    </Button>
                     <NewActivity />
-
                     {!isMobile && <AppbarProfile user={user} />}
                 </Stack>
             </Stack>
