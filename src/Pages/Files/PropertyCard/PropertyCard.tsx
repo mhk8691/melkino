@@ -6,6 +6,7 @@ import BedRoundedIcon from '@mui/icons-material/BedRounded'
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded'
 import {PropertyCardMenu} from './PropertyCardMenu'
 import {PropertyDetailDialog} from './PropertyDetailDialog'
+import {getPropertyTypeIcon} from './PropertyTypeIcon'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
 import { PropertyType, RecordMode } from '../../../Components/PropertyRecordForm'
 
@@ -90,7 +91,7 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 <PropertyCardMenu
                     id={item.id}
                     resource={resolvedResource}
-                    dark={Boolean(coverUrl)}
+                    dark={mode !== 'request' && Boolean(coverUrl)}
                     itemLabel={ITEM_LABEL_BY_MODE[mode]}
                     onEdit={onEdit ? () => onEdit(item) : undefined}
                     onDelete={onDelete}
@@ -98,17 +99,20 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 />
 
                 {/* تصویر اول به‌صورت ثابت؛ اسلایدر فقط داخل مودال است */}
+                {/* برای مود «درخواست» به‌جای تصویر، آیکون نوع ملک نمایش داده می‌شود */}
                 <Box
                     sx={{
                         width: '100%',
                         aspectRatio: '16 / 10',
-                        bgcolor: 'background.default',
+                        bgcolor: mode === 'request' ? 'rgba(30,97,205,0.06)' : 'background.default',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}
                 >
-                    {coverUrl ? (
+                    {mode === 'request' ? (
+                        getPropertyTypeIcon(item.propertyType, {sx: {fontSize: 40, color: 'primary.main'}})
+                    ) : coverUrl ? (
                         <Box
                             sx={{
                                 width: '100%',
@@ -209,7 +213,7 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 </Box>
             </Box>
 
-            <PropertyDetailDialog open={detailOpen} onClose={() => setDetailOpen(false)} item={item} />
+            <PropertyDetailDialog open={detailOpen} onClose={() => setDetailOpen(false)} item={item} mode={mode} />
         </>
     )
 }

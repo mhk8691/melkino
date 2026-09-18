@@ -17,8 +17,9 @@ import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import {ImageGallery} from './ImageGallery'
 import {DetailSection} from './DetailSection'
+import {getPropertyTypeIcon} from './PropertyTypeIcon'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
-import { PropertyType } from '../../../Components/PropertyRecordForm'
+import { PropertyType, RecordMode } from '../../../Components/PropertyRecordForm'
 
 function QuickFactChip({icon, label}: {icon: React.ReactNode; label?: string}) {
     if (!label) return null
@@ -47,10 +48,12 @@ export function PropertyDetailDialog({
     open,
     onClose,
     item,
+    mode = 'file',
 }: {
     open: boolean
     onClose: () => void
     item: Partial<PropertyType>
+    mode?: RecordMode
 }) {
     const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
     const images = item.images ?? []
@@ -88,16 +91,29 @@ export function PropertyDetailDialog({
                         top: 10,
                         insetInlineEnd: 10,
                         zIndex: 3,
-                        bgcolor: 'rgba(0,0,0,0.4)',
-                        color: '#fff',
+                        bgcolor: mode === 'request' ? 'rgba(30,97,205,0.14)' : 'rgba(0,0,0,0.4)',
+                        color: mode === 'request' ? 'primary.main' : '#fff',
                         backdropFilter: 'blur(4px)',
-                        '&:hover': {bgcolor: 'rgba(0,0,0,0.6)'},
+                        '&:hover': {bgcolor: mode === 'request' ? 'rgba(30,97,205,0.22)' : 'rgba(0,0,0,0.6)'},
                     }}
                 >
                     <CloseRoundedIcon fontSize="small" />
                 </IconButton>
 
-                {images.length > 0 ? (
+                {/* برای مود «درخواست» به‌جای گالری تصاویر، آیکون نوع ملک نمایش داده می‌شود */}
+                {mode === 'request' ? (
+                    <Box
+                        sx={{
+                            height: 140,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'rgba(30,97,205,0.06)',
+                        }}
+                    >
+                        {getPropertyTypeIcon(item.propertyType, {sx: {fontSize: 56, color: 'primary.main'}})}
+                    </Box>
+                ) : images.length > 0 ? (
                     <Box sx={{position: 'relative'}}>
                         <ImageGallery images={images} height={240} />
                         {/* گرادیانت پایین عکس برای خوانایی بهتر وضعیت روی آن */}
