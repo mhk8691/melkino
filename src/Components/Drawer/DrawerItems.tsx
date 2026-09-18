@@ -147,6 +147,12 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <AddCircleOutlineIcon sx={iconStyle} />,
     },
+        {
+        title: 'درخواست مالکین',
+        link: 'owners-requests',
+        role: 'all',
+        icon: <AddCircleOutlineIcon sx={iconStyle} />,
+    },
     {
         title: 'یادآوری ها',
         link: 'reminders',
