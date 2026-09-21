@@ -19,7 +19,8 @@ import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 import {RecordMode} from '../../../Components/PropertyRecordForm'
-
+import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded'
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
 type ActionColor = 'primary' | 'error' | 'success' | 'warning'
 
 const COLORS: Record<ActionColor, {main: string; soft: string; hover: string}> = {
@@ -35,18 +36,16 @@ export type PropertyCardMenuProps = {
     id?: number
     resource?: string
     mode?: RecordMode
-    /** true وقتی پس‌زمینه‌ی زیر آیکون تصویر است (برای کنتراست بهتر) */
     dark?: boolean
-    /** برای متن دیالوگ تایید حذف — مثلاً «فایل»، «درخواست» یا «آگهی» */
     itemLabel?: string
     onEdit?: () => void
     onDelete?: (id?: number) => void
-    /** با دادن این هندلرها گزینه‌ی «تایید» / «رد کردن» در منو نمایش داده می‌شود */
     onApprove?: (id?: number) => void
     onReject?: (id?: number) => void
-    /** اگر بخواهی گزینه‌ها را دستی مخفی/نمایان کنی */
     showEdit?: boolean
     showDelete?: boolean
+    pinned?: boolean
+    onTogglePin?: () => void
 }
 
 /** یک آیتم منو با آیکون داخل باکس رنگی؛ کاملاً جدا از MenuItem پیش‌فرض MUI طراحی شده */
@@ -115,6 +114,8 @@ export function PropertyCardMenu({
     showEdit = true,
     showDelete = true,
     mode,
+    pinned,
+    onTogglePin,
 }: PropertyCardMenuProps) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -132,11 +133,15 @@ export function PropertyCardMenu({
         else navigate(`/${resource}/${id}/edit`)
     }
 
+    const handleTogglePin = () => {
+        handleClose()
+        onTogglePin?.()
+    }
+
     const ask = (type: ConfirmType) => {
         handleClose()
         setConfirm(type)
     }
-
     const handleConfirm = () => {
         if (confirm === 'delete') onDelete?.(id)
         else if (confirm === 'approve') onApprove?.(id)
@@ -214,6 +219,21 @@ export function PropertyCardMenu({
                 }}
                 MenuListProps={{sx: {p: 0, display: 'flex', flexDirection: 'column', gap: 0.25}}}
             >
+                {onTogglePin && (
+        <ActionItem
+            icon={
+                pinned ? (
+                    <PushPinRoundedIcon sx={{fontSize: 17}} />
+                ) : (
+                    <PushPinOutlinedIcon sx={{fontSize: 17}} />
+                )
+            }
+            label={pinned ? 'حذف پین' : 'پین کردن'}
+            color={pinned ? 'warning' : 'primary'}
+            onClick={handleTogglePin}
+        />
+    )}
+
                 {mode === 'request' && (
                     <ActionItem
                         icon={<CheckCircleRoundedIcon sx={{fontSize: 17}} />}

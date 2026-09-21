@@ -165,18 +165,18 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               options={toSelectOptions(CITY_OPTIONS)}
                           />,
 
-                          // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
-                          <CustomSelectField
-                              key="assignedTo"
-                              name="assignedTo"
-                              setData={setProperty}
-                              resource={resource}
-                              label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
-                              defaultValue={property.assignedTo}
-                              options={toSelectOptions(
-                                  mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS,
-                              )}
-                          />,
+                        //   // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
+                        //   <CustomSelectField
+                        //       key="assignedTo"
+                        //       name="assignedTo"
+                        //       setData={setProperty}
+                        //       resource={resource}
+                        //       label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
+                        //       defaultValue={property.assignedTo}
+                        //       options={toSelectOptions(
+                        //           mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS,
+                        //       )}
+                        //   />,
                       ]
                     : []),
 

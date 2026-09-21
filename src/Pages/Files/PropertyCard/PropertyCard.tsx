@@ -1,4 +1,5 @@
 import {useMemo, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import {Box, Stack, Typography} from '@mui/material'
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded'
 import SquareFootRoundedIcon from '@mui/icons-material/SquareFootRounded'
@@ -6,9 +7,12 @@ import BedRoundedIcon from '@mui/icons-material/BedRounded'
 import ImageNotSupportedRoundedIcon from '@mui/icons-material/ImageNotSupportedRounded'
 import {PropertyCardMenu} from './PropertyCardMenu'
 import {PropertyDetailDialog} from './PropertyDetailDialog'
+import {PinnedBadge} from './PinnedBadge'
 import {getPropertyTypeIcon} from './PropertyTypeIcon'
 import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
-import { PropertyType, RecordMode } from '../../../Components/PropertyRecordForm'
+import {PropertyType, RecordMode} from '../../../Components/PropertyRecordForm'
+import {setUtil} from '../../../redux/UtilSlice'
+import {DataProvider} from '../../../Core/DataProvider'
 
 function Notch({side}: {side: 'insetInlineStart' | 'insetInlineEnd'}) {
     return (
@@ -50,8 +54,37 @@ export type PropertyCardProps = {
 
 export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: PropertyCardProps) {
     const [detailOpen, setDetailOpen] = useState(false)
+     async function togglePinRequest(resource: string, id: number, pinned: boolean) {
+    return DataProvider.post(`${resource}/${id}/pin`, {
+        data: {pinned},
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+}
+    // وضعیت پین بودن کارت؛ مقدار اولیه از خود آیتم (اگه از بک‌اند فیلد pinned بیاد)
+    const [pinned, setPinned] = useState(Boolean((item as {pinned?: boolean}).pinned))
+    const [pinLoading, setPinLoading] = useState(false)
+
+    const dispatch = useDispatch()
 
     const resolvedResource = resource ?? RESOURCE_BY_MODE[mode]
+
+    const handleTogglePin = async () => {
+        if (!isFilled(item.id) || pinLoading) return
+
+        const next = !pinned
+        setPinned(next) // آپدیت خوش‌بینانه‌ی UI؛ منتظر جواب سرور نمی‌مونیم
+        setPinLoading(true)
+
+        try {
+            await togglePinRequest(resolvedResource, item.id as number, next)
+        } catch (error: any) {
+            setPinned(!next) // در صورت خطا وضعیت قبلی برگردونده می‌شه
+            dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
+        }
+        setPinLoading(false)
+    }
 
     const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
     const coverImage = item.images?.[0]
@@ -88,6 +121,8 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     },
                 }}
             >
+                {pinned && <PinnedBadge />}
+
                 <PropertyCardMenu
                     id={item.id}
                     resource={resolvedResource}
@@ -96,6 +131,8 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     onEdit={onEdit ? () => onEdit(item) : undefined}
                     onDelete={onDelete}
                     mode={mode}
+                    pinned={pinned}
+                    onTogglePin={handleTogglePin}
                 />
 
                 {/* تصویر اول به‌صورت ثابت؛ اسلایدر فقط داخل مودال است */}
@@ -111,7 +148,9 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     }}
                 >
                     {mode === 'request' ? (
-                        getPropertyTypeIcon(item.propertyType, {sx: {fontSize: 40, color: 'primary.main'}})
+                        getPropertyTypeIcon(item.propertyType, {
+                            sx: {fontSize: 40, color: 'primary.main'},
+                        })
                     ) : coverUrl ? (
                         <Box
                             sx={{
@@ -131,26 +170,48 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     <Stack direction="row" alignItems="center" spacing={0.75} sx={{mb: 0.5}}>
                         {item.status && (
                             <>
-                                <Box sx={{width: 7, height: 7, borderRadius: '50%', bgcolor: statusColor, flexShrink: 0}} />
-                                <Typography variant="badge" sx={{color: statusColor, fontSize: '12px'}} noWrap>
+                                <Box
+                                    sx={{
+                                        width: 7,
+                                        height: 7,
+                                        borderRadius: '50%',
+                                        bgcolor: statusColor,
+                                        flexShrink: 0,
+                                    }}
+                                />
+                                <Typography
+                                    variant="badge"
+                                    sx={{color: statusColor, fontSize: '12px'}}
+                                    noWrap
+                                >
                                     {item.status}
                                 </Typography>
                             </>
                         )}
                         {isFilled(item.id) && (
-                            <Typography variant="badge" sx={{color: 'text.disabled', fontSize: '12px'}}>
+                            <Typography
+                                variant="badge"
+                                sx={{color: 'text.disabled', fontSize: '12px'}}
+                            >
                                 · #{item.id}
                             </Typography>
                         )}
                     </Stack>
 
-                    <Typography variant="titleMd" fontWeight={700} color={mode === 'request' ? 'success.light':'black'} noWrap>
+                    <Typography
+                        variant="titleMd"
+                        fontWeight={700}
+                        color={mode === 'request' ? 'success.light' : 'black'}
+                        noWrap
+                    >
                         {item.propertyType || '--'}
                     </Typography>
 
                     {location && (
                         <Stack direction="row" alignItems="center" spacing={0.5} sx={{mt: 0.25}}>
-                            <PlaceRoundedIcon sx={{fontSize: 14, color: 'text.disabled', flexShrink: 0}} />
+                            <PlaceRoundedIcon
+                                sx={{fontSize: 14, color: 'text.disabled', flexShrink: 0}}
+                            />
                             <Typography variant="bodySm" color="text.secondary" noWrap>
                                 {location}
                             </Typography>
@@ -175,7 +236,9 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                         <Stack direction="row" spacing={2} sx={{mb: priceMain ? 1.5 : 0}}>
                             {areaText && (
                                 <Stack direction="row" alignItems="center" spacing={0.5}>
-                                    <SquareFootRoundedIcon sx={{fontSize: 15, color: 'text.disabled'}} />
+                                    <SquareFootRoundedIcon
+                                        sx={{fontSize: 15, color: 'text.disabled'}}
+                                    />
                                     <Typography variant="labelSm" color="text.secondary">
                                         {areaText}
                                     </Typography>
@@ -197,9 +260,18 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                             <Typography variant="labelSm" color="text.disabled">
                                 {priceLabel}
                             </Typography>
-                            <Typography variant="titleLg" fontWeight={800} color="primary.main" sx={{fontVariantNumeric: 'tabular-nums'}}>
+                            <Typography
+                                variant="titleLg"
+                                fontWeight={800}
+                                color="primary.main"
+                                sx={{fontVariantNumeric: 'tabular-nums'}}
+                            >
                                 {priceMain}{' '}
-                                <Typography component="span" variant="labelSm" color="text.disabled">
+                                <Typography
+                                    component="span"
+                                    variant="labelSm"
+                                    color="text.disabled"
+                                >
                                     تومان
                                 </Typography>
                             </Typography>
@@ -213,7 +285,12 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 </Box>
             </Box>
 
-            <PropertyDetailDialog open={detailOpen} onClose={() => setDetailOpen(false)} item={item} mode={mode} />
+            <PropertyDetailDialog
+                open={detailOpen}
+                onClose={() => setDetailOpen(false)}
+                item={item}
+                mode={mode}
+            />
         </>
     )
 }
