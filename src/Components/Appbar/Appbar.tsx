@@ -13,7 +13,7 @@ import AppbarProfile from './AppbarProfile'
 import AppbarSearch from './AppbarSearch'
 import NewActivity from './NewActivity'
 import {Link} from 'react-router-dom'
-
+import LoginIcon from '@mui/icons-material/Login';
 type AppbarProps = {
     selectedTitle: string
     drawerOpen: boolean
@@ -195,12 +195,13 @@ const Appbar = ({selectedTitle, drawerOpen, user, setDrawerOpen}: AppbarProps) =
                         </IconButton>
                     )}
                     <Button
-                        variant="contained"
+                        variant="outlined"
                         color="secondary"
                         component={Link}
                         to="/test"
                         target="_blank"
                         rel="noopener noreferrer"
+                        startIcon={<LoginIcon/>}
                     >
                         ورود به لندینگ
                     </Button>

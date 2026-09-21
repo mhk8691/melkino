@@ -189,6 +189,7 @@ export function OwnersRequestList() {
             defaultState={{
                 name: '',
             }}
+            noCreate
         >
             <Box sx={{borderBottom: 1, borderColor: 'divider', px: 1.5}}>
                 <Tabs
