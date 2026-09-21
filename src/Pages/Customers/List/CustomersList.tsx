@@ -304,7 +304,7 @@ export function CustomersList() {
     return (
         <ListPage
             viewKey={RESOURCE}
-            defaultView="list"
+            defaultView="card"
             header="مدیریت مشتری ها"
             href={`${RESOURCE}/create`}
             searchField="full_name"

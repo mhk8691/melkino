@@ -86,7 +86,7 @@ export function LessorsList() {
     return (
         <ListPage
             viewKey={RESOURCE}
-            defaultView="list"
+            defaultView="card"
             header={'مدیریت موجر ها'}
             href={'/landlord-tenant/lessors/create'}
             searchField="title"

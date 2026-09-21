@@ -87,7 +87,7 @@ export function OwnersList() {
     return (
         <ListPage
             viewKey={RESOURCE}
-            defaultView="list"
+            defaultView="card"
             header="مدیریت مالکین"
             href={RESOURCE + '/create'}
             searchField="full_name"

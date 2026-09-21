@@ -365,7 +365,7 @@ export function TenantsList() {
     return (
         <ListPage
             viewKey={RESOURCE}
-            defaultView="list"
+            defaultView="card"
             header="مدیریت مستأجرها"
             href={`/landlord-tenant/tenants/create`}
             searchField="full_name"

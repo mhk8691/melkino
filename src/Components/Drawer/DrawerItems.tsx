@@ -18,6 +18,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import PaymentIcon from '@mui/icons-material/Payment';
 export type DrawerItemType = {
     title: string
     link: string
@@ -148,10 +149,10 @@ export const drawerItems: DrawerItemType[] = [
         icon: <AddCircleOutlineIcon sx={iconStyle} />,
     },
         {
-        title: 'درخواست مالکین',
+        title: 'درخواست فروشندگان',
         link: 'owners-requests',
         role: 'all',
-        icon: <AddCircleOutlineIcon sx={iconStyle} />,
+        icon: <PaymentIcon sx={iconStyle} />,
     },
     {
         title: 'یادآوری ها',
