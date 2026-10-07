@@ -55,6 +55,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { OwnersRequestCreate } from '../OwnersRequest/Create/OwnersRequestCreate'
 import { OwnersRequestList } from '../OwnersRequest/List/OwnersRequestList'
 import { OwnersRequestEdit } from '../OwnersRequest/Edit/OwnersRequestEdit'
+import { CustomersRequestList } from '../CustomersRequest/List/CustomersRequestList'
+import { CustomersRequestEdit } from '../CustomersRequest/Edit/CustomersRequestEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -319,6 +321,10 @@ export function Home(props) {
                         />
                         <Route path="owners-requests" element={<OwnersRequestList />} />
                         <Route path="owners-requests/:id" element={<OwnersRequestEdit />} />
+                         {/* ...........customers-requests.......... */}
+                       
+                        <Route path="customers-requests" element={<CustomersRequestList />} />
+                        <Route path="customers-requests/:id" element={<CustomersRequestEdit />} />
                     </Routes>
                 </Box>
             </Box>
