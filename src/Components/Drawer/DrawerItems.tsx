@@ -17,9 +17,10 @@ import HandshakeIcon from '@mui/icons-material/Handshake'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import PaymentIcon from '@mui/icons-material/Payment';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent'
+import PaymentIcon from '@mui/icons-material/Payment'
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket'
+import VisibilityIcon from '@mui/icons-material/Visibility';
 export type DrawerItemType = {
     title: string
     link: string
@@ -149,13 +150,13 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <AddCircleOutlineIcon sx={iconStyle} />,
     },
-        {
+    {
         title: 'درخواست مشتریان',
         link: 'customers-requests',
         role: 'all',
         icon: <ShoppingBasketIcon sx={iconStyle} />,
     },
-        {
+    {
         title: 'درخواست مالکین',
         link: 'owners-requests',
         role: 'all',
@@ -166,6 +167,12 @@ export const drawerItems: DrawerItemType[] = [
         link: 'reminders',
         role: 'all',
         icon: <NotificationsActiveIcon sx={iconStyle} />,
+    },
+       {
+        title: 'بازدید ها',
+        link: 'views',
+        role: 'all',
+        icon: <VisibilityIcon sx={iconStyle} />,
     },
     {
         title: 'دیوارکوب',
@@ -192,7 +199,7 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <AssignmentIcon sx={iconStyle} />,
     },
-       {
+    {
         title: 'ثبت تیکت',
         link: 'tickets',
         role: 'all',

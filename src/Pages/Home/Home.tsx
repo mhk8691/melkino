@@ -50,13 +50,15 @@ import RoleSelectPage from '../Lessors/RoleCard'
 import {TicketsList} from '../Tickets/List/TicketsList'
 import {TicketsEdit} from '../Tickets/Edit/TicketsEdit'
 import {TicketsCreate} from '../Tickets/Create/TicketsCreate'
-import {Button, IconButton, Tooltip} from '@mui/material'
+import {Button} from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { OwnersRequestCreate } from '../OwnersRequest/Create/OwnersRequestCreate'
-import { OwnersRequestList } from '../OwnersRequest/List/OwnersRequestList'
-import { OwnersRequestEdit } from '../OwnersRequest/Edit/OwnersRequestEdit'
-import { CustomersRequestList } from '../CustomersRequest/List/CustomersRequestList'
-import { CustomersRequestEdit } from '../CustomersRequest/Edit/CustomersRequestEdit'
+import {OwnersRequestCreate} from '../OwnersRequest/Create/OwnersRequestCreate'
+import {OwnersRequestList} from '../OwnersRequest/List/OwnersRequestList'
+import {OwnersRequestEdit} from '../OwnersRequest/Edit/OwnersRequestEdit'
+import {CustomersRequestList} from '../CustomersRequest/List/CustomersRequestList'
+import {CustomersRequestEdit} from '../CustomersRequest/Edit/CustomersRequestEdit'
+import {ViewsList} from '../Views/List/ViewsList'
+import {ViewsEdit} from '../Views/Edit/ViewsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -314,17 +316,22 @@ export function Home(props) {
                             path="tickets/create"
                             element={<TicketsCreate data={data} setData={setData} />}
                         />
-                         {/* ...........owners-requests.......... */}
+                        {/* ...........owners-requests.......... */}
                         <Route
                             path="owners-requests/create"
                             element={<OwnersRequestCreate data={data} setData={setData} />}
                         />
                         <Route path="owners-requests" element={<OwnersRequestList />} />
                         <Route path="owners-requests/:id" element={<OwnersRequestEdit />} />
-                         {/* ...........customers-requests.......... */}
-                       
+                        {/* ...........customers-requests.......... */}
+
                         <Route path="customers-requests" element={<CustomersRequestList />} />
                         <Route path="customers-requests/:id" element={<CustomersRequestEdit />} />
+
+                        {/* ...........Views.......... */}
+
+                        <Route path="views" element={<ViewsList />} />
+                        <Route path="views/:id" element={<ViewsEdit />} />
                     </Routes>
                 </Box>
             </Box>
