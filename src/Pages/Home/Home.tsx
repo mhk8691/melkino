@@ -61,6 +61,8 @@ import {ViewsList} from '../Views/List/ViewsList'
 import {ViewsEdit} from '../Views/Edit/ViewsEdit'
 import { FollowUpsList } from '../FollowUps/List/FollowUpsList'
 import { FollowUpsEdit } from '../FollowUps/Edit/FollowUpsEdit'
+import { ContractsList } from '../Contracts/List/ContractsList'
+import { ContractsEdit } from '../Contracts/Edit/ContractsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -338,6 +340,10 @@ export function Home(props) {
 
                         <Route path="follow-ups" element={<FollowUpsList />} />
                         <Route path="follow-ups/:id" element={<FollowUpsEdit />} />
+                         {/* ...........Contracts.......... */}
+
+                        <Route path="contracts" element={<ContractsList />} />
+                        <Route path="contracts/:id" element={<ContractsEdit />} />
                     </Routes>
                 </Box>
             </Box>

@@ -22,7 +22,7 @@ import PaymentIcon from '@mui/icons-material/Payment'
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import TrackChangesIcon from '@mui/icons-material/TrackChanges'
-
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 export type DrawerItemType = {
     title: string
     link: string
@@ -181,6 +181,12 @@ export const drawerItems: DrawerItemType[] = [
         link: 'follow-ups',
         role: 'all',
         icon: <TrackChangesIcon sx={iconStyle} />,
+    },
+     {
+        title: 'قراردادها',
+        link: 'contracts',
+        role: 'all',
+        icon: <DescriptionOutlinedIcon sx={iconStyle} />,
     },
     {
         title: 'دیوارکوب',
