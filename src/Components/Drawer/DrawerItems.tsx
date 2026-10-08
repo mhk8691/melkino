@@ -20,7 +20,9 @@ import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent'
 import PaymentIcon from '@mui/icons-material/Payment'
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket'
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import TrackChangesIcon from '@mui/icons-material/TrackChanges'
+
 export type DrawerItemType = {
     title: string
     link: string
@@ -168,11 +170,17 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <NotificationsActiveIcon sx={iconStyle} />,
     },
-       {
+    {
         title: 'بازدید ها',
         link: 'views',
         role: 'all',
         icon: <VisibilityIcon sx={iconStyle} />,
+    },
+    {
+        title: 'پیگیری ها',
+        link: 'follow-ups',
+        role: 'all',
+        icon: <TrackChangesIcon sx={iconStyle} />,
     },
     {
         title: 'دیوارکوب',
