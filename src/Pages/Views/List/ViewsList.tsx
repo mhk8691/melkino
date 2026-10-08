@@ -176,6 +176,38 @@ export function ViewsList() {
                             md: 3,
                             xl: 4,
                         }}
+                        renderers={{
+                            title: (row: ViewsType) => row.file_name || '--',
+                            subtitle: (row: ViewsType) => row.full_name || '--',
+
+                            actions: (row: ViewsType) => (
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="success"
+                                    size="small"
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+
+                                        console.log('تأیید بازدید:', row.id)
+                                    }}
+                                    sx={{
+                                        height: 34,
+                                        borderRadius: '9px',
+                                        fontSize: '12px',
+                                        fontWeight: 600,
+                                        boxShadow: 'none',
+                                        whiteSpace: 'nowrap',
+
+                                        '&:hover': {
+                                            boxShadow: 'none',
+                                        },
+                                    }}
+                                >
+                                    تأیید بازدید
+                                </Button>
+                            ),
+                        }}
                     />
                 ) : (
                     <CustomTable

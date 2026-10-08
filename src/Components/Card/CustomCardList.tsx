@@ -15,9 +15,7 @@ import {CardFieldType, CardRenderersType, CustomCard} from './CustomCard'
 
 export function CustomCardList(props: {
     rows: any[]
-    /** فیلدهای داخل کارت — با createCardField ساخته می‌شوند */
     fields: CardFieldType[]
-    /** رندرکننده‌های ناحیه‌های ثابت کارت: media / title / subtitle / status / actions */
     renderers?: CardRenderersType
     loading: boolean
     params: any
@@ -25,20 +23,21 @@ export function CustomCardList(props: {
     count: number
     resource: string
     getList: () => void
-    /** برای متن‌های مودال حذف: «حذف {title}» */
     title: string
     noEdit?: boolean
     noDelete?: boolean
     noPagination?: boolean
-    /** کلیک روی کارت به صفحه‌ی جزئیات می‌رود */
     hasDetail?: boolean
-    /** انتخاب گروهی با چک‌باکس */
     groupEdit?: boolean
     selectedIds?: string[]
     onSelectionChange?: (ids: string[]) => void
-    /** تعداد ستون‌ها در بریک‌پوینت‌های مختلف */
-    columns?: {xs?: number; sm?: number; md?: number; lg?: number; xl?: number}
-    /** اگر رفتار کلیک کارت متفاوت از navigate باشد */
+    columns?: {
+        xs?: number
+        sm?: number
+        md?: number
+        lg?: number
+        xl?: number
+    }
     onCardClick?: (row: any) => void
 }) {
     const {
@@ -97,20 +96,35 @@ export function CustomCardList(props: {
     }
 
     function handleSelectAll(checked: boolean) {
-        setSelectedIds(checked ? rows.map((row) => String(row.id)) : [])
+        setSelectedIds(
+            checked ? rows.map((row) => String(row.id)) : [],
+        )
     }
 
-    const allSelected = rows.length > 0 && rows.every((row) => selectedIds.includes(String(row.id)))
-    const someSelected = rows.some((row) => selectedIds.includes(String(row.id))) && !allSelected
+    const allSelected =
+        rows.length > 0 &&
+        rows.every((row) => selectedIds.includes(String(row.id)))
+
+    const someSelected =
+        rows.some((row) => selectedIds.includes(String(row.id))) &&
+        !allSelected
 
     async function handleDelete() {
         dispatch(setUtil({loading: true}))
+
         try {
             await DataProvider.delete(`${resource}/${selected}/`)
             getList()
         } catch (error: any) {
-            dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
+            dispatch(
+                setUtil({
+                    open: true,
+                    message: error.message,
+                    severity: 'error',
+                }),
+            )
         }
+
         dispatch(setUtil({loading: false}))
         setOpen(false)
         setSelected('')
@@ -124,7 +138,9 @@ export function CustomCardList(props: {
         xl: `repeat(${columns?.xl ?? columns?.lg ?? 4}, minmax(0, 1fr))`,
     }
 
-    if (!loading && rows.length === 0) return <BlankList />
+    if (!loading && rows.length === 0) {
+        return <BlankList />
+    }
 
     return (
         <>
@@ -134,9 +150,11 @@ export function CustomCardList(props: {
                         height: '2.5px',
                         borderRadius: '2px',
                         mb: 1.5,
+
                         [`& .${linearProgressClasses.bar}`]: {
                             background: `linear-gradient(90deg, ${primary.dark}, ${primary.light})`,
                         },
+
                         [`&.${linearProgressClasses.colorPrimary}`]: {
                             backgroundColor: 'transparent',
                         },
@@ -163,10 +181,23 @@ export function CustomCardList(props: {
                         <Checkbox
                             checked={allSelected}
                             indeterminate={someSelected}
-                            onChange={(e) => handleSelectAll(e.target.checked)}
-                            sx={{p: 0.5, '&.Mui-checked': {color: 'primary.main'}}}
+                            onChange={(e) =>
+                                handleSelectAll(e.target.checked)
+                            }
+                            sx={{
+                                p: 0.5,
+                                '&.Mui-checked': {
+                                    color: 'primary.main',
+                                },
+                            }}
                         />
-                        <Typography sx={{fontSize: '13px', color: 'text.secondary'}}>
+
+                        <Typography
+                            sx={{
+                                fontSize: '13px',
+                                color: 'text.secondary',
+                            }}
+                        >
                             {selectedIds.length > 0
                                 ? `${selectedIds.length} مورد انتخاب شده`
                                 : 'انتخاب همه'}
@@ -174,14 +205,22 @@ export function CustomCardList(props: {
                     </Stack>
                 )}
 
-                <Box sx={{display: 'grid', gridTemplateColumns: gridTemplate, gap: 2}}>
+                <Box
+                    sx={{
+                        display: 'grid',
+                        gridTemplateColumns: gridTemplate,
+                        gap: 2,
+                    }}
+                >
                     {loading && rows.length === 0
                         ? Array.from({length: 6}).map((_, i) => (
                               <Skeleton
                                   key={i}
                                   variant="rectangular"
                                   height={210}
-                                  sx={{borderRadius: '18px'}}
+                                  sx={{
+                                      borderRadius: '18px',
+                                  }}
                               />
                           ))
                         : rows.map((row, index) => (
@@ -194,15 +233,29 @@ export function CustomCardList(props: {
                                   noEdit={noEdit}
                                   noDelete={noDelete}
                                   selectable={groupEdit}
-                                  selected={selectedIds.includes(String(row.id))}
-                                  onSelect={() => handleRowSelect(String(row.id))}
-                                  clickable={Boolean(hasDetail || onCardClick)}
+                                  selected={selectedIds.includes(
+                                      String(row.id),
+                                  )}
+                                  onSelect={() =>
+                                      handleRowSelect(
+                                          String(row.id),
+                                      )
+                                  }
+                                  clickable={Boolean(
+                                      hasDetail || onCardClick,
+                                  )}
                                   onClick={() =>
                                       onCardClick
                                           ? onCardClick(row)
-                                          : navigate(`${row.id}`, {state: {row}})
+                                          : navigate(`${row.id}`, {
+                                                state: {row},
+                                            })
                                   }
-                                  onEdit={() => navigate(`${row.id}`, {state: {row}})}
+                                  onEdit={() =>
+                                      navigate(`${row.id}`, {
+                                          state: {row},
+                                      })
+                                  }
                                   onDelete={() => {
                                       setSelected(row.id)
                                       setOpen(true)
@@ -230,17 +283,33 @@ export function CustomCardList(props: {
                             page={page}
                             onPageChange={(event, newPage) => {
                                 setPage(newPage)
-                                setParams((prev) => ({...prev, page: newPage + 1}))
+
+                                setParams((prev: typeof params) => ({
+                                    ...prev,
+                                    page: newPage + 1,
+                                }))
                             }}
                             onRowsPerPageChange={(event) => {
-                                const newValue = parseInt(event.target.value, 10)
+                                const newValue = parseInt(
+                                    event.target.value,
+                                    10,
+                                )
+
                                 setRowsPerPage(newValue)
                                 setPage(0)
-                                setParams((prev) => ({...prev, page_size: newValue}))
+
+                                setParams((prev: typeof params) => ({
+                                    ...prev,
+                                    page_size: newValue,
+                                }))
                             }}
                             labelRowsPerPage="تعداد کارت در هر صفحه:"
                             labelDisplayedRows={({from, to, count}) =>
-                                `${from}–${to} از ${count !== -1 ? count : `بیشتر از ${to}`}`
+                                `${from}–${to} از ${
+                                    count !== -1
+                                        ? count
+                                        : `بیشتر از ${to}`
+                                }`
                             }
                             sx={{
                                 '& .MuiTablePagination-selectLabel': {
@@ -248,20 +317,27 @@ export function CustomCardList(props: {
                                     fontWeight: 500,
                                     color: 'text.secondary',
                                 },
+
                                 '& .MuiTablePagination-displayedRows': {
                                     fontSize: '13px',
                                     fontWeight: 600,
                                     color: 'text.primary',
                                 },
-                                '& .MuiTablePagination-select': {fontSize: '13px'},
+
+                                '& .MuiTablePagination-select': {
+                                    fontSize: '13px',
+                                },
+
                                 '& .MuiTablePagination-actions button': {
                                     borderRadius: '8px',
                                     transition: 'all .15s ease',
                                 },
-                                '& .MuiTablePagination-actions button:hover': {
-                                    bgcolor: tint.hoverBg,
-                                    color: 'primary.main',
-                                },
+
+                                '& .MuiTablePagination-actions button:hover':
+                                    {
+                                        bgcolor: tint.hoverBg,
+                                        color: 'primary.main',
+                                    },
                             }}
                         />
                     </Box>
@@ -275,7 +351,15 @@ export function CustomCardList(props: {
                 style={{maxWidth: 'sm'}}
             >
                 <Stack spacing={2.5}>
-                    <Stack alignItems="center" textAlign="center" spacing={1.5} sx={{pt: 1, px: 2}}>
+                    <Stack
+                        alignItems="center"
+                        textAlign="center"
+                        spacing={1.5}
+                        sx={{
+                            pt: 1,
+                            px: 2,
+                        }}
+                    >
                         <Box
                             sx={{
                                 width: 64,
@@ -289,22 +373,46 @@ export function CustomCardList(props: {
                                 borderColor: 'error.light',
                             }}
                         >
-                            <ReportProblemRoundedIcon sx={{color: 'error.main', fontSize: 32}} />
+                            <ReportProblemRoundedIcon
+                                sx={{
+                                    color: 'error.main',
+                                    fontSize: 32,
+                                }}
+                            />
                         </Box>
 
-                        <Typography sx={{fontSize: '18px', fontWeight: 700, color: 'text.primary'}}>
+                        <Typography
+                            sx={{
+                                fontSize: '18px',
+                                fontWeight: 700,
+                                color: 'text.primary',
+                            }}
+                        >
                             آیا از حذف این {title} مطمئن هستید؟
                         </Typography>
 
                         <Typography
-                            sx={{fontSize: '13px', color: 'text.secondary', lineHeight: 1.8}}
+                            sx={{
+                                fontSize: '13px',
+                                color: 'text.secondary',
+                                lineHeight: 1.8,
+                            }}
                         >
-                            با حذف این {title}، اطلاعات آن برای همیشه حذف خواهد شد
-                            <br />و این عملیات قابل بازگشت نیست.
+                            با حذف این {title}، اطلاعات آن برای همیشه حذف
+                            خواهد شد
+                            <br />
+                            و این عملیات قابل بازگشت نیست.
                         </Typography>
                     </Stack>
 
-                    <Stack direction="row" spacing={1.5} sx={{pt: 1, px: 1}}>
+                    <Stack
+                        direction="row"
+                        spacing={1.5}
+                        sx={{
+                            pt: 1,
+                            px: 1,
+                        }}
+                    >
                         <Button
                             fullWidth
                             variant="contained"
@@ -316,7 +424,11 @@ export function CustomCardList(props: {
                                 fontSize: '14px',
                                 fontWeight: 600,
                                 boxShadow: 'none',
-                                '&:hover': {boxShadow: 'none', backgroundColor: 'error.dark'},
+
+                                '&:hover': {
+                                    boxShadow: 'none',
+                                    backgroundColor: 'error.dark',
+                                },
                             }}
                         >
                             حذف {title}
@@ -333,6 +445,7 @@ export function CustomCardList(props: {
                                 fontWeight: 600,
                                 color: 'text.primary',
                                 borderColor: 'divider',
+
                                 '&:hover': {
                                     borderColor: 'text.secondary',
                                     backgroundColor: 'action.hover',
