@@ -254,8 +254,24 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               name="virtualTourLink"
                               setData={setProperty}
                               resource={resource}
-                              label="لینک تور مجازی"
-                              defaultValue={property.virtualTourLink}
+                              label="لینک تور مجازی ایتا"
+                             defaultValue={property.virtualTourLink?.eitaa ?? ''}
+                          />,
+                          <CustomTextField
+                              key="virtualTourLink"
+                              name="virtualTourLink"
+                              setData={setProperty}
+                              resource={resource}
+                              label="لینک تور مجازی تلگرام"
+                              defaultValue={property.virtualTourLink?.telegram ?? ''}
+                          />,
+                          <CustomTextField
+                              key="virtualTourLink"
+                              name="virtualTourLink"
+                              setData={setProperty}
+                              resource={resource}
+                              label="لینک تور مجازی اینستاگرام"
+                             defaultValue={property.virtualTourLink?.instagram ?? ''}
                           />,
                       ]
                     : []),

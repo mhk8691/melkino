@@ -1,4 +1,4 @@
-import type {Dispatch, SetStateAction} from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 
 export type RecordMode = 'file' | 'request' | 'ad'
 export type PropertyType = {
@@ -7,19 +7,23 @@ export type PropertyType = {
     propertyType: string
     contractType: string
     documentType: string
-    requesterName?:string
-    requesterPhone?:string
-    vacateDate?:string
+    requesterName?: string
+    requesterPhone?: string
+    vacateDate?: string
     // در حالت «فایل» یعنی اختصاص به مشتری و در حالت «درخواست» یعنی اختصاص به کارشناس
     assignedTo?: string
-    monthlyCharge:string
+    monthlyCharge: string
     city: string
-    virtualTourLink:string
+    virtualTourLink: {
+        eitaa: string
+        telegram: string
+        instagram: string
+    }
     // در حالت «فایل» رشته آزاد و در حالت «درخواست» چند مقداری است
     district: string | string[]
     neighborhood: string | string[]
     address: string
-budgetType:string
+    budgetType: string
     area: number
     totalPrice: number
     pricePerMeter: number
@@ -71,7 +75,7 @@ budgetType:string
     advisorName?: string
     agencyName?: string
     contactPhone?: string
-    toneOfTheAd?:string
+    toneOfTheAd?: string
 
 }
 export type FilesType = {
@@ -86,7 +90,7 @@ export type StepProps = {
     property: PropertyType
     setProperty: Dispatch<SetStateAction<PropertyType>>
     resource: string
-    editMode?:boolean
+    editMode?: boolean
 }
 
 // مراحلی که رفتارشان بین «فایل» و «درخواست» فرق می‌کند
