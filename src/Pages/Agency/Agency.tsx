@@ -17,9 +17,12 @@ export interface AgencyType {
     updatedAt?: string
     role: string
     agencyName: string
-    postalCode: string
-    maritalStatus: 'married' | 'single'
+    city: string
+    province: string
     officeAddress: string
+    licenseStatus: 'active' | 'inactive'
+    activeExpertCount: number
+    maritalStatus: 'married' | 'single'
     officePropertyStatus: 'owner' | 'tenant'
     leaseEndDate?: string | null
     logo?: string | null
@@ -91,36 +94,42 @@ export function Agency({
                                 defaultValue={agency.phoneNumber}
                             />,
                             <CustomTextField
-                                name="postalCode"
+                                name="province"
                                 setData={setAgency}
                                 resource={resource}
-                                label="کد پستی"
-                                defaultValue={agency.postalCode}
+                                label="استان"
+                                defaultValue={agency.province || ''}
                             />,
-                            <CustomSelectField
-                                key="maritalStatus"
-                                name="maritalStatus"
+                            <CustomTextField
+                                name="city"
                                 setData={setAgency}
                                 resource={resource}
-                                label="وضعیت تأهل"
-                                defaultValue={agency.maritalStatus}
-                                options={toSelectOptions(['متأهل', 'مجرد'])}
+                                label="شهر"
+                                defaultValue={agency.city || ''}
                             />,
                             <CustomTextField
                                 name="officeAddress"
                                 setData={setAgency}
                                 resource={resource}
-                                label="آدرس دفتر"
-                                defaultValue={agency.officeAddress}
+                                label="آدرس"
+                                defaultValue={agency.officeAddress || ''}
                             />,
                             <CustomSelectField
-                                key="officePropertyStatus"
-                                name="officePropertyStatus"
+                                key="licenseStatus"
+                                name="licenseStatus"
                                 setData={setAgency}
                                 resource={resource}
-                                label="وضعیت ملک دفتر"
-                                defaultValue={agency.officePropertyStatus}
-                                options={toSelectOptions(['مالک', 'مستأجر'])}
+                                label="وضعیت پروانه"
+                                defaultValue={agency.licenseStatus}
+                                options={toSelectOptions(['فعال', 'غیرفعال'])}
+                            />,
+                            <CustomTextField
+                                name="activeExpertCount"
+                                setData={setAgency}
+                                resource={resource}
+                                label="تعداد کارشناسان فعال"
+                                defaultValue={String(agency.activeExpertCount ?? 0)}
+                                disabled
                             />,
                             <DatePickerFilter
                                 key="leaseEndDate"
