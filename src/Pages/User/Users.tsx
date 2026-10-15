@@ -4,6 +4,7 @@ import {GridProducer} from '../../Components/Table/GridProducer'
 import type {Dispatch, SetStateAction} from 'react'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
 import ProfileUploader from './ProfileUploader'
+import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 
 export interface UsersType {
     id: string
@@ -23,6 +24,7 @@ export interface UsersType {
     createdAt?: string
     updatedAt?: string
     role: string
+    userType: 'consumer' | 'investor'
 }
 
 export function Users({
@@ -147,6 +149,18 @@ export function Users({
                                 label="نقش"
                                 defaultValue={users.role}
                                 disabled
+                            />,
+
+                            <CustomSelectField
+                                name="user_type"
+                                setData={setUsers}
+                                resource={resource}
+                                label="نوع کاربر"
+                                defaultValue={users.userType}
+                                options={[
+                                    {label: 'مصرف کننده', value: 'consumer'},
+                                    {label: 'سرمایه گذار', value: 'investor'},
+                                ]}
                             />,
                         ]}
                     />

@@ -25,6 +25,7 @@ const tableHeadCells = [
     createTableHeadCells('آدرس', 'address'),
     createTableHeadCells('تاریخ ایجاد', 'createdAt'),
     createTableHeadCells('نقش', 'role'),
+    createTableHeadCells('نوع کاربر', 'user_type'),
     createTableHeadCells('عملیات', 'action'),
 ]
 
@@ -59,6 +60,7 @@ export function UsersList() {
                 createdAt: '2026-09-01',
                 updatedAt: '2026-09-05',
                 role: 'regular_user',
+                userType: 'consumer',
             },
             {
                 id: 'USR-1002',
@@ -73,6 +75,7 @@ export function UsersList() {
                 createdAt: '2026-09-02',
                 updatedAt: '2026-09-06',
                 role: 'regular_user',
+                userType: 'investor',
             },
             {
                 id: 'USR-1003',
@@ -87,6 +90,7 @@ export function UsersList() {
                 createdAt: '2026-09-03',
                 updatedAt: '2026-09-07',
                 role: 'regular_user',
+                userType: 'consumer',
             },
             {
                 id: 'USR-1004',
@@ -101,6 +105,7 @@ export function UsersList() {
                 createdAt: '2026-09-04',
                 updatedAt: '2026-09-08',
                 role: 'regular_user',
+                userType: 'consumer',
             },
             {
                 id: 'USR-1005',
@@ -115,6 +120,7 @@ export function UsersList() {
                 createdAt: '2026-09-05',
                 updatedAt: '2026-09-09',
                 role: 'regular_user',
+                userType: 'consumer',
             },
         ],
     })
@@ -153,7 +159,12 @@ export function UsersList() {
             </Box>
 
             {viewMode === 'card' ? (
-                <UserCardGrid rows={users.data} resource={RESOURCE} getList={()=>{}} title='کاربر عادی'  />
+                <UserCardGrid
+                    rows={users.data}
+                    resource={RESOURCE}
+                    getList={() => {}}
+                    title="کاربر عادی"
+                />
             ) : (
                 <CustomTable
                     title="کاربران عادی"
@@ -209,11 +220,9 @@ export function UsersList() {
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-{`${item.firstName} ${item.lastName}`}
+                                    {`${item.firstName} ${item.lastName}`}
                                 </Typography>
                             </TableCell>
-
-                         
 
                             <TableCell>
                                 <Typography
@@ -248,8 +257,6 @@ export function UsersList() {
                                     {item.nationalId || '--'}
                                 </Typography>
                             </TableCell>
-
-               
 
                             <TableCell>
                                 <Typography
@@ -305,7 +312,22 @@ export function UsersList() {
                                 </Typography>
                             </TableCell>
 
-                           
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.userType === 'consumer' ? 'مصرف کننده' : 'سرمایه گذار'}
+                                </Typography>
+                            </TableCell>
 
                             <TableCell>
                                 <Typography
@@ -324,7 +346,7 @@ export function UsersList() {
                                 </Typography>
                             </TableCell>
                             <TableCell>
-                                <Button variant="outlined" color="success">
+                                <Button variant="outlined" color="success" sx={{whiteSpace:'nowrap'}}>
                                     ورود به پنل کاربری
                                 </Button>
                             </TableCell>
