@@ -83,6 +83,7 @@ export type TenantsType = {
 
     defaultConditions: string
     nationality: string
+    occupancyDate:string
 }
 
 const emptyBudget = {
@@ -823,6 +824,15 @@ export function Tenants({
                             defaultValue={tenants.note}
                             multiline
                             rows={4}
+                        />,
+                         <CustomTextField
+                            key="occupanc_date"
+                            name="occupancy_date"
+                            setData={setTenants}
+                            resource={resource}
+                            label="تاریخ تصرف"
+                            defaultValue={tenants.occupancyDate}
+                            inputType="text"
                         />,
                     ]}
                 />

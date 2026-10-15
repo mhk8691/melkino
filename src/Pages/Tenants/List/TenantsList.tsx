@@ -23,6 +23,7 @@ const tableHeadCells = [
     createTableHeadCells('بازه رهن', 'budget.mortgage'),
     createTableHeadCells('بازه اجاره', 'budget.rent'),
     createTableHeadCells('ملیت', 'budget.rent'),
+    createTableHeadCells('تاریخ تصرف', 'occupancyDate'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -65,6 +66,7 @@ const cardFields = [
     createCardField('بازه اجاره', 'rent', {
         render: (row) => formatRange(row.budget.rent.min, row.budget.rent.max),
     }),
+    createCardField('تاریخ تصرف', 'occupancyDate'),
 ]
 
 export function TenantsList() {
@@ -129,6 +131,7 @@ export function TenantsList() {
                 remainingDate5: '',
                 remainingAmount6: '',
                 remainingDate6: '',
+                occupancyDate:'1405/3/2'
             },
 
             {
@@ -183,6 +186,7 @@ export function TenantsList() {
                 remainingDate5: '',
                 remainingAmount6: '',
                 remainingDate6: '',
+                occupancyDate:'1405/3/2'
             },
 
             {
@@ -237,6 +241,7 @@ export function TenantsList() {
                 remainingDate5: '',
                 remainingAmount6: '',
                 remainingDate6: '',
+                occupancyDate:'1405/3/2'
             },
 
             {
@@ -290,6 +295,7 @@ export function TenantsList() {
                 remainingDate5: '',
                 remainingAmount6: '',
                 remainingDate6: '',
+                occupancyDate:'1405/3/2'
             },
 
             {
@@ -343,6 +349,7 @@ export function TenantsList() {
                 remainingDate5: '',
                 remainingAmount6: '',
                 remainingDate6: '',
+                occupancyDate:'1405/3/2'
             },
         ],
     })
@@ -436,6 +443,9 @@ export function TenantsList() {
 
                                 <TableCell key={`${item.id}-nationality`}>
                                     {cellText(item.nationality)}
+                                </TableCell>
+                                 <TableCell key={`${item.id}-occupancyDate`}>
+                                    {cellText(item.occupancyDate)}
                                 </TableCell>
                             </>
                         ))}

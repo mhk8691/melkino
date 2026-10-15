@@ -18,12 +18,14 @@ const tableHeadCells = [
     createTableHeadCells('تلفن', 'phone_number'),
     createTableHeadCells('شهر', 'cities'),
     createTableHeadCells('محله', 'neighborhoods'),
+    createTableHeadCells('وضعیت اشتغال', 'occupancyStatus'),
 ]
 
 /** همان ستون‌ها، اما برای بدنه‌ی کارت. نام و تلفن در سربرگ کارت می‌آیند پس اینجا تکرار نشده */
 const cardFields = [
     createCardField('شهر', 'cities'),
     createCardField('محله', 'neighborhoods'),
+    createCardField('وضعیت اشتغال', 'occupancyStatus'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -57,6 +59,7 @@ export function LessorsList() {
                 phone_number: '09125463121',
                 cities: 'قم',
                 neighborhoods: 'زنبیل آباد',
+                occupancyStatus:'تخلیه'
             },
             {
                 id: 2,
@@ -64,6 +67,7 @@ export function LessorsList() {
                 phone_number: '09105463121',
                 cities: 'تهران',
                 neighborhoods: 'پیروزی',
+                occupancyStatus:'1405/2/3'
             },
         ],
     })
@@ -123,6 +127,7 @@ export function LessorsList() {
                                 <TableCell>{cellText(item.phone_number)}</TableCell>
                                 <TableCell>{cellText(item.cities)}</TableCell>
                                 <TableCell>{cellText(item.neighborhoods)}</TableCell>
+                                <TableCell>{cellText(item.occupancyStatus)}</TableCell>
                             </>
                         ))}
                     />
