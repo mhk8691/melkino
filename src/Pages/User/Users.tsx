@@ -126,7 +126,7 @@ export function Users({
                                 name="createdAt"
                                 setData={setUsers}
                                 resource={resource}
-                                label="تاریخ ایجاد"
+                                label="تاریخ ثبت نام"
                                 defaultValue={users.createdAt || ''}
                                 disabled
                             />,

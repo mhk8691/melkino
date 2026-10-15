@@ -4,12 +4,13 @@ import {useEffect, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {setUtil} from '../../redux/UtilSlice'
 import { ParamType } from '../../Components/Filter/CustomFilter'
-import { UsersType } from '../User/Users'
+import { Users, UsersType } from '../User/Users'
 
 export default function Profile() {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
     const [initialData, setInitialData] = useState<UsersType>({} as UsersType)
       const [date,setDate] = useState<ParamType>({} as ParamType)
+      const [users,setUsers] = useState<UsersType>({} as UsersType)
     const dispatch = useDispatch()
     useEffect(() => {
         const getProfile = async () => {
@@ -117,7 +118,7 @@ export default function Profile() {
                     </Stack>
                 </Stack>
             </Stack>
-            {/* <Users    /> */}
+            <Users resource='/profile' users={users} setUsers={setUsers}   />
         </Box>
     )
 }

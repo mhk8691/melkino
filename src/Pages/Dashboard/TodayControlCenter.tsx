@@ -46,22 +46,7 @@ export default function TodayControlCenter({
                     </Typography>
                 </Box>
 
-                <Stack direction="row" spacing={1.5}>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={onRegisterFile}
-                    >
-                        ثبت فایل
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<PeopleAltOutlinedIcon />}
-                        onClick={onViewCustomers}
-                    >
-                        مشاهده مشتریان
-                    </Button>
-                </Stack>
+        
             </Stack>
         </Paper>
     )
