@@ -24,6 +24,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import TrackChangesIcon from '@mui/icons-material/TrackChanges'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+
 export type DrawerItemType = {
     title: string
     link: string
@@ -194,6 +196,12 @@ export const drawerItems: DrawerItemType[] = [
         link: 'archives',
         role: 'all',
         icon: <ArchiveOutlinedIcon sx={iconStyle} />,
+    },
+          {
+        title: 'کارهای مهم امروز',
+        link: 'tasks',
+        role: 'all',
+        icon: <AssignmentTurnedInIcon sx={iconStyle} />,
     },
     {
         title: 'دیوارکوب',
