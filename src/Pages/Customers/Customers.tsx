@@ -7,11 +7,13 @@ import {toSelectOptions} from '../../Components/PropertyRecordForm/utils'
 import {PROPERTY_TYPE_OPTIONS} from '../../Components/PropertyRecordForm/constants'
 import {CustomAutocomplete} from '../../Components/Input/CustomAutoComplete'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
-import { PropertyCard } from '../Files/PropertyCard/PropertyCard'
+import {PropertyCard} from '../Files/PropertyCard/PropertyCard'
+import ProfileUploader from '../User/ProfileUploader'
 
 export type CustomersType = {
     id: number
     full_name: string
+    profileImage?:string | null
     phone_number: string
     status: string
     propertyType: string
@@ -439,58 +441,65 @@ export function Customers({
                 return []
         }
     }
-       const requestData = [
-            // ---------- فروش ----------
-            {
-                id: 1,
-                propertyType: 'آپارتمان',
-                contractType: 'فروش',
-                city: 'تهران',
-                district: ['منطقه ۱', 'منطقه ۲'],
-                neighborhood: ['زعفرانیه', 'الهیه'],
-                areaFrom: 90,
-                areaTo: 130,
-                totalPriceFrom: 5000000000,
-                totalPriceTo: 7500000000,
-                roomCount: 2,
-                requesterName: 'علی محمدی',
-                requesterPhone: '09121234567',
-            },
-            {
-                id: 3,
-                propertyType: 'زمین',
-                contractType: 'فروش',
-                city: 'شیراز',
-                district: ['معالی‌آباد'],
-                neighborhood: [],
-                areaFrom: 300,
-                areaTo: 400,
-                totalPriceFrom: 10000000000,
-                totalPriceTo: 14000000000,
-                roomCount: 0,
-                requesterName: 'رضا کریمی',
-                requesterPhone: '09131234567',
-            },
-            {
-                id: 4,
-                propertyType: 'مغازه',
-                contractType: 'فروش',
-                city: 'اصفهان',
-                district: ['خیابان چهارباغ'],
-                neighborhood: ['نقش جهان'],
-                areaFrom: 40,
-                areaTo: 60,
-                totalPriceFrom: 3000000000,
-                totalPriceTo: 4500000000,
-                roomCount: 1,
-                requesterName: 'مریم صادقی',
-                requesterPhone: '09141234567',
-            },
-           
-        ]
+    const requestData = [
+        // ---------- فروش ----------
+        {
+            id: 1,
+            propertyType: 'آپارتمان',
+            contractType: 'فروش',
+            city: 'تهران',
+            district: ['منطقه ۱', 'منطقه ۲'],
+            neighborhood: ['زعفرانیه', 'الهیه'],
+            areaFrom: 90,
+            areaTo: 130,
+            totalPriceFrom: 5000000000,
+            totalPriceTo: 7500000000,
+            roomCount: 2,
+            requesterName: 'علی محمدی',
+            requesterPhone: '09121234567',
+        },
+        {
+            id: 3,
+            propertyType: 'زمین',
+            contractType: 'فروش',
+            city: 'شیراز',
+            district: ['معالی‌آباد'],
+            neighborhood: [],
+            areaFrom: 300,
+            areaTo: 400,
+            totalPriceFrom: 10000000000,
+            totalPriceTo: 14000000000,
+            roomCount: 0,
+            requesterName: 'رضا کریمی',
+            requesterPhone: '09131234567',
+        },
+        {
+            id: 4,
+            propertyType: 'مغازه',
+            contractType: 'فروش',
+            city: 'اصفهان',
+            district: ['خیابان چهارباغ'],
+            neighborhood: ['نقش جهان'],
+            areaFrom: 40,
+            areaTo: 60,
+            totalPriceFrom: 3000000000,
+            totalPriceTo: 4500000000,
+            roomCount: 1,
+            requesterName: 'مریم صادقی',
+            requesterPhone: '09141234567',
+        },
+    ]
 
     return (
         <Stack>
+            <Stack
+                sx={{
+                    width: '100%',
+                    marginBottom: '16px',
+                }}
+            >
+                <ProfileUploader user={customers} setUser={setCustomers} />
+            </Stack>
             {customers && (
                 <GridProducer
                     sx={{marginBottom: '16px'}}
@@ -606,16 +615,7 @@ export function Customers({
                             resource={resource}
                             label="منطقه"
                             defaultValue={customers.area}
-                            options={toSelectOptions([
-                                '1',
-                                '2',
-                                '3',
-                                '4',
-                                '5',
-                                '6',
-                                '7',
-                                '8',
-                            ])}
+                            options={toSelectOptions(['1', '2', '3', '4', '5', '6', '7', '8'])}
                         />,
 
                         <CustomAutocomplete
@@ -652,11 +652,7 @@ export function Customers({
                             resource={resource}
                             label="وضعیت اشتغال"
                             defaultValue={customers.employmentStatus}
-                            options={toSelectOptions([
-                                'تخلیه',
-                                'مالک',
-                                'مستاجر',
-                            ])}
+                            options={toSelectOptions(['تخلیه', 'مالک', 'مستاجر'])}
                         />,
 
                         <CustomTextField
@@ -692,7 +688,7 @@ export function Customers({
                     ]}
                 />
             )}
-                <Typography variant="body2" color="initial" fontWeight={'bold'} my={3}>
+            <Typography variant="body2" color="initial" fontWeight={'bold'} my={3}>
                 درخواست ها:
             </Typography>
             <Grid container spacing={2.5}>

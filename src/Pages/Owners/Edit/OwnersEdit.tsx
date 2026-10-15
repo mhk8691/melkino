@@ -1,12 +1,12 @@
 import {useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
-import {Owners, CustomersType} from '../Owners'
+import {Owners, OwnersType} from '../Owners'
 
 const resource = 'owners'
 
 export function OwnersEdit() {
-    const state = useLocation().state as {row: CustomersType}
+    const state = useLocation().state as {row: OwnersType}
     const [owners, setOwners] = useState(state.row)
 
     return (

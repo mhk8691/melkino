@@ -8,7 +8,7 @@ import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
-import {CustomersType} from '../Owners'
+import {OwnersType} from '../Owners'
 
 const RESOURCE = 'owners'
 
@@ -48,7 +48,7 @@ export function OwnersList() {
 
     const [owners, setOwners] = useState<{
         total_results: number
-        data: CustomersType[]
+        data: OwnersType[]
     }>({
         total_results: 5,
         data: [

@@ -7,12 +7,14 @@ import {PropertyCard} from '../Files/PropertyCard/PropertyCard'
 import img1 from '../../Images/file/1.jpg'
 import img2 from '../../Images/file/2.jpg'
 import img3 from '../../Images/file/3.jpg'
-export type CustomersType = {
+import ProfileUploader from '../User/ProfileUploader'
+export type OwnersType = {
     id: number
     full_name: string
     phone_number: string
     cities: string
     neighborhoods: string
+    profileImage?:string | null
 }
 
 export function Owners({
@@ -21,8 +23,8 @@ export function Owners({
     resource,
     editMode = false,
 }: {
-    owners: CustomersType
-    setOwners: React.Dispatch<React.SetStateAction<CustomersType>>
+    owners: OwnersType
+    setOwners: React.Dispatch<React.SetStateAction<OwnersType>>
     resource: string
     editMode?: boolean
 }) {
@@ -103,6 +105,14 @@ export function Owners({
             ]
     return (
         <Stack>
+            <Stack
+                            sx={{
+                                width: '100%',
+                                marginBottom: '16px',
+                            }}
+                        >
+                            <ProfileUploader user={owners} setUser={setOwners} />
+                        </Stack>
             {owners && (
                 <GridProducer
                     sx={{marginBottom: '16px'}}
