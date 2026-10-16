@@ -15,7 +15,7 @@ export function ImageGallery({images, height}: {images: (string | File)[]; heigh
     const urls = useMemo(() => images.map((img) => (typeof img === 'string' ? img : URL.createObjectURL(img))), [images])
 
     useEffect(() => {
-        // فقط URLهایی که از File ساخته شدن (blob:) باید revoke بشن، نه رشته‌های معمولی
+        // فقط URLهایی که از File ساخته شدن (blob:) باید revoke بشن
         return () => {
             urls.forEach((url) => {
                 if (url.startsWith('blob:')) {
@@ -25,14 +25,35 @@ export function ImageGallery({images, height}: {images: (string | File)[]; heigh
         }
     }, [urls])
 
+    // وقتی لیست تصاویر عوض شد، ایندکس رو ریست کن
+    useEffect(() => {
+        setActiveIndex(0)
+    }, [urls])
+
     if (urls.length === 0) return null
+
+    const multiple = urls.length > 1
+
+    const arrowSx = {
+        position: 'absolute',
+        top: '50%',
+        zIndex: 10,
+        width: 44,
+        height: 44,
+        transform: 'translateY(-50%)',
+        bgcolor: 'rgba(0,0,0,0.5)',
+        color: '#fff',
+        '&:hover': {bgcolor: 'rgba(0,0,0,0.7)'},
+    } as const
 
     return (
         <Box sx={{position: 'relative', width: '100%', height, overflow: 'hidden', bgcolor: 'background.default'}}>
             <Swiper
+                key={multiple ? 'loop' : 'single'} // loop رو نمی‌شه بعد از mount عوض کرد
                 dir="rtl"
+                loop={multiple}
                 onSwiper={(s) => (swiperRef.current = s)}
-                onSlideChange={(s) => setActiveIndex(s.activeIndex)}
+                onSlideChange={(s) => setActiveIndex(s.realIndex)}
                 style={{width: '100%', height: '100%'}}
             >
                 {urls.map((url, i) => (
@@ -50,56 +71,45 @@ export function ImageGallery({images, height}: {images: (string | File)[]; heigh
                 ))}
             </Swiper>
 
-            {urls.length > 1 && (
+            {multiple && (
                 <>
                     <IconButton
-                        size="small"
                         onClick={(e) => {
                             e.stopPropagation()
                             swiperRef.current?.slidePrev()
                         }}
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            insetInlineStart: 6,
-                            transform: 'translateY(-50%)',
-                            bgcolor: 'rgba(0,0,0,0.4)',
-                            color: '#fff',
-                            '&:hover': {bgcolor: 'rgba(0,0,0,0.6)'},
-                        }}
+                        sx={{...arrowSx, insetInlineStart: 12}}
                     >
-                        <ChevronRightRoundedIcon fontSize="small" />
+                        <ChevronRightRoundedIcon sx={{fontSize: 32}} />
                     </IconButton>
                     <IconButton
-                        size="small"
                         onClick={(e) => {
                             e.stopPropagation()
                             swiperRef.current?.slideNext()
                         }}
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            insetInlineEnd: 6,
-                            transform: 'translateY(-50%)',
-                            bgcolor: 'rgba(0,0,0,0.4)',
-                            color: '#fff',
-                            '&:hover': {bgcolor: 'rgba(0,0,0,0.6)'},
-                        }}
+                        sx={{...arrowSx, insetInlineEnd: 12}}
                     >
-                        <ChevronLeftRoundedIcon fontSize="small" />
+                        <ChevronLeftRoundedIcon sx={{fontSize: 32}} />
                     </IconButton>
 
                     <Stack
                         direction="row"
-                        spacing={0.5}
-                        sx={{position: 'absolute', bottom: 8, insetInlineStart: 0, insetInlineEnd: 0, justifyContent: 'center'}}
+                        spacing={1}
+                        sx={{
+                            position: 'absolute',
+                            bottom: 14,
+                            insetInlineStart: 0,
+                            insetInlineEnd: 0,
+                            justifyContent: 'center',
+                            zIndex: 10,
+                        }}
                     >
                         {urls.map((_, i) => (
                             <Box
                                 key={i}
                                 sx={{
-                                    width: 6,
-                                    height: 6,
+                                    width: 10,
+                                    height: 10,
                                     borderRadius: '50%',
                                     bgcolor: i === activeIndex ? '#fff' : 'rgba(255,255,255,0.5)',
                                 }}
@@ -111,14 +121,16 @@ export function ImageGallery({images, height}: {images: (string | File)[]; heigh
                         variant="badge"
                         sx={{
                             position: 'absolute',
-                            top: 8,
-                            insetInlineStart: 8,
-                            bgcolor: 'rgba(0,0,0,0.45)',
+                            top: 12,
+                            insetInlineStart: 12,
+                            zIndex: 10,
+                            bgcolor: 'rgba(0,0,0,0.55)',
                             color: '#fff',
-                            px: 0.75,
-                            py: 0.15,
-                            borderRadius: 1,
-                            fontSize: '11px',
+                            px: 1.25,
+                            py: 0.4,
+                            borderRadius: 1.5,
+                            fontSize: '14px',
+                            fontWeight: 600,
                         }}
                     >
                         {activeIndex + 1}/{urls.length}
