@@ -66,6 +66,23 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                       ]
                     : []),
 
+                ...(mode === 'request' && isMortgageRent
+    ? [
+            <DatePickerFilter
+                              key="vacateDate"
+                              mode="controlled"
+                              item={{label: 'زمان تصرف'}}
+                              value={property.vacateDate ?? null}
+                              onChange={(value) =>
+                                  setProperty((prev) => ({
+                                      ...prev,
+                                      occupancyDate: value ?? '',
+                                  }))
+                              }
+                          />,
+      ]
+    : []),
+
                 <CustomSelectField
                     key="propertyType"
                     name="propertyType"

@@ -76,6 +76,7 @@ export type PropertyType = {
     agencyName?: string
     contactPhone?: string
     toneOfTheAd?: string
+    occupancyDate?:string
 
 }
 export type FilesType = {
