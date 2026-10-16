@@ -19,6 +19,7 @@ const tableHeadCells = [
     createTableHeadCells('شهر', 'cities'),
     createTableHeadCells('محله', 'neighborhoods'),
     createTableHeadCells('تعداد ملک', 'properties_count'),
+    createTableHeadCells('نقش مالک', 'role'),
 ]
 
 /** همان ستون‌ها، اما برای بدنه‌ی کارت. نام و تلفن در سربرگ کارت می‌آیند پس اینجا تکرار نشده */
@@ -26,6 +27,7 @@ const cardFields = [
     createCardField('شهر', 'cities'),
     createCardField('محله', 'neighborhoods'),
     createCardField('تعداد ملک', 'propertiesCount'),
+    createCardField('نقش مالک', 'role'),
 ]
 
 const queryNames = tableHeadCells.map((cell) => ({
@@ -60,7 +62,8 @@ export function OwnersList() {
                 phone_number: '09121234567',
                 cities: 'قم',
                 neighborhoods: 'آزادگان',
-                propertiesCount:'5'
+                propertiesCount:'5',
+                role:'سازنده'
             },
             {
                 id: 2,
@@ -68,7 +71,17 @@ export function OwnersList() {
                 phone_number: '09129876543',
                 cities: 'تهران',
                 neighborhoods: 'پیروزی',
-                propertiesCount:'1'
+                propertiesCount:'1',
+                role:'سرمایه گذار'
+            },
+              {
+                id: 3,
+                full_name: 'علی رضوانی',
+                phone_number: '09121234565',
+                cities: 'اصفهان',
+                neighborhoods: 'آزادگان',
+                propertiesCount:'5',
+                role:'مصرف کننده'
             },
         ],
     })
@@ -129,6 +142,8 @@ export function OwnersList() {
                                 <TableCell>{cellText(item.cities)}</TableCell>
                                 <TableCell>{cellText(item.neighborhoods)}</TableCell>
                                 <TableCell>{cellText(item.propertiesCount)}</TableCell>
+                                <TableCell>{cellText(item.role)}</TableCell>
+
                             </>
                         ))}
                     />

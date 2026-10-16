@@ -79,6 +79,8 @@ export function FilesList() {
                 agencyName: 'املاک آریا',
                 agencyPhone: '02122334455',
                 agencyAddress: 'تهران، سعادت‌آباد، خیابان علامه',
+                isAd:true
+                
             },
             // ۲) ویلایی رهن و اجاره — تعدادی از فیلدها خالی
             {
@@ -109,6 +111,7 @@ export function FilesList() {
                 agencyName: 'املاک سپهر',
                 agencyPhone: '02632223344',
                 agencyAddress: 'کرج، گوهردشت، فاز ۲',
+                isAd:true
             },
             // ۳) زمین — فقط حداقل اطلاعات
             {
@@ -129,6 +132,8 @@ export function FilesList() {
                 agencyName: 'املاک پارس',
                 agencyPhone: '07132223344',
                 agencyAddress: 'شیراز، معالی‌آباد، بلوار معالی‌آباد',
+                isAd:true
+
             },
             // ۴) آپارتمان — اطلاعات متوسط، بدون قیمت هر متر و امکانات
             {
@@ -155,6 +160,8 @@ export function FilesList() {
                 agencyName: 'املاک تهران نو',
                 agencyPhone: '03132223344',
                 agencyAddress: 'اصفهان، ملک‌شهر، خیابان اصلی',
+                isAd:false
+
             },
             // ۵) پیش فروش — بدون مالک و بدون امکانات، فقط یادداشت داخلی
             {
@@ -176,6 +183,8 @@ export function FilesList() {
                 agencyName: 'املاک آفتاب',
                 agencyPhone: '05132223344',
                 agencyAddress: 'مشهد، وکیل‌آباد، بلوار وکیل‌آباد',
+                isAd:false
+
             },
         ],
     })

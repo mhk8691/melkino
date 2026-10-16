@@ -9,7 +9,11 @@ import {PropertyCardMenu} from './PropertyCardMenu'
 import {PropertyDetailDialog} from './PropertyDetailDialog'
 import {PinnedBadge} from './PinnedBadge'
 import {getPropertyTypeIcon} from './PropertyTypeIcon'
-import {STATUS_COLOR, isFilled, useDerivedPropertyInfo} from './propertyCardUtils'
+import {
+    STATUS_COLOR,
+    isFilled,
+    useDerivedPropertyInfo,
+} from './propertyCardUtils'
 import {PropertyType, RecordMode} from '../../../Components/PropertyRecordForm'
 import {setUtil} from '../../../redux/UtilSlice'
 import {DataProvider} from '../../../Core/DataProvider'
@@ -52,9 +56,11 @@ export type PropertyCardProps = {
     onDelete?: (id?: number) => void
 }
 
-export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: PropertyCardProps) {
-    const [detailOpen, setDetailOpen] = useState(false)
-     async function togglePinRequest(resource: string, id: number, pinned: boolean) {
+async function togglePinRequest(
+    resource: string,
+    id: number,
+    pinned: boolean,
+) {
     return DataProvider.post(`${resource}/${id}/pin`, {
         data: {pinned},
         headers: {
@@ -62,8 +68,20 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
         },
     })
 }
-    // وضعیت پین بودن کارت؛ مقدار اولیه از خود آیتم (اگه از بک‌اند فیلد pinned بیاد)
-    const [pinned, setPinned] = useState(Boolean((item as {pinned?: boolean}).pinned))
+
+export function PropertyCard({
+    item,
+    mode = 'file',
+    resource,
+    onEdit,
+    onDelete,
+}: PropertyCardProps) {
+    const [detailOpen, setDetailOpen] = useState(false)
+
+    // وضعیت پین بودن کارت
+    const [pinned, setPinned] = useState(
+        Boolean((item as {pinned?: boolean}).pinned),
+    )
     const [pinLoading, setPinLoading] = useState(false)
 
     const dispatch = useDispatch()
@@ -73,29 +91,60 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
     const handleTogglePin = async () => {
         if (!isFilled(item.id) || pinLoading) return
 
-        const next = !pinned
-        setPinned(next) // آپدیت خوش‌بینانه‌ی UI؛ منتظر جواب سرور نمی‌مونیم
+        const previousPinned = pinned
+        const next = !previousPinned
+
+        // به‌روزرسانی خوش‌بینانه رابط کاربری
+        setPinned(next)
         setPinLoading(true)
 
         try {
-            await togglePinRequest(resolvedResource, item.id as number, next)
-        } catch (error: any) {
-            setPinned(!next) // در صورت خطا وضعیت قبلی برگردونده می‌شه
-            dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
+            await togglePinRequest(
+                resolvedResource,
+                item.id as number,
+                next,
+            )
+        } catch (error: unknown) {
+            setPinned(previousPinned)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'تغییر وضعیت سنجاق با خطا مواجه شد.'
+
+            dispatch(
+                setUtil({
+                    open: true,
+                    message,
+                    severity: 'error',
+                }),
+            )
+        } finally {
+            setPinLoading(false)
         }
-        setPinLoading(false)
     }
 
-    const statusColor = STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
+    const statusColor =
+        STATUS_COLOR[item.status ?? ''] ?? 'text.disabled'
+
     const coverImage = item.images?.[0]
 
-    // پشتیبانی از هر دو حالت: رشته (import شده / URL) یا File آپلود شده
+    // پشتیبانی از آدرس تصویر و فایل آپلودشده
     const coverUrl = useMemo(() => {
         if (!coverImage) return undefined
-        return typeof coverImage === 'string' ? coverImage : URL.createObjectURL(coverImage)
+
+        return typeof coverImage === 'string'
+            ? coverImage
+            : URL.createObjectURL(coverImage)
     }, [coverImage])
 
-    const {location, areaText, priceMain, priceLabel, priceSecondary} = useDerivedPropertyInfo(item)
+    const {
+        location,
+        areaText,
+        priceMain,
+        priceLabel,
+        priceSecondary,
+    } = useDerivedPropertyInfo(item)
 
     return (
         <>
@@ -103,6 +152,12 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 role="button"
                 tabIndex={0}
                 onClick={() => setDetailOpen(true)}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setDetailOpen(true)
+                    }
+                }}
                 sx={{
                     position: 'relative',
                     height: '100%',
@@ -114,9 +169,11 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     borderColor: 'divider',
                     overflow: 'hidden',
                     cursor: 'pointer',
-                    transition: 'box-shadow .15s ease, transform .1s ease',
+                    transition:
+                        'box-shadow .15s ease, transform .1s ease',
                     '&:hover': {
-                        boxShadow: '0 10px 24px -10px rgba(30,97,205,0.28)',
+                        boxShadow:
+                            '0 10px 24px -10px rgba(30,97,205,0.28)',
                         transform: 'translateY(-2px)',
                     },
                 }}
@@ -135,13 +192,15 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     onTogglePin={handleTogglePin}
                 />
 
-                {/* تصویر اول به‌صورت ثابت؛ اسلایدر فقط داخل مودال است */}
-                {/* برای مود «درخواست» به‌جای تصویر، آیکون نوع ملک نمایش داده می‌شود */}
+                {/* تصویر یا آیکون نوع ملک */}
                 <Box
                     sx={{
                         width: '100%',
                         aspectRatio: '16 / 10',
-                        bgcolor: mode === 'request' ? 'rgba(30,97,205,0.06)' : 'background.default',
+                        bgcolor:
+                            mode === 'request'
+                                ? 'rgba(30,97,205,0.06)'
+                                : 'background.default',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -149,7 +208,10 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                 >
                     {mode === 'request' ? (
                         getPropertyTypeIcon(item.propertyType, {
-                            sx: {fontSize: 40, color: 'primary.main'},
+                            sx: {
+                                fontSize: 40,
+                                color: 'primary.main',
+                            },
                         })
                     ) : coverUrl ? (
                         <Box
@@ -162,12 +224,23 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                             }}
                         />
                     ) : (
-                        <ImageNotSupportedRoundedIcon sx={{fontSize: 24, color: 'text.disabled'}} />
+                        <ImageNotSupportedRoundedIcon
+                            sx={{
+                                fontSize: 24,
+                                color: 'text.disabled',
+                            }}
+                        />
                     )}
                 </Box>
 
+                {/* اطلاعات اصلی ملک */}
                 <Box sx={{p: 2, pb: 1.75}}>
-                    <Stack direction="row" alignItems="center" spacing={0.75} sx={{mb: 0.5}}>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={0.75}
+                        sx={{mb: 0.5}}
+                    >
                         {item.status && (
                             <>
                                 <Box
@@ -179,19 +252,27 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                                         flexShrink: 0,
                                     }}
                                 />
+
                                 <Typography
                                     variant="badge"
-                                    sx={{color: statusColor, fontSize: '12px'}}
+                                    sx={{
+                                        color: statusColor,
+                                        fontSize: '12px',
+                                    }}
                                     noWrap
                                 >
                                     {item.status}
                                 </Typography>
                             </>
                         )}
+
                         {isFilled(item.id) && (
                             <Typography
                                 variant="badge"
-                                sx={{color: 'text.disabled', fontSize: '12px'}}
+                                sx={{
+                                    color: 'text.disabled',
+                                    fontSize: '12px',
+                                }}
                             >
                                 · #{item.id}
                             </Typography>
@@ -201,53 +282,150 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                     <Typography
                         variant="titleMd"
                         fontWeight={700}
-                        color={mode === 'request' ? 'success.light' : 'black'}
+                        color={
+                            mode === 'request'
+                                ? 'success.light'
+                                : 'text.primary'
+                        }
                         noWrap
                     >
                         {item.propertyType || '--'}
                     </Typography>
 
                     {location && (
-                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{mt: 0.25}}>
+                        <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={0.5}
+                            sx={{mt: 0.25}}
+                        >
                             <PlaceRoundedIcon
-                                sx={{fontSize: 14, color: 'text.disabled', flexShrink: 0}}
+                                sx={{
+                                    fontSize: 14,
+                                    color: 'text.disabled',
+                                    flexShrink: 0,
+                                }}
                             />
-                            <Typography variant="bodySm" color="text.secondary" noWrap>
+
+                            <Typography
+                                variant="bodySm"
+                                color="text.secondary"
+                                noWrap
+                            >
                                 {location}
                             </Typography>
                         </Stack>
                     )}
 
                     {item.contractType && (
-                        <Typography variant="labelSm" color="text.disabled" sx={{mt: 0.25}}>
+                        <Typography
+                            variant="labelSm"
+                            color="text.disabled"
+                            sx={{mt: 0.25}}
+                        >
                             {item.contractType}
+                        </Typography>
+                    )}
+
+                    {/* وضعیت ثبت فایل در دیوار */}
+                    {typeof (item as Partial<PropertyType> & {
+                        isAd?: boolean
+                    }).isAd === 'boolean' && (
+                        <Typography
+                            variant="labelSm"
+                            sx={{
+                                display: 'block',
+                                mt: 0.75,
+                                color: (
+                                    item as Partial<PropertyType> & {
+                                        isAd?: boolean
+                                    }
+                                ).isAd
+                                    ? 'success.main'
+                                    : 'text.secondary',
+                                fontWeight: 500,
+                            }}
+                        >
+                            {(
+                                item as Partial<PropertyType> & {
+                                    isAd?: boolean
+                                }
+                            ).isAd
+                                ? 'این فایل در دیوار ثبت شده است'
+                                : 'این فایل در دیوار ثبت نشده است'}
                         </Typography>
                     )}
                 </Box>
 
+                {/* خط جداکننده با حاشیه نیم‌دایره‌ای */}
                 <Box sx={{position: 'relative', mx: 0}}>
                     <Notch side="insetInlineStart" />
                     <Notch side="insetInlineEnd" />
-                    <Box sx={{borderTop: '1.5px dashed', borderColor: 'divider', mx: 2.5}} />
+
+                    <Box
+                        sx={{
+                            borderTop: '1.5px dashed',
+                            borderColor: 'divider',
+                            mx: 2.5,
+                        }}
+                    />
                 </Box>
 
-                <Box sx={{p: 2, pt: 1.75, display: 'flex', flexDirection: 'column', flexGrow: 1}}>
+                {/* متراژ، اتاق و قیمت */}
+                <Box
+                    sx={{
+                        p: 2,
+                        pt: 1.75,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexGrow: 1,
+                    }}
+                >
                     {(areaText || isFilled(item.roomCount)) && (
-                        <Stack direction="row" spacing={2} sx={{mb: priceMain ? 1.5 : 0}}>
+                        <Stack
+                            direction="row"
+                            spacing={2}
+                            sx={{mb: priceMain ? 1.5 : 0}}
+                        >
                             {areaText && (
-                                <Stack direction="row" alignItems="center" spacing={0.5}>
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={0.5}
+                                >
                                     <SquareFootRoundedIcon
-                                        sx={{fontSize: 15, color: 'text.disabled'}}
+                                        sx={{
+                                            fontSize: 15,
+                                            color: 'text.disabled',
+                                        }}
                                     />
-                                    <Typography variant="labelSm" color="text.secondary">
+
+                                    <Typography
+                                        variant="labelSm"
+                                        color="text.secondary"
+                                    >
                                         {areaText}
                                     </Typography>
                                 </Stack>
                             )}
+
                             {isFilled(item.roomCount) && (
-                                <Stack direction="row" alignItems="center" spacing={0.5}>
-                                    <BedRoundedIcon sx={{fontSize: 15, color: 'text.disabled'}} />
-                                    <Typography variant="labelSm" color="text.secondary">
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={0.5}
+                                >
+                                    <BedRoundedIcon
+                                        sx={{
+                                            fontSize: 15,
+                                            color: 'text.disabled',
+                                        }}
+                                    />
+
+                                    <Typography
+                                        variant="labelSm"
+                                        color="text.secondary"
+                                    >
                                         {item.roomCount} خوابه
                                     </Typography>
                                 </Stack>
@@ -257,16 +435,23 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
 
                     {priceMain && (
                         <Box sx={{mt: 'auto'}}>
-                            <Typography variant="labelSm" color="text.disabled">
+                            <Typography
+                                variant="labelSm"
+                                color="text.disabled"
+                            >
                                 {priceLabel}
                             </Typography>
+
                             <Typography
                                 variant="titleLg"
                                 fontWeight={800}
                                 color="primary.main"
-                                sx={{fontVariantNumeric: 'tabular-nums'}}
+                                sx={{
+                                    fontVariantNumeric: 'tabular-nums',
+                                }}
                             >
                                 {priceMain}{' '}
+
                                 <Typography
                                     component="span"
                                     variant="labelSm"
@@ -275,8 +460,12 @@ export function PropertyCard({item, mode = 'file', resource, onEdit, onDelete}: 
                                     تومان
                                 </Typography>
                             </Typography>
+
                             {priceSecondary && (
-                                <Typography variant="labelSm" color="text.secondary">
+                                <Typography
+                                    variant="labelSm"
+                                    color="text.secondary"
+                                >
                                     {priceSecondary}
                                 </Typography>
                             )}

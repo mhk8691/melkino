@@ -16,6 +16,7 @@ export type OwnersType = {
     neighborhoods: string
     profileImage?: string | null
     propertiesCount: string
+    role:string
 }
 
 export function Owners({
