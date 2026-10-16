@@ -67,8 +67,8 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                     : []),
 
                 ...(mode === 'request' && isMortgageRent
-    ? [
-            <DatePickerFilter
+                    ? [
+                          <DatePickerFilter
                               key="vacateDate"
                               mode="controlled"
                               item={{label: 'زمان تصرف'}}
@@ -80,8 +80,8 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                                   }))
                               }
                           />,
-      ]
-    : []),
+                      ]
+                    : []),
 
                 <CustomSelectField
                     key="propertyType"
@@ -182,18 +182,18 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               options={toSelectOptions(CITY_OPTIONS)}
                           />,
 
-                        //   // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
-                        //   <CustomSelectField
-                        //       key="assignedTo"
-                        //       name="assignedTo"
-                        //       setData={setProperty}
-                        //       resource={resource}
-                        //       label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
-                        //       defaultValue={property.assignedTo}
-                        //       options={toSelectOptions(
-                        //           mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS,
-                        //       )}
-                        //   />,
+                          //   // در حالت «فایل» اختصاص به مشتری و در حالت «درخواست» اختصاص به کارشناس است
+                          //   <CustomSelectField
+                          //       key="assignedTo"
+                          //       name="assignedTo"
+                          //       setData={setProperty}
+                          //       resource={resource}
+                          //       label={mode === 'file' ? 'اختصاص به مشتری' : 'اختصاص به کارشناس'}
+                          //       defaultValue={property.assignedTo}
+                          //       options={toSelectOptions(
+                          //           mode === 'file' ? CUSTOMER_OPTIONS : EXPERT_OPTIONS,
+                          //       )}
+                          //   />,
                       ]
                     : []),
 
@@ -224,7 +224,17 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               />
                           ),
                       ]),
-
+                mode === 'request' && (
+                    <CustomSelectField
+                        key="requestStatus"
+                        name="requestStatus"
+                        setData={setProperty}
+                        resource={resource}
+                        label="وضعیت"
+                        defaultValue={property.requestStatus}
+                        options={toSelectOptions(['در انتظار بررسی توسط کارشناس', 'تایید شده'])}
+                    />
+                ),
                 mode === 'request' ? (
                     <MultiValueField
                         key="neighborhood"
@@ -272,7 +282,7 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               setData={setProperty}
                               resource={resource}
                               label="لینک تور مجازی ایتا"
-                             defaultValue={property.virtualTourLink?.eitaa ?? ''}
+                              defaultValue={property.virtualTourLink?.eitaa ?? ''}
                           />,
                           <CustomTextField
                               key="virtualTourLink"
@@ -288,7 +298,16 @@ export function BaseStep({property, setProperty, resource, mode, editMode}: Mode
                               setData={setProperty}
                               resource={resource}
                               label="لینک تور مجازی اینستاگرام"
-                             defaultValue={property.virtualTourLink?.instagram ?? ''}
+                              defaultValue={property.virtualTourLink?.instagram ?? ''}
+                          />,
+                          <CustomSelectField
+                              key="publicationStatus"
+                              name="publicationStatus"
+                              setData={setProperty}
+                              resource={resource}
+                              label="وضعیت"
+                              defaultValue={property.publicationStatus}
+                              options={toSelectOptions(['منتشر شده', 'پیش‌نویس شده'])}
                           />,
                       ]
                     : []),

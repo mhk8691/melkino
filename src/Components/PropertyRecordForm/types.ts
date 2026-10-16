@@ -4,6 +4,8 @@ export type RecordMode = 'file' | 'request' | 'ad'
 export type PropertyType = {
     id: number
     status: string
+    publicationStatus:string
+    requestStatus:string
     propertyType: string
     contractType: string
     documentType: string
