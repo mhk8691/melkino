@@ -67,6 +67,7 @@ export function PropertyDetailDialog({
         specFields,
         financialFields,
         ownerFields,
+        agentFields,
         requesterFields,
         adFields,
         hasNotes,
@@ -247,6 +248,11 @@ export function PropertyDetailDialog({
                     title="مالک"
                     icon={<PersonRoundedIcon sx={{fontSize: 16}} />}
                     fields={ownerFields}
+                />
+                 <DetailSection
+                    title="اطلاعات کارشناس و املاک"
+                    icon={<PersonRoundedIcon sx={{fontSize: 16}} />}
+                    fields={agentFields}
                 />
                 <DetailSection
                     title="درخواست‌کننده"

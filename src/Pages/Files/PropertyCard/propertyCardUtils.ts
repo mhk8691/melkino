@@ -103,6 +103,13 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         {label: 'تلفن دوم مالک', value: item.ownerPhone2},
         {label: 'شغل مالک', value: item.ownerJob},
     ]
+     const agentFields: DetailField[] = [
+        {label: 'نام کارشناس', value: item.agentName},
+        {label: 'تلفن کارشناس', value: item.agentPhone},
+        {label: 'نام املاک', value: item.agencyName},
+        {label: 'تلفن املاک', value: item.agencyPhone},
+        {label: 'آدرس املاک', value: item.agencyAddress},
+    ]
 
     const requesterFields: DetailField[] = [
         {label: 'نام درخواست‌کننده', value: item.requesterName},
@@ -129,6 +136,7 @@ export function useDerivedPropertyInfo(item: Partial<PropertyType>) {
         specFields,
         financialFields,
         ownerFields,
+        agentFields,
         requesterFields,
         adFields,
         hasNotes: [item.description, item.internalNote, item.strongPoint].some(isFilled),

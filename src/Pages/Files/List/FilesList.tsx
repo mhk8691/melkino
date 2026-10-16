@@ -9,8 +9,8 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 import {useDispatch} from 'react-redux'
 import {FilesCreate} from '../Create/FilesCreate'
-import { PropertyType } from '../../../Components/PropertyRecordForm'
-import { PropertyCard } from '../PropertyCard/PropertyCard'
+import {PropertyType} from '../../../Components/PropertyRecordForm'
+import {PropertyCard} from '../PropertyCard/PropertyCard'
 
 // تصاویر نمونه برای نمایش در کارت‌ها
 import img1 from '../../../Images/file/1.jpg'
@@ -36,7 +36,8 @@ const queryNames = tableHeadCells.map((cell) => ({
 export function FilesList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-     const [files, setFiles] = useState<{
+
+    const [files, setFiles] = useState<{
         total_results: number
         data: Partial<PropertyType>[]
     }>({
@@ -72,7 +73,12 @@ export function FilesList() {
                 ownerJob: 'مهندس',
                 description: 'واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.',
                 internalNote: 'مالک عجله برای فروش دارد، قابل مذاکره.',
-                images: [img1],
+                images: [img1,img2],
+                agentName: 'محمد احمدی',
+                agentPhone: '09123456789',
+                agencyName: 'املاک آریا',
+                agencyPhone: '02122334455',
+                agencyAddress: 'تهران، سعادت‌آباد، خیابان علامه',
             },
             // ۲) ویلایی رهن و اجاره — تعدادی از فیلدها خالی
             {
@@ -98,6 +104,11 @@ export function FilesList() {
                 ownerPhone: '09351234567',
                 description: 'ویلای دوبلکس با حیاط بزرگ و درخت‌های میوه.',
                 images: [img2],
+                agentName: 'علی رضایی',
+                agentPhone: '09123456780',
+                agencyName: 'املاک سپهر',
+                agencyPhone: '02632223344',
+                agencyAddress: 'کرج، گوهردشت، فاز ۲',
             },
             // ۳) زمین — فقط حداقل اطلاعات
             {
@@ -113,6 +124,11 @@ export function FilesList() {
                 totalPrice: 12000000000,
                 direction: 'جنوبی',
                 images: [img3],
+                agentName: 'حسین کریمی',
+                agentPhone: '09123456781',
+                agencyName: 'املاک پارس',
+                agencyPhone: '07132223344',
+                agencyAddress: 'شیراز، معالی‌آباد، بلوار معالی‌آباد',
             },
             // ۴) آپارتمان — اطلاعات متوسط، بدون قیمت هر متر و امکانات
             {
@@ -134,6 +150,11 @@ export function FilesList() {
                 ownerPhone: '09131234567',
                 ownerJob: 'آزاد',
                 images: [img4],
+                agentName: 'رضا محمدی',
+                agentPhone: '09123456782',
+                agencyName: 'املاک تهران نو',
+                agencyPhone: '03132223344',
+                agencyAddress: 'اصفهان، ملک‌شهر، خیابان اصلی',
             },
             // ۵) پیش فروش — بدون مالک و بدون امکانات، فقط یادداشت داخلی
             {
@@ -150,6 +171,11 @@ export function FilesList() {
                 flooring: 'پارکت',
                 internalNote: 'فایل به مشتری قبلی فروخته شد، آرشیو شود.',
                 images: [img5],
+                agentName: 'امیر حسینی',
+                agentPhone: '09123456783',
+                agencyName: 'املاک آفتاب',
+                agencyPhone: '05132223344',
+                agencyAddress: 'مشهد، وکیل‌آباد، بلوار وکیل‌آباد',
             },
         ],
     })
@@ -195,15 +221,23 @@ export function FilesList() {
             }}
         >
             {loading ? (
-                <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
+                <Typography
+                    variant="bodySm"
+                    color="text.secondary"
+                    sx={{py: 4, textAlign: 'center'}}
+                >
                     در حال بارگذاری...
                 </Typography>
             ) : files.data.length === 0 ? (
-                <Typography variant="bodySm" color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
+                <Typography
+                    variant="bodySm"
+                    color="text.secondary"
+                    sx={{py: 4, textAlign: 'center'}}
+                >
                     فایلی ثبت نشده است.
                 </Typography>
             ) : (
-                <Box sx={{pt: 1,px:1.5}}>
+                <Box sx={{pt: 1, px: 1.5}}>
                     <Grid container spacing={2.5}>
                         {files.data.map((item) => (
                             <Grid item xs={12} sm={6} md={4} key={item.id}>

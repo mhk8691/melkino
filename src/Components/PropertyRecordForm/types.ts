@@ -64,6 +64,11 @@ export type PropertyType = {
     ownerPhone2: string
     ownerJob: string
 
+      agentName: string
+    agentPhone: string
+    agencyPhone: string
+    agencyAddress:string
+
     // پشتیبانی از هر دو حالت: فایل آپلودی (File) یا مسیر/URL تصویر (string) برای دیتای نمونه یا تصاویر از سرور
     images: (string | File)[]
 
