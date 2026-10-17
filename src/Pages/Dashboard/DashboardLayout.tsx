@@ -170,6 +170,33 @@ const statWidgets = [
         color: 'primary' as const,
         trend: 14,
     },
+     {
+        title: 'املاک ها',
+        value: '15',
+        color: 'error' as const,
+        featured: true,
+        trend: 12,
+    },
+     {
+        title: 'کارشناس ها',
+        value: '20',
+        color: 'success' as const,
+        trend: 12,
+    },
+     {
+        title: 'فایل ها',
+        value: '30',
+        color: 'warning' as const,
+        featured: true,
+        trend: 5,
+    },
+     {
+        title: 'درخواست ها',
+        value: '50',
+        color: 'primary' as const,
+        featured: true,
+        trend: 25,
+    },
 ]
 
 export default function DashboardLayout() {
