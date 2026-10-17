@@ -28,7 +28,7 @@ const cardFields = [
     createCardField('وضعیت اشتغال', 'occupancyStatus'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,3).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -95,12 +95,11 @@ export function LessorsList() {
             href={'/landlord-tenant/lessors/create'}
             searchField="title"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getLessors}
-            filtersData={[]}
+            filtersData={queryNames}
             noCreate
             defaultState={{name: ''}}
         >

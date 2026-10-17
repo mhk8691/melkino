@@ -27,7 +27,7 @@ const tableHeadCells = [
     createTableHeadCells('محله', 'neighborhoods'),
 ]
 
-const queryNames = tableHeadCells.map(cell => ({
+const queryNames = tableHeadCells.slice(1,3).map(cell => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -309,12 +309,11 @@ export function CustomersList() {
             href={`${RESOURCE}/create`}
             searchField="full_name"
             searchText="نام و نام خانوادگی"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getCustomers}
-            filtersData={[]}
+            filtersData={queryNames}
             noCreate
             defaultState={{full_name: ''}}
         >

@@ -30,7 +30,7 @@ const cardFields = [
     createCardField('نقش مالک', 'role'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,3).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -109,12 +109,11 @@ export function OwnersList() {
             href={RESOURCE + '/create'}
             searchField="full_name"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getOwners}
-            filtersData={[]}
+            filtersData={queryNames}
             noCreate
             defaultState={{full_name: ''}}
         >

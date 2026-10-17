@@ -28,7 +28,7 @@ const cardFields = [
     createCardField('توضیحات', 'description', {fullWidth: true}),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1, 2).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -108,16 +108,15 @@ export function ReminderList() {
         <ListPage
             viewKey={RESOURCE}
             defaultView="list"
-            header={'مدیریت اطلاعیه ها'}
+            header={'مدیریت یادآوری ها'}
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getReminders}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={ReminderCreate}
             defaultState={{name: ''}}
         >

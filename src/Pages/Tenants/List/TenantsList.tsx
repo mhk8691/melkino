@@ -26,7 +26,7 @@ const tableHeadCells = [
     createTableHeadCells('تاریخ تصرف', 'occupancyDate'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,3).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -377,12 +377,11 @@ export function TenantsList() {
             href={`/landlord-tenant/tenants/create`}
             searchField="full_name"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getTenants}
-            filtersData={[]}
+            filtersData={queryNames}
             noCreate
             defaultState={{name: ''}}
         >

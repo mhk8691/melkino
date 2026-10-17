@@ -1,4 +1,4 @@
-import {Avatar, Box, Button, Typography} from '@mui/material'
+import {Avatar, Box, Button, Stack, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -21,10 +21,8 @@ const RESOURCE = 'agencies'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('پروفایل', 'profileImage'),
-    createTableHeadCells('نام املاکی', 'agencyName'),
-    createTableHeadCells('نام مدیر', 'firstName'),
-    createTableHeadCells('نام خانوادگی مدیر', 'lastName'),
+    createTableHeadCells('املاک', 'agencyName'),
+    createTableHeadCells('نام و نام خانوادگی مدیر', 'full_name'),
     createTableHeadCells('شماره تلفن', 'phoneNumber'),
     createTableHeadCells('استان', 'province'),
     createTableHeadCells('شهر', 'city'),
@@ -34,7 +32,7 @@ const tableHeadCells = [
     createTableHeadCells('عملیات', 'action'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1, 6).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -202,13 +200,12 @@ export function AgencyList() {
             href={`${RESOURCE}/create`}
             searchField="agencyName"
             searchText="نام املاکی"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={() => {}}
             isCsvExport
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={AgencyCreate}
             defaultState={{
                 agencyName: '',
@@ -247,28 +244,35 @@ export function AgencyList() {
                             </TableCell>
 
                             <TableCell>
-                                <Avatar
-                                    src={item.logo || item.profileImage || ''}
-                                    alt={item.agencyName}
-                                    sx={{width: 40, height: 40}}
-                                />
+                                <Stack direction={'row'} gap={1} alignItems={'center'}>
+                                    <Avatar
+                                        src={item.profileImage || ''}
+                                        alt={`${item.firstName} ${item.lastName}`}
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        fontSize={{
+                                            xs: '13px',
+                                            sm: '14px',
+                                            md: '16px',
+                                            xl: '17px',
+                                        }}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {item.agencyName || '--'}
+                                    </Typography>
+                                </Stack>
                             </TableCell>
 
                             <TableCell>
                                 <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
-                                    {item.agencyName || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
-                                    {item.firstName || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
-                                    {item.lastName || '--'}
+                                    {item.firstName + item.lastName || '--'}
                                 </Typography>
                             </TableCell>
 
@@ -313,7 +317,11 @@ export function AgencyList() {
                             </TableCell>
 
                             <TableCell>
-                                <Button variant="outlined" color="success" sx={{whiteSpace:'nowrap'}}>
+                                <Button
+                                    variant="outlined"
+                                    color="success"
+                                    sx={{whiteSpace: 'nowrap'}}
+                                >
                                     ورود به پنل کاربری
                                 </Button>
                             </TableCell>

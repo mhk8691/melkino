@@ -1,4 +1,4 @@
-import {Avatar, Box, Button, Typography} from '@mui/material'
+import {Avatar, Box, Button, Stack, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -18,17 +18,16 @@ const resource = 'agents'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('پروفایل', 'profileImage'),
     createTableHeadCells('نام و نام خانوادگی', 'fullname'),
     createTableHeadCells('شماره تلفن', 'phoneNumber'),
-    createTableHeadCells('نقش', 'role'),
     createTableHeadCells('نام املاکی', 'agencyName'),
+    createTableHeadCells('نقش', 'role'),
     createTableHeadCells('آدرس منزل', 'homeAddress'),
     createTableHeadCells('آدرس محل کار', 'workAddress'),
     createTableHeadCells('عملیات', 'action'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1, 4).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -145,12 +144,11 @@ export function AgentsList({title, resource}: {title: string; resource: string})
             href={resource + '/create'}
             searchField="firstName"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={resource}
             getList={() => {}}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={AgentsCreate}
             isCsvExport
             defaultState={{
@@ -161,7 +159,12 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                 <ViewModeToggle value={viewMode} onChange={setViewMode} />
             </Box>
             {viewMode === 'card' ? (
-                <UserCardGrid rows={agents.data} resource={resource} getList={()=>{}} title='کارشناس'  />
+                <UserCardGrid
+                    rows={agents.data}
+                    resource={resource}
+                    getList={() => {}}
+                    title="کارشناس"
+                />
             ) : (
                 <CustomTable
                     title={title}
@@ -195,34 +198,31 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                             </TableCell>
 
                             <TableCell>
-                                <Avatar
-                                    src={item.profileImage || ''}
-                                    alt={`${item.firstName} ${item.lastName}`}
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                    }}
-                                />
+                                <Stack direction={'row'} gap={1} alignItems={'center'}>
+                                    <Avatar
+                                        src={item.profileImage || ''}
+                                        alt={`${item.firstName} ${item.lastName}`}
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        fontSize={{
+                                            xs: '13px',
+                                            sm: '14px',
+                                            md: '16px',
+                                            xl: '17px',
+                                        }}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {item.firstName + item.lastName || '--'}
+                                    </Typography>
+                                </Stack>
                             </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                  {`${item.firstName} ${item.lastName}`}
-                                </Typography>
-                            </TableCell>
-
-                         
 
                             <TableCell>
                                 <Typography
@@ -254,10 +254,9 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {getRoleLabel(item.role)}
+                                    {item.agencyName || '--'}
                                 </Typography>
                             </TableCell>
-
                             <TableCell>
                                 <Typography
                                     variant="body2"
@@ -271,7 +270,7 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {item.agencyName || '--'}
+                                    {getRoleLabel(item.role)}
                                 </Typography>
                             </TableCell>
 

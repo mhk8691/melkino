@@ -1,4 +1,4 @@
-import {Avatar, Box, Button, Typography} from '@mui/material'
+import {Avatar, Box, Button, Stack, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
@@ -17,7 +17,6 @@ const RESOURCE = 'user'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('پروفایل', 'profileImage'),
     createTableHeadCells('نام و نام خانوادگی', 'fullname'),
     createTableHeadCells('شماره تماس', 'phoneNumber'),
     createTableHeadCells('کد ملی', 'nationalId'),
@@ -29,7 +28,7 @@ const tableHeadCells = [
     createTableHeadCells('عملیات', 'action'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,5).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -131,13 +130,12 @@ export function UsersList() {
             href={RESOURCE + '/create'}
             searchField="firstName"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             isCsvExport
             resource={RESOURCE}
             getList={() => {}}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={UsersCreate}
             defaultState={{
                 id: '',
@@ -196,32 +194,31 @@ export function UsersList() {
                                     {item.id || '--'}
                                 </Typography>
                             </TableCell>
-                            <TableCell>
-                                <Avatar
-                                    src={item.profileImage || ''}
-                                    alt={`${item.firstName} ${item.lastName}`}
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                    }}
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {`${item.firstName} ${item.lastName}`}
-                                </Typography>
+                         <TableCell>
+                                <Stack direction={'row'} gap={1} alignItems={'center'}>
+                                    <Avatar
+                                        src={item.profileImage || ''}
+                                        alt={`${item.firstName} ${item.lastName}`}
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        fontSize={{
+                                            xs: '13px',
+                                            sm: '14px',
+                                            md: '16px',
+                                            xl: '17px',
+                                        }}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {item.firstName + item.lastName || '--'}
+                                    </Typography>
+                                </Stack>
                             </TableCell>
 
                             <TableCell>

@@ -27,7 +27,7 @@ const cardFields = [
     createCardField('وضعیت انجام', 'isDone'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,2).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -124,12 +124,11 @@ export function TasksList() {
             href={`${RESOURCE}/create`}
             searchField="title"
             searchText="عنوان"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getTasks}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={TasksCreate}
             defaultState={{
                 title: '',

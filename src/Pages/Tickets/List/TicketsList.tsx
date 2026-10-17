@@ -21,7 +21,7 @@ const tableHeadCells = [
     createTableHeadCells('دسته‌بندی', 'category'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,2).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -153,12 +153,11 @@ export function TicketsList() {
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="عنوان"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getTickets}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={TicketsCreate}
             defaultState={{name: ''}}
         >

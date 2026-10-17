@@ -1,5 +1,5 @@
-import {Avatar, Box, Button, Typography} from '@mui/material'
-import TableCell from '@mui/material/TableCell'
+import {Avatar, Box, Button, Stack, Typography} from '@mui/material'
+import TableCell, {tableCellClasses} from '@mui/material/TableCell'
 import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
@@ -13,22 +13,20 @@ import {useDispatch} from 'react-redux'
 import {SuperUsersType} from '../SuperUsers'
 import {SuperUsersCreate} from '../Create/SuperUsersCreate'
 import profileImage from '../../../Images/user.png'
-import { useViewMode } from '../../../Core/useViewMode'
-import { ViewModeToggle } from '../../User/ViewModeToggle'
-import { UserCardGrid } from '../../User/UserCardGrid'
+import {useViewMode} from '../../../Core/useViewMode'
+import {ViewModeToggle} from '../../User/ViewModeToggle'
+import {UserCardGrid} from '../../User/UserCardGrid'
 const RESOURCE = 'super-users'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('پروفایل', 'profileImage'),
-    createTableHeadCells('نام', 'firstName'),
-    createTableHeadCells('نام خانوادگی', 'lastName'),
+    createTableHeadCells('نام و نام خانوادگی', 'fullName'),
     createTableHeadCells('شماره تلفن', 'phoneNumber'),
     createTableHeadCells('نقش', 'role'),
     createTableHeadCells('عملیات', 'action'),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1, 3).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -136,142 +134,129 @@ export function SuperUsersList() {
             href={RESOURCE + '/create'}
             searchField="firstName"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={() => {}}
             // getList={getSuperUsers}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={SuperUsersCreate}
             defaultState={{
                 name: '',
             }}
         >
-              <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2 , px:1}}>
-                            <ViewModeToggle value={viewMode} onChange={setViewMode} />
-                        </Box>
-            {
-                viewMode === 'card' ? <UserCardGrid rows={superUsers.data} resource={RESOURCE} getList={()=>{}} title='سوپر ادمین' />:
-            <CustomTable
-                title="سوپر یوزر"
-                resource={RESOURCE}
-                headCells={tableHeadCells}
-                rows={superUsers.data}
-                count={superUsers.total_results}
-                getList={() => {}}
-                // getList={getSuperUsers}
-                params={search}
-                setParams={setSearch}
-                handleSort={() => {}}
-                // handleSort={getSuperUsers}
-                loading={loading}
-                hasDetail={true}
-                tableBodyCells={superUsers.data.map((item, index) => (
-                    <>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.id || '--'}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <Avatar
-                                src={item.profileImage || ''}
-                                alt={`${item.firstName} ${item.lastName}`}
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                }}
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.firstName || '--'}
-                            </Typography>
-                        </TableCell>
+            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2, px: 1}}>
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </Box>
+            {viewMode === 'card' ? (
+                <UserCardGrid
+                    rows={superUsers.data}
+                    resource={RESOURCE}
+                    getList={() => {}}
+                    title="سوپر ادمین"
+                />
+            ) : (
+                <CustomTable
+                    title="سوپر یوزر"
+                    resource={RESOURCE}
+                    headCells={tableHeadCells}
+                    rows={superUsers.data}
+                    count={superUsers.total_results}
+                    getList={() => {}}
+                    // getList={getSuperUsers}
+                    params={search}
+                    setParams={setSearch}
+                    handleSort={() => {}}
+                    // handleSort={getSuperUsers}
+                    loading={loading}
+                    hasDetail={true}
+                    tableBodyCells={superUsers.data.map((item, index) => (
+                        <>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.id || '--'}
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Stack direction={'row'} gap={1} alignItems={'center'}>
+                                    <Avatar
+                                        src={item.profileImage || ''}
+                                        alt={`${item.firstName} ${item.lastName}`}
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        fontSize={{
+                                            xs: '13px',
+                                            sm: '14px',
+                                            md: '16px',
+                                            xl: '17px',
+                                        }}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {item.firstName + item.lastName || '--'}
+                                    </Typography>
+                                </Stack>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.lastName || '--'}
-                            </Typography>
-                        </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.phoneNumber || '--'}
+                                </Typography>
+                            </TableCell>
 
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.phoneNumber || '--'}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                variant="body2"
-                                fontSize={{
-                                    xs: '13px',
-                                    sm: '14px',
-                                    md: '16px',
-                                    xl: '17px',
-                                }}
-                                sx={{
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {item.role || '--'}
-                            </Typography>
-                        </TableCell>
-                               <TableCell>
-                                                        <Button variant="outlined" color="success">
-                                                            ورود به پنل کاربری
-                                                        </Button>
-                                                    </TableCell>
-                    </>
-                ))}
-            />
-            }
-
+                            <TableCell>
+                                <Typography
+                                    variant="body2"
+                                    fontSize={{
+                                        xs: '13px',
+                                        sm: '14px',
+                                        md: '16px',
+                                        xl: '17px',
+                                    }}
+                                    sx={{
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {item.role || '--'}
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Button variant="outlined" color="success">
+                                    ورود به پنل کاربری
+                                </Button>
+                            </TableCell>
+                        </>
+                    ))}
+                />
+            )}
         </ListPage>
     )
 }

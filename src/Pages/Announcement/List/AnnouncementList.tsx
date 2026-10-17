@@ -27,7 +27,7 @@ const cardFields = [
     createCardField('توضیحات', 'description', {fullWidth: true}),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,2).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -111,14 +111,13 @@ export function AnnouncementList() {
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getAnnouncement}
-            filtersData={[]}
             createModal={AnnouncementCreate}
             defaultState={{name: ''}}
+            filtersData={queryNames}
         >
             {(view) =>
                 view === 'card' ? (

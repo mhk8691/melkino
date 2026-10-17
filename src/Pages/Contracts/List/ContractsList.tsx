@@ -18,12 +18,12 @@ const RESOURCE = 'contracts'
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('فایل', 'file_name'),
-    createTableHeadCells('زمان قرارداد', 'contract_datetime'),
     createTableHeadCells('قیمت توافق شده', 'agreed_price'),
     createTableHeadCells('اختلاف قیمت', 'price_difference'),
     createTableHeadCells('مدیر جلسه', 'meeting_manager'),
     createTableHeadCells('کمیسیون مالک', 'owner_commission'),
     createTableHeadCells('کمیسیون خریدار', 'buyer_commission'),
+    createTableHeadCells('زمان قرارداد', 'contract_datetime'),
     createTableHeadCells('توضیحات', 'description'),
 ]
 
@@ -51,7 +51,7 @@ const cardFields = [
     }),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,4).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -175,12 +175,11 @@ export function ContractsList() {
             href={`${RESOURCE}/create`}
             searchField="file_name"
             searchText="نام فایل"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getContracts}
-            filtersData={[]}
+            filtersData={queryNames}
             noCreate
             defaultState={{
                 name: '',
@@ -253,17 +252,7 @@ export function ContractsList() {
                                     {cellText(item.file_name)}
                                 </TableCell>
 
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {formatDate(
-                                            item.contract_datetime,
-                                        )}
-                                    </Typography>
-                                </TableCell>
+                                
 
                                 <TableCell>
                                     {cellText(item.agreed_price)}
@@ -283,6 +272,17 @@ export function ContractsList() {
 
                                 <TableCell>
                                     {cellText(item.buyer_commission)}
+                                </TableCell>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {formatDate(
+                                            item.contract_datetime,
+                                        )}
+                                    </Typography>
                                 </TableCell>
 
                                 <TableCell>

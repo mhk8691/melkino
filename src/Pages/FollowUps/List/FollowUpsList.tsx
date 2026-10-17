@@ -190,7 +190,7 @@ const cardFields = [
     }),
 ]
 
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,4).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -454,12 +454,11 @@ export function FollowUpsList() {
                 href={`${RESOURCE}/create`}
                 searchField="full_name"
                 searchText="نام و نام خانوادگی"
-                nofilter
                 setParams={setSearch}
                 params={search}
                 resource={RESOURCE}
                 getList={getFollowUps}
-                filtersData={[]}
+                filtersData={queryNames}
                 noCreate
                 defaultState={{
                     name: '',
