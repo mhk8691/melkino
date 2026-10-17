@@ -27,7 +27,7 @@ const tableHeadCells = [
     createTableHeadCells('شهر', 'city'),
     createTableHeadCells('قیمت', 'totalPrice'),
 ]
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,4).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -217,13 +217,12 @@ export function FilesList() {
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={() => {}}
             // getList={getFiles}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={FilesCreate}
             defaultState={{
                 name: '',

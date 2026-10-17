@@ -20,7 +20,7 @@ const tableHeadCells = [
     createTableHeadCells('شهر', 'city'),
     createTableHeadCells('قیمت', 'totalPrice'),
 ]
-const queryNames = tableHeadCells.map((cell) => ({
+const queryNames = tableHeadCells.slice(1,4).map((cell) => ({
     field: cell.name,
     label: cell.label,
     type: '',
@@ -134,13 +134,12 @@ export function AdvertisementsList() {
             href={RESOURCE + '/create'}
             searchField="title"
             searchText="نام"
-            nofilter
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={() => {}}
             // getList={getAdvertisements}
-            filtersData={[]}
+            filtersData={queryNames}
             createModal={AdvertisementsCreate}
             defaultState={{
                 name: '',
