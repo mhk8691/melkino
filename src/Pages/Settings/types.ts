@@ -34,6 +34,16 @@ export interface PanelSettingsState {
         ogImage: string
         robots: string
     }
+
+    contact: {
+        phone: string
+        email: string
+        address: string
+        instagram: string
+        telegram: string
+        linkedin: string
+        whatsapp: string
+    }
 }
 
 export type SettingsSetter = Dispatch<SetStateAction<PanelSettingsState>>

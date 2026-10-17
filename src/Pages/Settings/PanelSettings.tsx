@@ -8,6 +8,7 @@ import {BrandingSettings} from './BrandingSettings'
 import {ThemeSettings} from './ThemeSettings'
 import {SeoSettings} from './SeoSettings'
 import {PanelPreview, type PanelPreviewRef} from './PanelPreview'
+import { ContactSettings } from './ContactSettings'
 
 const INITIAL_SETTINGS: PanelSettingsState = {
     general: {
@@ -43,6 +44,15 @@ const INITIAL_SETTINGS: PanelSettingsState = {
         keywords: 'admin, dashboard, panel',
         ogImage: '',
         robots: 'index, follow',
+    },
+    contact: {
+        phone: '',
+        email: '',
+        address: '',
+        instagram: '',
+        telegram: '',
+        linkedin: '',
+        whatsapp: '',
     },
 }
 
@@ -139,6 +149,7 @@ export default function PanelSettings() {
                     />
 
                     <SeoSettings settings={settings} setSettings={setSettings} />
+                    <ContactSettings settings={settings} setSettings={setSettings} />
                 </Stack>
 
                 <PanelPreview ref={previewRef} settings={settings} />
