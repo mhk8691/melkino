@@ -59,15 +59,15 @@ import {CustomersRequestList} from '../CustomersRequest/List/CustomersRequestLis
 import {CustomersRequestEdit} from '../CustomersRequest/Edit/CustomersRequestEdit'
 import {ViewsList} from '../Views/List/ViewsList'
 import {ViewsEdit} from '../Views/Edit/ViewsEdit'
-import { FollowUpsList } from '../FollowUps/List/FollowUpsList'
-import { FollowUpsEdit } from '../FollowUps/Edit/FollowUpsEdit'
-import { ContractsList } from '../Contracts/List/ContractsList'
-import { ContractsEdit } from '../Contracts/Edit/ContractsEdit'
-import { ArchivesList } from '../Archives/List/ArchivesList'
-import { ArchivesEdit } from '../Archives/Edit/ArchivesEdit'
-import { TasksCreate } from '../Tasks/Create/TasksCreate'
-import { TasksEdit } from '../Tasks/Edit/TasksEdit'
-import { TasksList } from '../Tasks/List/TasksList'
+import {FollowUpsList} from '../FollowUps/List/FollowUpsList'
+import {FollowUpsEdit} from '../FollowUps/Edit/FollowUpsEdit'
+import {ContractsList} from '../Contracts/List/ContractsList'
+import {ContractsEdit} from '../Contracts/Edit/ContractsEdit'
+import {ArchivesList} from '../Archives/List/ArchivesList'
+import {ArchivesEdit} from '../Archives/Edit/ArchivesEdit'
+import {TasksCreate} from '../Tasks/Create/TasksCreate'
+import {TasksEdit} from '../Tasks/Edit/TasksEdit'
+import {TasksList} from '../Tasks/List/TasksList'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -78,7 +78,7 @@ export function Home(props) {
     // useEffect(() => {
     //     const getProfile = async () => {
     //         try {
-    //             const response = await axios.get(`https://api.darine.shop/accounts/profile/`, {
+    //             const response = await axios.get(`https://api.mlkino.com/accounts/profile/`, {
     //                 withCredentials: true,
     //             })
 
@@ -341,19 +341,19 @@ export function Home(props) {
 
                         <Route path="views" element={<ViewsList />} />
                         <Route path="views/:id" element={<ViewsEdit />} />
-                          {/* ...........follow-ups.......... */}
+                        {/* ...........follow-ups.......... */}
 
                         <Route path="follow-ups" element={<FollowUpsList />} />
                         <Route path="follow-ups/:id" element={<FollowUpsEdit />} />
-                         {/* ...........Contracts.......... */}
+                        {/* ...........Contracts.......... */}
 
                         <Route path="contracts" element={<ContractsList />} />
                         <Route path="contracts/:id" element={<ContractsEdit />} />
-                         {/* ...........archives.......... */}
+                        {/* ...........archives.......... */}
 
                         <Route path="archives" element={<ArchivesList />} />
                         <Route path="archives/:id" element={<ArchivesEdit />} />
-                          {/* ...........Tasks.......... */}
+                        {/* ...........Tasks.......... */}
                         <Route
                             path="tasks/create"
                             element={<TasksCreate data={data} setData={setData} />}

@@ -15,6 +15,8 @@ import {RTL} from './RTL'
 import {AppTheme} from './Theme'
 import LoginPage from './Pages/Auth/Login/LoginPage'
 import SignupPage from './Pages/Auth/Signup/SignupPage'
+import ChangePassword from './Pages/Auth/ChangePassword/ChangePassword'
+import ChangePasswordPage from './Pages/Auth/ChangePassword/ChangePasswordPage'
 function App() {
     return (
         <RTL>
@@ -36,6 +38,7 @@ function App() {
                                     <Route path="/*" element={<Home />} />
                                     <Route path="login" element={<LoginPage />} />
                                     <Route path="signup" element={<SignupPage />} />
+                                    <Route path="change-password" element={<ChangePasswordPage />} />
                                 </Routes>
                             </QueryParamProvider>
                         </Provider>

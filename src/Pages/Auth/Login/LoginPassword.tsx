@@ -26,7 +26,7 @@ const LoginPassword = () => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await axios.post('https://api.darine.shop/accounts/login/', {
+            await axios.post('https://api.mlkino.com/accounts/login/', {
                 mobile: data.mobile,
                 password: data.password,
             })

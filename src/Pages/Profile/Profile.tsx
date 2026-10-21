@@ -3,22 +3,22 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {setUtil} from '../../redux/UtilSlice'
-import { ParamType } from '../../Components/Filter/CustomFilter'
-import { Users, UsersType } from '../User/Users'
+import {ParamType} from '../../Components/Filter/CustomFilter'
+import {Users, UsersType} from '../User/Users'
 
 export default function Profile() {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
     const [initialData, setInitialData] = useState<UsersType>({} as UsersType)
-      const [date,setDate] = useState<ParamType>({} as ParamType)
-      const [users,setUsers] = useState<UsersType>({} as UsersType)
+    const [date, setDate] = useState<ParamType>({} as ParamType)
+    const [users, setUsers] = useState<UsersType>({} as UsersType)
     const dispatch = useDispatch()
     useEffect(() => {
         const getProfile = async () => {
             try {
                 const response = await axios.get<{
                     data: UsersType
-                }>(`https://api.darine.shop/accounts/profile/`, {
-                    withCredentials:true
+                }>(`https://api.mlkino.com/accounts/profile/`, {
+                    withCredentials: true,
                 })
                 setProfile(response.data.data)
                 setInitialData(response.data.data)
@@ -55,8 +55,8 @@ export default function Profile() {
                 data: UsersType
                 message: string
                 status: boolean
-            }>(`https://api.darine.shop/accounts/profile/`, formData, {
-               withCredentials:true
+            }>(`https://api.mlkino.com/accounts/profile/`, formData, {
+                withCredentials: true,
             })
             dispatch(
                 setUtil({
@@ -118,7 +118,7 @@ export default function Profile() {
                     </Stack>
                 </Stack>
             </Stack>
-            <Users resource='/profile' users={users} setUsers={setUsers}   />
+            <Users resource="/profile" users={users} setUsers={setUsers} />
         </Box>
     )
 }

@@ -23,7 +23,7 @@ type SignupInfoForm = {
 }
 
 interface Props {
-    mobile: string
+    phone: string
     onBack: () => void
 }
 
@@ -36,7 +36,7 @@ const SUB_STEP_FIELDS: Record<InfoSubStep, (keyof SignupInfoForm)[]> = {
 
 const subStepLabels = ['اطلاعات شخصی', 'آدرس و رمز عبور']
 
-const SignupInfo = ({mobile, onBack}: Props) => {
+const SignupInfo = ({phone, onBack}: Props) => {
     const dispatch = useDispatch()
     const [subStep, setSubStep] = useState<InfoSubStep>(0)
 
@@ -69,7 +69,7 @@ const SignupInfo = ({mobile, onBack}: Props) => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await registerUser({mobile, ...rest})
+            await registerUser({phone, ...rest})
 
             dispatch(
                 setUtil({

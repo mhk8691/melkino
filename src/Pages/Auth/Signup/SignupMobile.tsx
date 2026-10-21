@@ -6,12 +6,12 @@ import {CustomTextField} from '../../../Components/Input/CustomTextField'
 import {setUtil} from '../../../redux/UtilSlice'
 import { sendOtp } from './authApi'
 
-type MobileForm = {
-    mobile: string
+type phoneForm = {
+    phone: string
 }
 
 interface Props {
-    onSuccess: (mobile: string) => void
+    onSuccess: (phone: string) => void
 }
 
 const SignupMobile = ({onSuccess}: Props) => {
@@ -21,16 +21,16 @@ const SignupMobile = ({onSuccess}: Props) => {
         register,
         handleSubmit,
         formState: {errors, isSubmitting},
-    } = useForm<MobileForm>({mode: 'onTouched'})
+    } = useForm<phoneForm>({mode: 'onTouched'})
 
-    const onSubmit = async (data: MobileForm) => {
-        const mobile = data.mobile.trim()
+    const onSubmit = async (data: phoneForm) => {
+        const phone = data.phone.trim()
 
         dispatch(setUtil({loading: true}))
 
         try {
-            await sendOtp(mobile)
-            onSuccess(mobile)
+            await sendOtp(phone)
+            onSuccess(phone)
         } catch (error: any) {
             dispatch(
                 setUtil({
@@ -53,10 +53,10 @@ const SignupMobile = ({onSuccess}: Props) => {
 
                 <CustomTextField
                     label="شماره تلفن"
-                    name="mobile"
+                    name="phone"
                     inputMode="numeric"
                     register={{
-                        ...register('mobile', {
+                        ...register('phone', {
                             required: 'شماره تلفن الزامی است',
                             pattern: {
                                 value: /^09\d{9}$/,
@@ -64,8 +64,8 @@ const SignupMobile = ({onSuccess}: Props) => {
                             },
                         }),
                     }}
-                    error={!!errors.mobile}
-                    helperText={errors.mobile?.message}
+                    error={!!errors.phone}
+                    helperText={errors.phone?.message}
                     sx={{
                         '& input': {direction: 'ltr', textAlign: 'right'},
                         '& .MuiFormLabel-root': {fontSize: {xs: '12px', sm: '14px'}},

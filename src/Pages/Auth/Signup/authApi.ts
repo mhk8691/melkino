@@ -1,11 +1,11 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'https://api.darine.shop',
+    baseURL: 'https://api.mlkino.com',
 })
 
 export interface RegisterPayload {
-    mobile: string
+    phone: string
     firstName: string
     lastName: string
     nationalCode: string
@@ -19,10 +19,10 @@ export interface RegisterPayload {
     password: string
 }
 
-export const sendOtp = (mobile: string) => api.post('/accounts/send-otp/', {mobile})
+export const sendOtp = (phone: string) => api.post('/accounts/send-otp/', { phone })
 
-export const verifyOtp = (mobile: string, code: string) =>
-    api.post('/accounts/login/otp/', {mobile, code}, {withCredentials: true})
+export const verifyOtp = (phone: string, code: string) =>
+    api.post('/accounts/login/otp/', { phone, code }, { withCredentials: true })
 
 export const registerUser = (payload: RegisterPayload) =>
-    api.post('/accounts/register/', payload, {withCredentials: true})
+    api.post('/accounts/register/', payload, { withCredentials: true })

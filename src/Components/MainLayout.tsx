@@ -7,19 +7,18 @@ import {AppDrawer, drawerWidth} from './Drawer/AppDrawer'
 import Cookies from 'universal-cookie'
 
 const MainLayout = ({children}: {children: React.ReactNode}) => {
-    const cookies= new Cookies()
+    const cookies = new Cookies()
     const [selectedTitle, setSelectedTitle] = useState<string>('')
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [user, setUser] = useState<ProfileType>({} as ProfileType)
-
 
     useEffect(() => {
         const getUser = async () => {
             try {
                 const response = await axios.get<{
                     data: ProfileType
-                }>(`https://api.darine.shop/accounts/profile/`, {
-                    withCredentials:true
+                }>(`https://api.mlkino.com/accounts/profile/`, {
+                    withCredentials: true,
                 })
                 setUser(response.data.data)
             } catch (error: any) {

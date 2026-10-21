@@ -19,7 +19,7 @@ const CIRCLE_SIZE = {xs: 34, sm: 38}
 
 const SignupPage = () => {
     const [step, setStep] = useState<SignupStep>(0)
-    const [mobile, setMobile] = useState('')
+    const [phone, setMobile] = useState('')
 
     return (
         <Box
@@ -262,13 +262,13 @@ const SignupPage = () => {
 
                             {step === 1 && (
                                 <SignupOtp
-                                    mobile={mobile}
+                                    phone={phone}
                                     onBack={() => setStep(0)}
                                     onSuccess={() => setStep(2)}
                                 />
                             )}
 
-                            {step === 2 && <SignupInfo mobile={mobile} onBack={() => setStep(1)} />}
+                            {step === 2 && <SignupInfo phone={phone} onBack={() => setStep(1)} />}
                         </Box>
                     </Stack>
                 </Paper>

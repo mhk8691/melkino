@@ -56,7 +56,7 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await axios.post('https://api.darine.shop/accounts/send-otp/', data)
+            await axios.post('https://api.mlkino.com/accounts/send-otp/', data)
 
             setTime(OTP_DURATION)
 

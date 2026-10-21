@@ -12,7 +12,7 @@ type OtpForm = {
 }
 
 interface Props {
-    mobile: string
+    phone: string
     onBack: () => void
     onSuccess: () => void
 }
@@ -26,7 +26,7 @@ export const formatTime = (seconds: number) => {
     return `${min}:${sec < 10 ? `0${sec}` : sec}`
 }
 
-const SignupOtp = ({mobile, onBack, onSuccess}: Props) => {
+const SignupOtp = ({phone, onBack, onSuccess}: Props) => {
     const dispatch = useDispatch()
 
     const [time, setTime] = useState(OTP_DURATION)
@@ -59,7 +59,7 @@ const SignupOtp = ({mobile, onBack, onSuccess}: Props) => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await verifyOtp(mobile, data.otp.trim())
+            await verifyOtp(phone, data.otp.trim())
             onSuccess()
         } catch (error: any) {
             dispatch(
@@ -79,7 +79,7 @@ const SignupOtp = ({mobile, onBack, onSuccess}: Props) => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await sendOtp(mobile)
+            await sendOtp(phone)
             setOtpRequestId((id) => id + 1)
 
             dispatch(
@@ -119,7 +119,7 @@ const SignupOtp = ({mobile, onBack, onSuccess}: Props) => {
                         color="text.primary"
                         dir="ltr"
                     >
-                        {mobile}
+                        {phone}
                     </Typography>{' '}
                     را وارد کنید.
                 </Typography>

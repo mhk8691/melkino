@@ -42,7 +42,7 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
 
         try {
             await axios.post<AuthResponse>(
-                'https://api.darine.shop/accounts/login/otp/',
+                'https://api.mlkino.com/accounts/login/otp/',
                 {
                     mobile,
                     code: data.otp,

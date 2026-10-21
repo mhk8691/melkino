@@ -3,15 +3,7 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 
-import {
-    Avatar,
-    Divider,
-    ListItemIcon,
-    Menu,
-    MenuItem,
-    Stack,
-    Typography,
-} from '@mui/material'
+import {Avatar, Divider, ListItemIcon, Menu, MenuItem, Stack, Typography} from '@mui/material'
 
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
@@ -20,16 +12,13 @@ import axios from 'axios'
 import {ProfileType} from '../../Core/types'
 
 const AppbarProfile = ({user}: {user: ProfileType}) => {
-    const [anchorEl, setAnchorEl] =
-        useState<null | HTMLElement>(null)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
 
     const open = Boolean(anchorEl)
 
-    const handleOpen = (
-        event: React.MouseEvent<HTMLElement>,
-    ) => {
+    const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
     }
 
@@ -41,20 +30,16 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
         navigate('/profile')
         handleClose()
     }
-     const handleSettings = () => {
+    const handleSettings = () => {
         navigate('/settings')
         handleClose()
     }
 
     const handleLogout = async () => {
         try {
-            await axios.post(
-                'https://api.darine.shop/accounts/logout/',
-                null,
-                {
-                    withCredentials: true,
-                },
-            )
+            await axios.post('https://api.mlkino.com/accounts/logout/', null, {
+                withCredentials: true,
+            })
 
             handleClose()
 
@@ -105,20 +90,11 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                         },
                     }}
                 >
-                    <Typography
-                        fontSize={14}
-                        fontWeight={700}
-                        lineHeight={1.3}
-                        noWrap
-                    >
+                    <Typography fontSize={14} fontWeight={700} lineHeight={1.3} noWrap>
                         {user.first_name}
                     </Typography>
 
-                    <Typography
-                        fontSize={11}
-                        color="text.secondary"
-                        lineHeight={1.3}
-                    >
+                    <Typography fontSize={11} color="text.secondary" lineHeight={1.3}>
                         حساب کاربری
                     </Typography>
                 </Stack>
@@ -128,9 +104,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                         fontSize: 20,
                         color: 'text.secondary',
                         transition: 'transform .2s ease',
-                        transform: open
-                            ? 'rotate(180deg)'
-                            : 'rotate(0)',
+                        transform: open ? 'rotate(180deg)' : 'rotate(0)',
                     }}
                 />
             </Stack>
@@ -156,21 +130,14 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                             borderRadius: '16px',
                             border: '1px solid',
                             borderColor: 'divider',
-                            boxShadow:
-                                '0 12px 35px rgba(0,0,0,.10)',
+                            boxShadow: '0 12px 35px rgba(0,0,0,.10)',
                             overflow: 'hidden',
                         },
                     },
                 }}
             >
                 {/* PROFILE HEADER */}
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    gap={1.5}
-                    px={2}
-                    py={1.75}
-                >
+                <Stack direction="row" alignItems="center" gap={1.5} px={2} py={1.75}>
                     <Avatar
                         src={user.profile_picture || ''}
                         sx={{
@@ -182,19 +149,11 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                     </Avatar>
 
                     <Stack minWidth={0}>
-                        <Typography
-                            fontSize={14}
-                            fontWeight={700}
-                            noWrap
-                        >
+                        <Typography fontSize={14} fontWeight={700} noWrap>
                             {user.first_name}
                         </Typography>
 
-                        <Typography
-                            fontSize={12}
-                            color="text.secondary"
-                            noWrap
-                        >
+                        <Typography fontSize={12} color="text.secondary" noWrap>
                             {user.mobile}
                         </Typography>
                     </Stack>
@@ -215,9 +174,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                         <AccountCircleRoundedIcon fontSize="small" />
                     </ListItemIcon>
 
-                    <Typography fontSize={13}>
-                        پروفایل
-                    </Typography>
+                    <Typography fontSize={13}>پروفایل</Typography>
                 </MenuItem>
 
                 <MenuItem
@@ -233,9 +190,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                         <SettingsRoundedIcon fontSize="small" />
                     </ListItemIcon>
 
-                    <Typography fontSize={13}>
-                        تنظیمات 
-                    </Typography>
+                    <Typography fontSize={13}>تنظیمات</Typography>
                 </MenuItem>
 
                 <Divider sx={{my: 0.5}} />
@@ -262,10 +217,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                         <LogoutRoundedIcon fontSize="small" />
                     </ListItemIcon>
 
-                    <Typography
-                        fontSize={13}
-                        fontWeight={600}
-                    >
+                    <Typography fontSize={13} fontWeight={600}>
                         خروج از حساب
                     </Typography>
                 </MenuItem>
