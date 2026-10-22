@@ -38,7 +38,6 @@ const ChangePassword = () => {
     })
 
     const newPassword = watch('new_password')
-
     const onSubmit = async (data: ChangePasswordForm) => {
         dispatch(setUtil({loading: true}))
 

@@ -4,6 +4,7 @@ import axios from 'axios'
 import {useDispatch} from 'react-redux'
 import {CustomTextField} from '../../../Components/Input/CustomTextField'
 import {setUtil} from '../../../redux/UtilSlice'
+import { useNavigate } from 'react-router-dom'
 
 type LoginPasswordForm = {
     phone: string
@@ -13,7 +14,7 @@ type LoginPasswordForm = {
 
 const LoginPassword = () => {
     const dispatch = useDispatch()
-
+    const navigate = useNavigate()
     const {register, handleSubmit} = useForm<LoginPasswordForm>({
         defaultValues: {
             phone: '',
@@ -30,6 +31,7 @@ const LoginPassword = () => {
                 phone: data.phone,
                 password: data.password,
             })
+           navigate('/dashboard')
         } catch (error: any) {
             dispatch(
                 setUtil({
