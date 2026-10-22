@@ -9,7 +9,7 @@ import {setUtil} from '../../../redux/UtilSlice'
 import SubmitCode from './SubmitCode'
 
 type OtpForm = {
-    mobile: string
+    phone: string
 }
 
 interface LoginOtpProps {
@@ -78,7 +78,7 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
         handleSubmit(sendOtp)()
     }
 
-    const mobile = getValues('mobile')
+    const phone = getValues('phone')
 
     if (!isOtpStep) {
         return (
@@ -97,9 +97,9 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
 
                     <CustomTextField
                         label="شماره تلفن"
-                        name="mobile"
+                        name="phone"
                         register={{
-                            ...register('mobile', {
+                            ...register('phone', {
                                 required: 'شماره تلفن الزامی است',
                             }),
                         }}
@@ -172,7 +172,7 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
                         color="text.primary"
                         dir="ltr"
                     >
-                        {mobile}
+                        {phone}
                     </Typography>{' '}
                     را وارد کنید.
                 </Typography>

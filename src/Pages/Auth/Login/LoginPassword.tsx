@@ -6,7 +6,7 @@ import {CustomTextField} from '../../../Components/Input/CustomTextField'
 import {setUtil} from '../../../redux/UtilSlice'
 
 type LoginPasswordForm = {
-    mobile: string
+    phone: string
     password: string
     rememberMe: boolean
 }
@@ -16,7 +16,7 @@ const LoginPassword = () => {
 
     const {register, handleSubmit} = useForm<LoginPasswordForm>({
         defaultValues: {
-            mobile: '',
+            phone: '',
             password: '',
             rememberMe: false,
         },
@@ -26,8 +26,8 @@ const LoginPassword = () => {
         dispatch(setUtil({loading: true}))
 
         try {
-            await axios.post('https://api.mlkino.com/accounts/login/', {
-                mobile: data.mobile,
+            await axios.post('https://api.mlkino.com/accounts/login/password/', {
+                phone: data.phone,
                 password: data.password,
             })
         } catch (error: any) {
@@ -53,9 +53,9 @@ const LoginPassword = () => {
         >
             <CustomTextField
                 label="شماره تلفن"
-                name="mobile"
+                name="phone"
                 register={{
-                    ...register('mobile', {
+                    ...register('phone', {
                         required: 'شماره تلفن الزامی است',
                     }),
                 }}

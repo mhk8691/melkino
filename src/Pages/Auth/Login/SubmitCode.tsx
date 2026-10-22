@@ -9,7 +9,7 @@ import {CustomTextField} from '../../../Components/Input/CustomTextField'
 import {setUtil} from '../../../redux/UtilSlice'
 
 type ParentForm = {
-    mobile: string
+    phone: string
 }
 
 type SubmitCodeForm = {
@@ -35,7 +35,7 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
 
     const {register, handleSubmit} = useForm<SubmitCodeForm>()
 
-    const mobile = getValues ? getValues('mobile') : phoneNumber
+    const phone = getValues ? getValues('phone') : phoneNumber
 
     const onSubmit = async (data: SubmitCodeForm) => {
         dispatch(setUtil({loading: true}))
@@ -44,7 +44,7 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
             await axios.post<AuthResponse>(
                 'https://api.mlkino.com/accounts/login/otp/',
                 {
-                    mobile,
+                    phone,
                     code: data.otp,
                 },
                 {
@@ -85,7 +85,7 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
                         fontWeight={700}
                         color="text.primary"
                     >
-                        {mobile}
+                        {phone}
                     </Typography>{' '}
                     ارسال شده است
                 </Typography>

@@ -6,23 +6,51 @@ const api = axios.create({
 
 export interface RegisterPayload {
     phone: string
-    firstName: string
-    lastName: string
-    nationalCode: string
-    birthDate: string
-    email: string
-    landline: string
+    first_name: string
+    last_name: string
+    national_code: string
+    birth_date: string
+    avatar?: File
     province: string
     city: string
-    postalCode: string
+    postal_code: string
     address: string
     password: string
+    password_confirm: string
+    user_type: 'consumer' | 'investor'
 }
 
-export const sendOtp = (phone: string) => api.post('/accounts/send-otp/', { phone })
+export const sendOtp = (phone: string) =>
+    api.post('/accounts/send-otp/', { phone })
 
 export const verifyOtp = (phone: string, code: string) =>
-    api.post('/accounts/login/otp/', { phone, code }, { withCredentials: true })
+    api.post(
+        '/accounts/verify-otp/',
+        { phone, code },
+        { withCredentials: true },
+    )
 
-export const registerUser = (payload: RegisterPayload) =>
-    api.post('/accounts/register/', payload, { withCredentials: true })
+export const registerUser = (payload: RegisterPayload) => {
+    const formData = new FormData()
+
+    formData.append('phone', payload.phone)
+    formData.append('first_name', payload.first_name)
+    formData.append('last_name', payload.last_name)
+    formData.append('national_code', payload.national_code)
+    formData.append('birth_date', payload.birth_date)
+    formData.append('province', payload.province)
+    formData.append('city', payload.city)
+    formData.append('postal_code', payload.postal_code)
+    formData.append('address', payload.address)
+    formData.append('password', payload.password)
+    formData.append('password_confirm', payload.password_confirm)
+    formData.append('user_type', payload.user_type)
+
+    if (payload.avatar) {
+        formData.append('avatar', payload.avatar)
+    }
+
+    return api.post('/accounts/complete-register/', formData, {
+        withCredentials: true,
+    })
+}
