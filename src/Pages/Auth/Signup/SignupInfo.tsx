@@ -8,6 +8,7 @@ import { CustomSelectField } from '../../../Components/Input/CustomSelectField'
 import DatePickerFilter from '../../../Components/Filter/DatePicker'
 import { setUtil } from '../../../redux/UtilSlice'
 import { registerUser } from './authApi'
+import { useNavigate } from 'react-router-dom'
 
 type SignupInfoForm = {
     first_name: string
@@ -74,7 +75,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
     })
 
     const password = watch('password')
-
+    const navigate = useNavigate()
     // CustomSelectField uses a state setter; forward its value to react-hook-form.
     const setData: Dispatch<SetStateAction<any>> = (updater) => {
         const currentData = { user_type: watch('user_type') }
@@ -124,6 +125,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
             // Keep the API field names exactly as specified by the backend schema.
             await registerUser(payload as Parameters<typeof registerUser>[0])
             dispatch(setUtil({ open: true, message: 'اطلاعات ثبت شد', severity: 'success' }))
+            navigate('/dashboard')
         } catch (error: any) {
             dispatch(setUtil({
                 open: true,

@@ -7,6 +7,7 @@ import {useDispatch} from 'react-redux'
 import {CustomTextField} from '../../../Components/Input/CustomTextField'
 import {setUtil} from '../../../redux/UtilSlice'
 import SubmitCode from './SubmitCode'
+import { useNavigate } from 'react-router-dom'
 
 type OtpForm = {
     phone: string
@@ -28,7 +29,7 @@ const OTP_DURATION = 120
 
 const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
     const dispatch = useDispatch()
-
+    const navigate = useNavigate()
     const [time, setTime] = useState(0)
 
     const {register, handleSubmit, getValues} = useForm<OtpForm>()
@@ -61,6 +62,7 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
             setTime(OTP_DURATION)
 
             setIsOtpStep(true)
+             navigate('/dashboard')
         } catch (error: any) {
             dispatch(
                 setUtil({

@@ -1,187 +1,237 @@
-import { useEffect, useState, useRef } from 'react'
-import DatePicker, { DateObject } from 'react-multi-date-picker'
+import {useEffect, useMemo, useState} from 'react'
+import DatePicker, {DateObject} from 'react-multi-date-picker'
 import TimePicker from 'react-multi-date-picker/plugins/time_picker'
 
-import { FormControl, InputLabel } from '@mui/material'
+import {Box, TextField} from '@mui/material'
 
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import gregorian from 'react-date-object/calendars/gregorian'
 import gregorian_en from 'react-date-object/locales/gregorian_en'
-import { ParamType } from './CustomFilter'
+
+import type {ParamType} from './CustomFilter'
 import './datePicker.css'
-import { CustomTextField } from '../Input/CustomTextField'
 
 const DATE_FORMAT = 'YYYY-MM-DD'
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm'
 
 type DatePickerFilterBaseProps = {
-    item: any
-    // اگه true باشه، انتخاب ساعت و دقیقه هم به کلندر اضافه میشه
+    item: {
+        field?: string
+        label: string
+    }
     withTime?: boolean
 }
-
-// مود پیش‌فرض: خودش استیت رو با setParams مدیریت می‌کنه (رفتار قبلی)
 type DatePickerFilterParamsModeProps = DatePickerFilterBaseProps & {
     mode?: 'params'
     setParams: React.Dispatch<React.SetStateAction<ParamType>>
     initialValue?: string
 }
 
-// مود کنترل‌شده: مقدار و تغییرش کاملاً از بیرون کنترل میشه
-// value/onChange با فرمت گرگوری هستن: 'YYYY-MM-DD' یا در صورت withTime، 'YYYY-MM-DD HH:mm'
 type DatePickerFilterControlledModeProps = DatePickerFilterBaseProps & {
     mode: 'controlled'
     value: string | null
     onChange: (value: string | null) => void
 }
 
-type DatePickerFilterProps =
-    | DatePickerFilterParamsModeProps
-    | DatePickerFilterControlledModeProps
+type DatePickerFilterProps = DatePickerFilterParamsModeProps | DatePickerFilterControlledModeProps
 
-export default function DatePickerFilter(props: DatePickerFilterProps) {
-    const { item, withTime = false } = props
-    const format = withTime ? DATE_TIME_FORMAT : DATE_FORMAT
+// Convert Gregorian string to Persian DateObject
+const toPersianDate = (value: string | null | undefined, format: string): DateObject | null => {
+    if (!value || !value.trim()) {
+        return null
+    }
 
-    const [internalValue, setInternalValue] = useState<DateObject | null>(null)
-    const [focused, setFocused] = useState(false)
-    const wrapperRef = useRef<HTMLDivElement>(null)
-
-    // برای وابستگی‌های useEffect؛ باعث narrow شدن props نمیشه، فقط برای dependency array استفاده میشه
-    const controlledRawValue = props.mode === 'controlled' ? props.value : undefined
-    const paramsInitialValue = props.mode !== 'controlled' ? props.initialValue : undefined
-
-    // ورودی مود controlled گرگوریه، برای نمایش باید به شمسی تبدیل بشه
-    const gregorianStringToDateObject = (dateStr: string | null | undefined) => {
-        if (!dateStr) return null
-        return new DateObject({
-            date: dateStr,
+    try {
+        const date = new DateObject({
+            date: value,
             format,
             calendar: gregorian,
             locale: gregorian_en,
-        }).convert(persian, persian_fa)
-    }
+        })
 
-    // مود params: مقداردهی اولیه بر اساس initialValue (شمسی فرض شده، طبق کد اصلی)
-    // نکته: باید مستقیماً روی props.mode چک بشه تا TS بتونه نوع props رو narrow کنه
-    useEffect(() => {
-        if (props.mode === 'controlled') return
-        const initialValue = props.initialValue
-        setInternalValue(
-            initialValue
-                ? new DateObject({
-                      date: initialValue,
-                      format,
-                      calendar: persian,
-                      locale: persian_fa,
-                  })
-                : null
-        )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.mode, format, paramsInitialValue])
-
-    // مود controlled: همگام‌سازی مقدار داخلی با value بیرونی
-    useEffect(() => {
-        if (props.mode !== 'controlled') return
-        setInternalValue(gregorianStringToDateObject(props.value))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.mode, format, controlledRawValue])
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                wrapperRef.current &&
-                !wrapperRef.current.contains(event.target as Node)
-            ) {
-                setFocused(false)
-            }
+        if (!date.isValid) {
+            return null
         }
 
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+        return date.convert(persian, persian_fa)
+    } catch {
+        return null
+    }
+}
 
-    const handleChange = (date: DateObject | null) => {
-        if (!date) {
-            setInternalValue(null)
-            if (props.mode === 'controlled') {
-                props.onChange(null)
-            } else {
-                props.setParams((params) => {
-                    const updated = { ...params }
-                    delete updated[item.field]
-                    return updated
-                })
-            }
+// Convert Persian string to DateObject
+const parsePersianDate = (value: string | null | undefined, format: string): DateObject | null => {
+    if (!value || !value.trim()) {
+        return null
+    }
+
+    try {
+        const date = new DateObject({
+            date: value,
+            format,
+            calendar: persian,
+            locale: persian_fa,
+        })
+
+        return date.isValid ? date : null
+    } catch {
+        return null
+    }
+}
+
+export default function DatePickerFilter(props: DatePickerFilterProps) {
+    const {item, withTime = false} = props
+
+    const format = withTime ? DATE_TIME_FORMAT : DATE_FORMAT
+
+    const isControlled = props.mode === 'controlled'
+
+    const controlledValue = props.mode === 'controlled' ? props.value : undefined
+
+    const initialValue = props.mode !== 'controlled' ? props.initialValue : undefined
+
+    const [internalValue, setInternalValue] = useState<DateObject | null>(null)
+
+    const [focused, setFocused] = useState(false)
+
+    // Sync initial value in params mode
+    useEffect(() => {
+        if (isControlled) {
             return
         }
 
-        setInternalValue(date)
+        setInternalValue(parsePersianDate(initialValue, format))
+    }, [isControlled, initialValue, format])
 
-        const gregorianDate = new DateObject(date)
-            .convert(gregorian, gregorian_en)
-            .format(format)
+    // Sync controlled value from parent
+    const externalDate = useMemo(() => {
+        if (!isControlled) {
+            return null
+        }
+
+        return toPersianDate(controlledValue, format)
+    }, [isControlled, controlledValue, format])
+
+    // In controlled mode, the parent is the source of truth.
+    const selectedDate = isControlled ? externalDate : internalValue
+
+    // Handle selected date
+
+    const handleChange = (date: DateObject | null) => {
+        const fieldName = item.field
+
+        if (!date || !date.isValid) {
+            if (props.mode === 'controlled') {
+                props.onChange(null)
+            } else {
+                setInternalValue(null)
+
+                if (fieldName) {
+                    props.setParams((prev) => {
+                        const updated = {...prev}
+                        delete updated[fieldName]
+                        return updated
+                    })
+                }
+            }
+
+            return
+        }
+
+        const persianDate = new DateObject(date).convert(persian, persian_fa)
+
+        const gregorianDate = new DateObject(date).convert(gregorian, gregorian_en).format(format)
 
         if (props.mode === 'controlled') {
             props.onChange(gregorianDate)
         } else {
-            props.setParams((params) => ({
-                ...params,
-                [item.field]: gregorianDate,
-            }))
+            setInternalValue(persianDate)
+
+            if (fieldName) {
+                props.setParams((prev) => ({
+                    ...prev,
+                    [fieldName]: gregorianDate,
+                }))
+            }
         }
     }
 
-    const active = focused || !!internalValue
+    const displayValue = selectedDate ? selectedDate.format(format) : ''
+
+    const active = focused || !!selectedDate
 
     return (
-        <FormControl fullWidth sx={{ width: '100%' }}>
-            <InputLabel
-                shrink={active}
-                sx={{
-                    color: '#B0B0B0',
-                    fontSize: 15,
-                    '&.Mui-focused': {
-                        color: '#E2E7DF',
-                    },
-                }}
-            >
-                {item.label}
-            </InputLabel>
-
-            <div
-                ref={wrapperRef}
-                style={{
+        <Box
+            sx={{
+                width: '100%',
+                minWidth: 0,
+                position: 'relative',
+            }}
+        >
+            <DatePicker
+                calendar={persian}
+                locale={persian_fa}
+                format={format}
+                value={selectedDate}
+                onChange={handleChange}
+                onOpenPickNewDate={false}
+                onOpen={() => setFocused(true)}
+                onClose={() => setFocused(false)}
+                className="blue"
+                calendarPosition="bottom-right"
+                containerStyle={{
                     width: '100%',
-                    display: 'block',
                 }}
-            >
-                <DatePicker
-                    calendar={persian}
-                    locale={persian_fa}
-                    format={format}
-                    onOpenPickNewDate={false}
-                    value={internalValue}
-                    onChange={handleChange}
-                    onOpen={() => setFocused(true)}
-                    onClose={() => setFocused(false)}
-                    className="blue"
-                    plugins={withTime ? [<TimePicker key="time-picker" hideSeconds />] : []}
-                    render={(_, openCalendar) => (
-                        <CustomTextField
-                            fullWidth
-                            value={internalValue ? internalValue.format(format) : ''}
-                            onClick={openCalendar}
-                            label={item.label}
-                            variant="outlined"
-                            InputLabelProps={{
-                                shrink: focused || !!internalValue,
-                            }}
-                        />
-                    )}
-                />
-            </div>
-        </FormControl>
+                plugins={withTime ? [<TimePicker key="time-picker" hideSeconds />] : []}
+                render={(_, openCalendar) => (
+                    <TextField
+                        fullWidth
+                        label={item.label}
+                        value={displayValue}
+                        variant="outlined"
+                        onClick={openCalendar}
+                        onFocus={() => setFocused(true)}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        InputLabelProps={{
+                            shrink: active,
+                        }}
+                        inputProps={{
+                            style: {
+                                cursor: 'pointer',
+                                direction: 'ltr',
+                                textAlign: 'right',
+                            },
+                        }}
+                        sx={{
+                            width: '100%',
+                            minWidth: 0,
+
+                            '& .MuiOutlinedInput-root': {
+                                cursor: 'pointer',
+                                borderRadius: '12px',
+                                transition: 'all 0.2s ease',
+                            },
+
+                            '& .MuiInputBase-input': {
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                            },
+
+                            '& .MuiInputLabel-root': {
+                                color: '#B0B0B0',
+                                fontSize: '15px',
+                            },
+
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: '#E2E7DF',
+                            },
+                        }}
+                    />
+                )}
+            />
+        </Box>
     )
 }

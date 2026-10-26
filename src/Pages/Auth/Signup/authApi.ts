@@ -27,7 +27,12 @@ export const verifyOtp = (phone: string, code: string) =>
     api.post(
         '/accounts/verify-otp/',
         { phone, code },
-        { withCredentials: true },
+        {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        },
     )
 
 export const registerUser = (payload: RegisterPayload) => {
@@ -52,5 +57,8 @@ export const registerUser = (payload: RegisterPayload) => {
 
     return api.post('/accounts/complete-register/', formData, {
         withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+        },
     })
 }

@@ -1,12 +1,12 @@
-import {Box, Button, Stack, Typography} from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import axios from 'axios'
 import React from 'react'
-import {useForm, UseFormGetValues} from 'react-hook-form'
-import {useDispatch} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
+import { useForm, UseFormGetValues } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-import {CustomTextField} from '../../../Components/Input/CustomTextField'
-import {setUtil} from '../../../redux/UtilSlice'
+import { CustomTextField } from '../../../Components/Input/CustomTextField'
+import { setUtil } from '../../../redux/UtilSlice'
 
 type ParentForm = {
     phone: string
@@ -29,16 +29,16 @@ interface Props {
     resource: string
 }
 
-export default function SubmitCode({getValues, children, phoneNumber}: Props) {
+export default function SubmitCode({ getValues, children, phoneNumber }: Props) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const {register, handleSubmit} = useForm<SubmitCodeForm>()
+    const { register, handleSubmit } = useForm<SubmitCodeForm>()
 
     const phone = getValues ? getValues('phone') : phoneNumber
 
     const onSubmit = async (data: SubmitCodeForm) => {
-        dispatch(setUtil({loading: true}))
+        dispatch(setUtil({ loading: true }))
 
         try {
             await axios.post<AuthResponse>(
@@ -49,6 +49,9 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
                 },
                 {
                     withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                 },
             )
 
@@ -62,7 +65,7 @@ export default function SubmitCode({getValues, children, phoneNumber}: Props) {
                 }),
             )
         } finally {
-            dispatch(setUtil({loading: false}))
+            dispatch(setUtil({ loading: false }))
         }
     }
 
