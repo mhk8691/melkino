@@ -201,12 +201,13 @@ export function UsersList() {
             </Box>
 
             {viewMode === 'card' ? (
-                <UserCardGrid
-                    rows={users.data}
-                    resource={RESOURCE}
-                    getList={getList}
-                    title="کاربران عادی"
-                />
+                // <UserCardGrid
+                //     rows={users.data}
+                //     resource={RESOURCE}
+                //     getList={getList}
+                //     title="کاربران عادی"
+                // />
+                <></>
             ) : (
                 <CustomTable
                     title="کاربران عادی"

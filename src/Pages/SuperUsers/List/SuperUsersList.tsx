@@ -172,12 +172,13 @@ export function SuperUsersList() {
             </Box>
 
             {viewMode === 'card' ? (
-                <UserCardGrid
-                    rows={superUsers.data}
-                    resource={RESOURCE}
-                    getList={getSuperUsers}
-                    title="سوپر ادمین‌ها"
-                />
+                // <UserCardGrid
+                //     rows={superUsers.data}
+                //     resource={RESOURCE}
+                //     getList={getSuperUsers}
+                //     title="سوپر ادمین‌ها"
+                // />
+                <></>
             ) : (
                 <CustomTable
                     title="سوپر ادمین‌ها"
