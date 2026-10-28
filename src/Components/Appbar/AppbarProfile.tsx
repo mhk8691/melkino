@@ -24,7 +24,6 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
 
     const handleClose = () => {
         setAnchorEl(null)
-        navigate('/login')
     }
 
     const handleProfile = () => {
@@ -43,8 +42,8 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
             })
 
             handleClose()
+        navigate('/login')
 
-            // navigate('/login')
         } catch (error) {
             console.error(error)
         }
