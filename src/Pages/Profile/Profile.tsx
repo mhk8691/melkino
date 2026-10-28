@@ -62,7 +62,6 @@ export default function Profile() {
                     severity: 'success',
                 }),
             )
-            window.location.reload()
         } catch (error: any) {
             dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
         }

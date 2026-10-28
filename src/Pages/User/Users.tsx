@@ -14,7 +14,6 @@ export interface UsersType {
     email: string | null
     first_name: string
     last_name: string
-    full_name: string
     national_code: string | null
     birth_date: string | null
     avatar: string | null
@@ -101,15 +100,7 @@ export function Users({
                         value={users.last_name ?? ''}
                     />,
 
-                    <CustomTextField
-                        key="full_name"
-                        name="full_name"
-                        setData={setUsers}
-                        resource={resource}
-                        label="نام کامل"
-                        value={users.full_name ?? ''}
-                        disabled
-                    />,
+                  
 
                     <CustomTextField
                         key="phone"
@@ -136,6 +127,7 @@ export function Users({
                         resource={resource}
                         label="کد ملی"
                         value={users.national_code ?? ''}
+                        disabled
                     />,
 
                     <DatePickerFilter

@@ -54,7 +54,6 @@ const defaultUser: UsersType = {
 
     first_name: '',
     last_name: '',
-    full_name: '',
 
     national_code: null,
     birth_date: null,
@@ -194,7 +193,7 @@ export function UsersList() {
                                 >
                                     <Avatar
                                         src={item.avatar || profileImage}
-                                        alt={item.full_name}
+                                        alt={item.first_name}
                                         sx={{
                                             width: 40,
                                             height: 40,
@@ -205,7 +204,7 @@ export function UsersList() {
                                         variant="body2"
                                         sx={{ whiteSpace: 'nowrap' }}
                                     >
-                                        {item.full_name ||
+                                        {
                                             `${item.first_name} ${item.last_name}`.trim() ||
                                             '--'}
                                     </Typography>
