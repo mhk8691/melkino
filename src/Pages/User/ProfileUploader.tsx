@@ -9,16 +9,16 @@ import {
     useRef,
     useState,
 } from 'react'
+
 import userImage from '../../Images/user.png'
 
 interface ProfileUploaderProps {
-    avatar: string | null
+    avatar: string | File | null
 }
 
 interface Props<T extends ProfileUploaderProps> {
     user: T
     setUser: Dispatch<SetStateAction<T>>
-    onFileChange?: (file: File) => void
 }
 
 export default function ProfileUploader<
@@ -26,7 +26,6 @@ export default function ProfileUploader<
 >({
     user,
     setUser,
-    onFileChange,
 }: Props<T>) {
     const [isHover, setIsHover] = useState(false)
     const [imagePreview, setImagePreview] = useState('')
@@ -34,12 +33,24 @@ export default function ProfileUploader<
     const previewRef = useRef<string | null>(null)
 
     useEffect(() => {
+        if (!(user.avatar instanceof File)) {
+            setImagePreview('')
+            return
+        }
+
+        const previewUrl = URL.createObjectURL(user.avatar)
+
+        previewRef.current = previewUrl
+        setImagePreview(previewUrl)
+
         return () => {
-            if (previewRef.current) {
-                URL.revokeObjectURL(previewRef.current)
+            URL.revokeObjectURL(previewUrl)
+
+            if (previewRef.current === previewUrl) {
+                previewRef.current = null
             }
         }
-    }, [])
+    }, [user.avatar])
 
     const handleChange = (
         event: ChangeEvent<HTMLInputElement>
@@ -53,27 +64,20 @@ export default function ProfileUploader<
             return
         }
 
-        if (previewRef.current) {
-            URL.revokeObjectURL(previewRef.current)
-        }
-
-        const previewUrl = URL.createObjectURL(file)
-
-        previewRef.current = previewUrl
-        setImagePreview(previewUrl)
-
         setUser((prev) => ({
             ...prev,
-            avatar: previewUrl,
+            avatar: file,
         }))
-
-        onFileChange?.(file)
 
         event.target.value = ''
     }
 
     const imageSrc =
-        imagePreview || user.avatar || userImage
+        imagePreview ||
+        (typeof user.avatar === 'string'
+            ? user.avatar
+            : '') ||
+        userImage
 
     return (
         <Stack
@@ -105,6 +109,8 @@ export default function ProfileUploader<
                     },
                     cursor: 'pointer',
                     overflow: 'hidden',
+                    display: 'block',
+                    flexShrink: 0,
                 }}
             >
                 <Box
@@ -112,6 +118,7 @@ export default function ProfileUploader<
                     src={imageSrc}
                     alt="تصویر پروفایل کاربر"
                     onError={(event) => {
+                        event.currentTarget.onerror = null
                         event.currentTarget.src = userImage
                     }}
                     sx={{
@@ -126,28 +133,25 @@ export default function ProfileUploader<
                     }}
                 />
 
-                {isHover && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: isHover ? 1 : 0,
+                        transition: 'opacity .2s ease-in-out',
+                        pointerEvents: 'none',
+                    }}
+                >
                     <EditIcon
                         fontSize="large"
-                        color="primary"
                         sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            animation: 'editIcon .2s ease-in-out',
-
-                            '@keyframes editIcon': {
-                                '0%': {
-                                    opacity: 0,
-                                },
-                                '100%': {
-                                    opacity: 1,
-                                },
-                            },
+                            color: '#fff',
                         }}
                     />
-                )}
+                </Box>
 
                 <Box
                     component="input"

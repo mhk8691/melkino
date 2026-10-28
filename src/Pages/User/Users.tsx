@@ -1,9 +1,10 @@
 
-import {Stack} from '@mui/material'
-import {CustomTextField} from '../../Components/Input/CustomTextField'
-import {CustomSelectField} from '../../Components/Input/CustomSelectField'
-import {GridProducer} from '../../Components/Table/GridProducer'
-import type {Dispatch, SetStateAction} from 'react'
+import { Stack } from '@mui/material'
+import { type Dispatch, type SetStateAction } from 'react'
+
+import { CustomTextField } from '../../Components/Input/CustomTextField'
+import { CustomSelectField } from '../../Components/Input/CustomSelectField'
+import { GridProducer } from '../../Components/Table/GridProducer'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
 import ProfileUploader from './ProfileUploader'
 import { formatDate } from '../../Core/FormatDate'
@@ -16,7 +17,7 @@ export interface UsersType {
     last_name: string
     national_code: string | null
     birth_date: string | null
-    avatar: string | null
+    avatar: string | File | null
     province: string | null
     city: string | null
     postal_code: string | null
@@ -40,7 +41,7 @@ export interface UsersType {
     is_superuser: boolean
     admin_level: string | number | null
     has_profile: boolean
-    last_login: string 
+    last_login: string
     date_joined: string
 }
 
@@ -70,7 +71,7 @@ export function Users({
             </Stack>
 
             <GridProducer
-                sx={{marginBottom: '16px'}}
+                sx={{ marginBottom: '16px' }}
                 data={[
                     <CustomTextField
                         key="id"
@@ -99,8 +100,6 @@ export function Users({
                         label="نام خانوادگی"
                         value={users.last_name ?? ''}
                     />,
-
-                  
 
                     <CustomTextField
                         key="phone"
@@ -145,7 +144,8 @@ export function Users({
                             }))
                         }
                     />,
-                       <CustomTextField
+
+                    <CustomTextField
                         key="postal_code"
                         name="postal_code"
                         setData={setUsers}
@@ -153,7 +153,6 @@ export function Users({
                         label="کد پستی"
                         value={users.postal_code ?? ''}
                     />,
-
 
                     <CustomTextField
                         key="province"
@@ -175,7 +174,6 @@ export function Users({
                         disabled
                     />,
 
-                 
                     <CustomTextField
                         key="address"
                         name="address"
@@ -206,7 +204,6 @@ export function Users({
                             },
                         ]}
                     />,
-
 
                     <CustomSelectField
                         key="account_status"

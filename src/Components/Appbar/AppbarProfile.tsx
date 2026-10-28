@@ -9,7 +9,7 @@ import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
 
-import { UsersType } from '../../Pages/User/Users'
+import {UsersType} from '../../Pages/User/Users'
 
 const AppbarProfile = ({user}: {user: UsersType}) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -42,8 +42,7 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
             })
 
             handleClose()
-        navigate('/login')
-
+            navigate('/login')
         } catch (error) {
             console.error(error)
         }
@@ -70,7 +69,7 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
                 }}
             >
                 <Avatar
-                    src={user.avatar || ''}
+                    src={typeof user.avatar === 'string' ? user.avatar : ''}
                     alt={user.first_name}
                     sx={{
                         width: 38,
@@ -139,7 +138,7 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
                 {/* PROFILE HEADER */}
                 <Stack direction="row" alignItems="center" gap={1.5} px={2} py={1.75}>
                     <Avatar
-                        src={user.avatar || ''}
+                        src={typeof user.avatar === 'string' ? user.avatar : ''}
                         sx={{
                             width: 44,
                             height: 44,

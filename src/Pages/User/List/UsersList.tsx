@@ -192,7 +192,7 @@ export function UsersList() {
                                     alignItems="center"
                                 >
                                     <Avatar
-                                        src={item.avatar || profileImage}
+                                        src={typeof item.avatar === 'string' ? item.avatar :profileImage}
                                         alt={item.first_name}
                                         sx={{
                                             width: 40,
