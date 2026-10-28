@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Route, Routes, useLocation, useNavigate} from 'react-router-dom'
 import MainLayout from '../../Components/MainLayout'
 
@@ -68,48 +68,86 @@ import {ArchivesEdit} from '../Archives/Edit/ArchivesEdit'
 import {TasksCreate} from '../Tasks/Create/TasksCreate'
 import {TasksEdit} from '../Tasks/Edit/TasksEdit'
 import {TasksList} from '../Tasks/List/TasksList'
+import { clearRole, setRole, UserRole } from '../../redux/RoleSlice'
+import { useDispatch } from 'react-redux'
+import axios from 'axios'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
     const navigate = useNavigate()
     const location = useLocation()
     const [data, setData] = useState({})
-    const [authStatus, setAuthStatus] = useState('loading')
-    // useEffect(() => {
-    //     const getProfile = async () => {
-    //         try {
-    //             const response = await axios.get(`https://api.mlkino.com/accounts/profile/`, {
-    //                 withCredentials: true,
-    //             })
+    const dispatch = useDispatch()
+    const [authStatus, setAuthStatus] = useState<'loading' | 'auth' | 'unauth'>('loading')
 
-    //             setProfile(response.data.data)
-    //             setAuthStatus('auth')
-    //         } catch (error) {
-    //             setAuthStatus('unauth')
-    //         }
-    //     }
+    useEffect(() => {
+        let active = true
 
-    //     getProfile()
-    // }, [])
-    // useEffect(() => {
-    //     // if (!profile) {
-    //     //     navigate('/login')
-    //     // }
-    //     // if (profile.role === 'customer') {
-    //     //     navigate('/login')
-    //     // }
-    //     // if (location.pathname === '/') {
-    //     //     navigate('/dashboard')
-    //     // }
-    // }, [navigate, profile])
-    // if (authStatus === 'loading') {
-    //     return null // یا splash screen
-    // }
+        const getProfile = async () => {
+            try {
+                const response = await axios.get('https://api.mlkino.com/accounts/profile/', {
+                    withCredentials: true,
+                    headers: {
+                        'Accept-Language': 'fa',
+                    },
+                })
 
-    // if (authStatus === 'unauth') {
-    //     // navigate('/login')
-    //     return null
-    // }
+                if (!active) return
+
+                const user = response.data.data
+
+                if (!user || !Object.values(UserRole).includes(user.role)) {
+                    throw new Error('Invalid user role')
+                }
+
+                setProfile(user)
+                dispatch(setRole(user.role as UserRole))
+                setAuthStatus('auth')
+            } catch (error) {
+                if (!active) return
+
+                setProfile({} as UsersType)
+                dispatch(clearRole())
+                setAuthStatus('unauth')
+            }
+        }
+
+        getProfile()
+
+        return () => {
+            active = false
+        }
+    }, [dispatch])
+
+    useEffect(() => {
+        if (authStatus === 'loading') return
+
+        if (authStatus === 'unauth') {
+            navigate('/login', {replace: true})
+            return
+        }
+
+        if (profile?.role === UserRole.USER) {
+            navigate('/login', {replace: true})
+            return
+        }
+
+        if (location.pathname === '/') {
+            navigate('/dashboard', {replace: true})
+        }
+    }, [authStatus, profile, navigate, location.pathname])
+
+    if (authStatus === 'loading') {
+        return null
+    }
+
+    if (authStatus === 'unauth') {
+        return null
+    }
+
+    if (profile?.role === UserRole.USER) {
+        return null
+    }
     return (
         <MainLayout>
             <Box

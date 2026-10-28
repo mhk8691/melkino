@@ -1,39 +1,79 @@
+
 import EditIcon from '@mui/icons-material/Edit'
-import {Box, Stack} from '@mui/material'
-import {ChangeEvent, Dispatch, SetStateAction, useState} from 'react'
-import {CustomTextField} from '../../Components/Input/CustomTextField'
+import { Box, Stack } from '@mui/material'
+import {
+    type ChangeEvent,
+    type Dispatch,
+    type SetStateAction,
+    useEffect,
+    useRef,
+    useState,
+} from 'react'
 import userImage from '../../Images/user.png'
 
 interface ProfileUploaderProps {
-    profileImage?: string | null
+    avatar: string | null
 }
 
 interface Props<T extends ProfileUploaderProps> {
     user: T
     setUser: Dispatch<SetStateAction<T>>
+    onFileChange?: (file: File) => void
 }
 
-export default function ProfileUploader<T extends ProfileUploaderProps>({
+export default function ProfileUploader<
+    T extends ProfileUploaderProps
+>({
     user,
     setUser,
+    onFileChange,
 }: Props<T>) {
     const [isHover, setIsHover] = useState(false)
     const [imagePreview, setImagePreview] = useState('')
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const previewRef = useRef<string | null>(null)
+
+    useEffect(() => {
+        return () => {
+            if (previewRef.current) {
+                URL.revokeObjectURL(previewRef.current)
+            }
+        }
+    }, [])
+
+    const handleChange = (
+        event: ChangeEvent<HTMLInputElement>
+    ) => {
         const file = event.target.files?.[0]
 
-        if (file) {
-            const previewUrl = URL.createObjectURL(file)
+        if (!file) return
 
-            setImagePreview(previewUrl)
-
-            setUser((prev) => ({
-                ...prev,
-                profileImage: previewUrl,
-            }))
+        if (!file.type.startsWith('image/')) {
+            event.target.value = ''
+            return
         }
+
+        if (previewRef.current) {
+            URL.revokeObjectURL(previewRef.current)
+        }
+
+        const previewUrl = URL.createObjectURL(file)
+
+        previewRef.current = previewUrl
+        setImagePreview(previewUrl)
+
+        setUser((prev) => ({
+            ...prev,
+            avatar: previewUrl,
+        }))
+
+        onFileChange?.(file)
+
+        event.target.value = ''
     }
+
+    const imageSrc =
+        imagePreview || user.avatar || userImage
 
     return (
         <Stack
@@ -64,17 +104,16 @@ export default function ProfileUploader<T extends ProfileUploaderProps>({
                         sm: 5,
                     },
                     cursor: 'pointer',
+                    overflow: 'hidden',
                 }}
             >
                 <Box
                     component="img"
-                    src={
-                        imagePreview
-                            ? imagePreview
-                            : user.profileImage
-                              ? user.profileImage
-                              : userImage
-                    }
+                    src={imageSrc}
+                    alt="تصویر پروفایل کاربر"
+                    onError={(event) => {
+                        event.currentTarget.src = userImage
+                    }}
                     sx={{
                         borderRadius: '50%',
                         width: '100%',
@@ -83,18 +122,7 @@ export default function ProfileUploader<T extends ProfileUploaderProps>({
                         filter: isHover
                             ? 'brightness(0.4)'
                             : 'brightness(1)',
-                        animation: isHover
-                            ? 'imageAnimation .2s ease-in-out'
-                            : 'none',
-
-                        '@keyframes imageAnimation': {
-                            '0%': {
-                                filter: 'brightness(1)',
-                            },
-                            '100%': {
-                                filter: 'brightness(0.4)',
-                            },
-                        },
+                        transition: 'filter .2s ease-in-out',
                     }}
                 />
 
@@ -121,10 +149,12 @@ export default function ProfileUploader<T extends ProfileUploaderProps>({
                     />
                 )}
 
-                <CustomTextField
-                    name="profileImage"
-                    
+                <Box
+                    component="input"
+                    type="file"
+                    name="avatar"
                     id="profile_image"
+                    accept="image/*"
                     onChange={handleChange}
                     sx={{
                         display: 'none',

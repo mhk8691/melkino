@@ -34,14 +34,14 @@ export function Agents({
         <Stack>
             {agents && (
                 <>
-                    <Stack
+                    {/* <Stack
                         sx={{
                             width: '100%',
                             marginBottom: '16px',
                         }}
                     >
                         <ProfileUploader user={agents} setUser={setAgents} />
-                    </Stack>
+                    </Stack> */}
 
                     <GridProducer
                         sx={{marginBottom: '16px'}}

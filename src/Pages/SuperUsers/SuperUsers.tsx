@@ -29,14 +29,14 @@ export function SuperUsers({
             {superUsers && (
                 <>
                     {/* سطر اول: تصویر پروفایل */}
-                    <Stack
+                    {/* <Stack
                         sx={{
                             width: '100%',
                             marginBottom: '16px',
                         }}
                     >
                         <ProfileUploader user={superUsers} setUser={setSuperUsers} />
-                    </Stack>
+                    </Stack> */}
 
                     {/* سطر دوم به بعد: فیلدها */}
                     <GridProducer

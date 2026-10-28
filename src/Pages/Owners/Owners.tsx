@@ -106,14 +106,14 @@ export function Owners({
     ]
     return (
         <Stack>
-            <Stack
+            {/* <Stack
                 sx={{
                     width: '100%',
                     marginBottom: '16px',
                 }}
             >
                 <ProfileUploader user={owners} setUser={setOwners} />
-            </Stack>
+            </Stack> */}
             {owners && (
                 <GridProducer
                     sx={{marginBottom: '16px'}}

@@ -1,16 +1,16 @@
+
+import type { ReactNode } from 'react'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import GroupIcon from '@mui/icons-material/Group'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
-
-import {Dashboard, WorkspacePremium} from '@mui/icons-material'
+import { Dashboard, WorkspacePremium } from '@mui/icons-material'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import DiamondIcon from '@mui/icons-material/Diamond'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
 import HomeIcon from '@mui/icons-material/Home'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import {ReactNode} from 'react'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import HandshakeIcon from '@mui/icons-material/Handshake'
@@ -26,10 +26,15 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined'
+import { UserRole } from '../../redux/RoleSlice'
+
+
+export type DrawerRole = UserRole | 'all'
+
 export type DrawerItemType = {
     title: string
     link: string
-    role: string
+    role: DrawerRole | DrawerRole[]
     icon: ReactNode
     disabled?: boolean
     groupId?: string
@@ -41,15 +46,25 @@ export type DrawerGroupType = {
     icon: ReactNode
 }
 
-const iconStyle = {fontSize: '1.9rem !important'}
-const groupIconStyle = {fontSize: '1.6rem !important'}
+export const canAccessDrawerItem = (
+    item: DrawerItemType,
+    currentRole: UserRole | null
+): boolean => {
+    if (!currentRole) return false
 
-// ----------------------------------------------------------------------
-// Groups
-// ----------------------------------------------------------------------
+    const allowedRoles = Array.isArray(item.role)
+        ? item.role
+        : [item.role]
+
+    return allowedRoles.some(
+        role => role === 'all' || role === currentRole
+    )
+}
+
+const iconStyle = { fontSize: '1.9rem !important' }
+const groupIconStyle = { fontSize: '1.6rem !important' }
 
 export const drawerGroups: DrawerGroupType[] = [
-    // darineh (gold)
     {
         id: 'darineh-store',
         title: 'فروشگاه دارینه',
@@ -80,7 +95,6 @@ export const drawerGroups: DrawerGroupType[] = [
         title: 'محتوا و اطلاع‌رسانی',
         icon: <CampaignIcon sx={groupIconStyle} />,
     },
-    // silver
     {
         id: 'silver-store',
         title: 'فروشگاه نقرینه',
@@ -113,9 +127,8 @@ export const drawerItems: DrawerItemType[] = [
     {
         title: 'اطلاعیه ها',
         link: 'announcements',
-        role: 'all',
+        role: UserRole.SUPERADMIN,
         icon: <CampaignIcon sx={iconStyle} />,
-        // groupId: 'silver-content',
     },
     {
         title: 'کاربران',
@@ -141,13 +154,11 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <VpnKeyIcon sx={iconStyle} />,
     },
-
     {
         title: 'فایل ها',
         link: 'files',
         role: 'all',
         icon: <HomeIcon sx={iconStyle} />,
-        // groupId: 'silver-content',
     },
     {
         title: 'درخواست ها',
@@ -215,7 +226,6 @@ export const drawerItems: DrawerItemType[] = [
         role: 'all',
         icon: <LocalOfferIcon sx={iconStyle} />,
     },
-
     {
         title: 'تنظیمات',
         link: 'settings',

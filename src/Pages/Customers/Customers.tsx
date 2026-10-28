@@ -492,14 +492,14 @@ export function Customers({
 
     return (
         <Stack>
-            <Stack
+            {/* <Stack
                 sx={{
                     width: '100%',
                     marginBottom: '16px',
                 }}
             >
                 <ProfileUploader user={customers} setUser={setCustomers} />
-            </Stack>
+            </Stack> */}
             {customers && (
                 <GridProducer
                     sx={{marginBottom: '16px'}}

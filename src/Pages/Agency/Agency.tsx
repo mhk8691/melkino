@@ -45,14 +45,14 @@ export function Agency({
         <Stack>
             {agency && (
                 <>
-                    <Stack
+                    {/* <Stack
                         sx={{
                             width: '100%',
                             marginBottom: '16px',
                         }}
                     >
                         <ProfileUploader user={agency} setUser={setAgency} />
-                    </Stack>
+                    </Stack> */}
 
                     <GridProducer
                         sx={{marginBottom: '16px'}}
