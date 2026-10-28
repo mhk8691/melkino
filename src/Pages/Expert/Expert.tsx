@@ -5,7 +5,7 @@ import {GridProducer} from '../../Components/Table/GridProducer'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
 import ProfileUploader from '../User/ProfileUploader'
 
-export interface AgentsType {
+export interface ExpertType {
     id: string
     firstName: string
     lastName: string
@@ -13,7 +13,7 @@ export interface AgentsType {
     profileImage?: string | null
     createdAt?: string
     updatedAt?: string
-    role: 'real_estate_agent' | 'accountant' | 'secretary'
+    role: 'real_estate_expert' | 'accountant' | 'secretary'
     agencyId: string
     agencyName: string
     homeAddress: string
@@ -21,18 +21,18 @@ export interface AgentsType {
     registrationData: Record<string, unknown>
 }
 
-export function Agents({
-    agents,
-    setAgents,
+export function Expert({
+    expert,
+    setExpert,
     resource,
 }: {
-    agents: AgentsType
-    setAgents: Dispatch<SetStateAction<AgentsType>>
+    expert: ExpertType
+    setExpert: Dispatch<SetStateAction<ExpertType>>
     resource: string
 }) {
     return (
         <Stack>
-            {agents && (
+            {expert && (
                 <>
                     {/* <Stack
                         sx={{
@@ -40,7 +40,7 @@ export function Agents({
                             marginBottom: '16px',
                         }}
                     >
-                        <ProfileUploader user={agents} setUser={setAgents} />
+                        <ProfileUploader user={expert} setUser={setExpert} />
                     </Stack> */}
 
                     <GridProducer
@@ -48,85 +48,85 @@ export function Agents({
                         data={[
                             <CustomTextField
                                 name="id"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="شناسه"
-                                defaultValue={agents.id}
+                                defaultValue={expert.id}
                                 disabled
                             />,
                             <CustomTextField
                                 name="agencyId"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="شناسه املاکی"
-                                defaultValue={agents.agencyId}
+                                defaultValue={expert.agencyId}
                                 disabled
                             />,
                             <CustomTextField
                                 name="agencyName"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="نام املاکی"
-                                defaultValue={agents.agencyName}
+                                defaultValue={expert.agencyName}
                                 disabled
                             />,
                             <CustomTextField
                                 name="firstName"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="نام"
-                                defaultValue={agents.firstName}
+                                defaultValue={expert.firstName}
                             />,
                             <CustomTextField
                                 name="lastName"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="نام خانوادگی"
-                                defaultValue={agents.lastName}
+                                defaultValue={expert.lastName}
                             />,
                             <CustomTextField
                                 name="phoneNumber"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="شماره تلفن"
-                                defaultValue={agents.phoneNumber}
+                                defaultValue={expert.phoneNumber}
                             />,
                             <CustomTextField
                                 name="homeAddress"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="آدرس منزل"
-                                defaultValue={agents.homeAddress}
+                                defaultValue={expert.homeAddress}
                             />,
                             <CustomTextField
                                 name="workAddress"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="آدرس محل کار"
-                                defaultValue={agents.workAddress}
+                                defaultValue={expert.workAddress}
                             />,
                             <CustomTextField
                                 name="createdAt"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="تاریخ ایجاد"
-                                defaultValue={agents.createdAt || ''}
+                                defaultValue={expert.createdAt || ''}
                                 disabled
                             />,
                             <CustomTextField
                                 name="updatedAt"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="آخرین بروزرسانی"
-                                defaultValue={agents.updatedAt || ''}
+                                defaultValue={expert.updatedAt || ''}
                                 disabled
                             />,
                             <CustomTextField
                                 name="role"
-                                setData={setAgents}
+                                setData={setExpert}
                                 resource={resource}
                                 label="نقش"
-                                defaultValue={agents.role}
+                                defaultValue={expert.role}
                                 disabled
                             />,
                             <DatePickerFilter
@@ -135,7 +135,7 @@ export function Agents({
                                 item={{
                                     label: 'تاریخ ایجاد',
                                 }}
-                                value={agents.createdAt || ''}
+                                value={expert.createdAt || ''}
                                 onChange={() => {}}
                             />,
                         ]}

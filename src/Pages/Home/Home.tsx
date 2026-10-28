@@ -38,9 +38,9 @@ import {AgencyEdit} from '../Agency/Edit/AgencyEdit'
 import {UsersCreate} from '../User/Create/UsersCreate'
 import {UsersList} from '../User/List/UsersList'
 import {UsersEdit} from '../User/Edit/UsersEdit'
-import {AgentsCreate} from '../Agent/Create/AgentsCreate'
-import {AgentsList} from '../Agent/List/AgentsList'
-import {AgentsEdit} from '../Agent/Edit/AgentsEdit'
+import {ExpertCreate} from '../Expert/Create/ExpertCreate'
+import {ExpertList} from '../Expert/List/ExpertList'
+import {ExpertEdit} from '../Expert/Edit/ExpertEdit'
 import {UsersType} from '../User/Users'
 import {LessorsList} from '../Lessors/List/LessorsList'
 import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
@@ -68,8 +68,8 @@ import {ArchivesEdit} from '../Archives/Edit/ArchivesEdit'
 import {TasksCreate} from '../Tasks/Create/TasksCreate'
 import {TasksEdit} from '../Tasks/Edit/TasksEdit'
 import {TasksList} from '../Tasks/List/TasksList'
-import { clearRole, setRole, UserRole } from '../../redux/RoleSlice'
-import { useDispatch } from 'react-redux'
+import {clearRole, setRole, UserRole} from '../../redux/RoleSlice'
+import {useDispatch} from 'react-redux'
 import axios from 'axios'
 
 export function Home(props) {
@@ -227,68 +227,27 @@ export function Home(props) {
                         />
                         <Route path="users/user" element={<UsersList />} />
                         <Route path="users/user/:id" element={<UsersEdit />} />
-                        {/* ...........agents.......... */}
+                        {/* ...........expert.......... */}
                         <Route
-                            path="users/agents/create"
+                            path="users/expert/create"
                             element={
-                                <AgentsCreate
+                                <ExpertCreate
                                     title="افزودن کارشناس"
-                                    resource="agents"
                                     data={data}
                                     setData={setData}
                                 />
                             }
                         />
                         <Route
-                            path="users/agents"
-                            element={<AgentsList title="لیست کارشناسان" resource="agents" />}
+                            path="users/expert"
+                            element={<ExpertList title="لیست کارشناسان" />}
                         />
                         <Route
-                            path="users/agents/:id"
-                            element={<AgentsEdit title="ویرایش کارشناس" resource="agents" />}
+                            path="users/expert/:id"
+                            element={<ExpertEdit title="ویرایش کارشناس" />}
                         />
 
-                        {/* ...........accountant.......... */}
-                        <Route
-                            path="users/accountant/create"
-                            element={
-                                <AgentsCreate
-                                    title="افزودن حسابدار"
-                                    resource="accountant"
-                                    data={data}
-                                    setData={setData}
-                                />
-                            }
-                        />
-                        <Route
-                            path="users/accountant"
-                            element={<AgentsList title="لیست حسابداران" resource="accountant" />}
-                        />
-                        <Route
-                            path="users/accountant/:id"
-                            element={<AgentsEdit title="ویرایش حسابدار" resource="accountant" />}
-                        />
-
-                        {/* ...........secretary.......... */}
-                        <Route
-                            path="users/secretary/create"
-                            element={
-                                <AgentsCreate
-                                    title="افزودن منشی"
-                                    resource="secretary"
-                                    data={data}
-                                    setData={setData}
-                                />
-                            }
-                        />
-                        <Route
-                            path="users/secretary"
-                            element={<AgentsList title="لیست منشی ها" resource="secretary" />}
-                        />
-                        <Route
-                            path="users/secretary/:id"
-                            element={<AgentsEdit title="ویرایش منشی" resource="secretary" />}
-                        />
+                      
 
                         <Route path="users" element={<UserPage />} />
 

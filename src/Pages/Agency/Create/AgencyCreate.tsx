@@ -2,7 +2,7 @@ import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
 import {Agency} from '../Agency'
 
-const resource = 'agencies'
+const resource = 'users/?group=expert'
 
 export function AgencyCreate({
     data,

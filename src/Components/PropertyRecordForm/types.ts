@@ -65,8 +65,8 @@ export type PropertyType = {
     ownerPhone2: string
     ownerJob: string
 
-      agentName: string
-    agentPhone: string
+      expertName: string
+    expertPhone: string
     agencyPhone: string
     agencyAddress:string
 

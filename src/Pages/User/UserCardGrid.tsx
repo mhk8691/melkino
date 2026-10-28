@@ -46,7 +46,7 @@ const roleLabels: Record<string, string> = {
     regular_user: 'کاربر عادی',
     super_user: 'سوپر ادمین',
     real_estate_agency: 'املاک',
-    real_estate_agent: 'مشاور املاک',
+    real_estate_expert: 'مشاور املاک',
     accountant: 'حسابدار',
     secretary: 'منشی',
 }
@@ -55,7 +55,7 @@ const roleColors: Record<string, string> = {
     regular_user: '#3B82F6',
     super_user: '#8B5CF6',
     real_estate_agency: '#F59E0B',
-    real_estate_agent: '#10B981',
+    real_estate_expert: '#10B981',
     accountant: '#EF4444',
     secretary: '#06B6D4',
 }

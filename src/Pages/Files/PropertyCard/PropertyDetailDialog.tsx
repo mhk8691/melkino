@@ -67,7 +67,7 @@ export function PropertyDetailDialog({
         specFields,
         financialFields,
         ownerFields,
-        agentFields,
+        expertFields,
         requesterFields,
         adFields,
         hasNotes,
@@ -252,7 +252,7 @@ export function PropertyDetailDialog({
                  <DetailSection
                     title="اطلاعات کارشناس و املاک"
                     icon={<PersonRoundedIcon sx={{fontSize: 16}} />}
-                    fields={agentFields}
+                    fields={expertFields}
                 />
                 <DetailSection
                     title="درخواست‌کننده"

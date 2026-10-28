@@ -8,13 +8,17 @@ import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import profileImage from '../../../Images/user.png'
 
-import {AgentsType} from '../Agents'
-import {AgentsCreate} from '../Create/AgentsCreate'
+import {ExpertType} from '../Expert'
+import {ExpertCreate} from '../Create/ExpertCreate'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
 import {UserCardGrid} from '../../User/UserCardGrid'
 import {useViewMode} from '../../../Core/useViewMode'
+import { DataProvider } from '../../../Core/DataProvider'
+import { setUtil } from '../../../redux/UtilSlice'
+import useDeepCompareEffect from 'use-deep-compare-effect'
+import { useDispatch } from 'react-redux'
 
-const resource = 'agents'
+const RESOURCE = 'users/?group=expert'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
@@ -33,17 +37,17 @@ const queryNames = tableHeadCells.slice(1, 4).map((cell) => ({
     type: '',
 }))
 
-export function AgentsList({title, resource}: {title: string; resource: string}) {
+export function ExpertList({title}: {title: string}) {
     const [search, setSearch] = useQueryParams(
         Object.fromEntries(queryNames.map((item) => [item.field, undefined])),
     )
+    const dispatch = useDispatch()
+    const [loading,setLoading] = useState(false)
+    const [viewMode, setViewMode] = useViewMode(RESOURCE)
 
-    const [loading] = useState(false)
-    const [viewMode, setViewMode] = useViewMode(resource)
-
-    const [agents] = useState<{
+    const [expert,setExpert] = useState<{
         total_results: number
-        data: AgentsType[]
+        data: ExpertType[]
     }>({
         total_results: 5,
         data: [
@@ -55,7 +59,7 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                 profileImage,
                 createdAt: '2026-09-01',
                 updatedAt: '2026-09-05',
-                role: 'real_estate_agent',
+                role: 'real_estate_expert',
                 agencyId: 'AGENCY-001',
                 agencyName: 'املاک آریا',
                 homeAddress: 'تهران، سعادت‌آباد، خیابان سرو، کوچه یاس',
@@ -100,7 +104,7 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                 profileImage,
                 createdAt: '2026-09-04',
                 updatedAt: '2026-09-08',
-                role: 'real_estate_agent',
+                role: 'real_estate_expert',
                 agencyId: 'AGENCY-003',
                 agencyName: 'املاک پارس',
                 homeAddress: 'تهران، تهرانپارس، خیابان جشنواره، کوچه شقایق',
@@ -125,31 +129,49 @@ export function AgentsList({title, resource}: {title: string; resource: string})
         ],
     })
 
-    const getRoleLabel = (role: AgentsType['role']) => {
-        switch (role) {
-            case 'real_estate_agent':
-                return 'کارشناس'
-            case 'accountant':
-                return 'حسابدار'
-            case 'secretary':
-                return 'منشی'
-            default:
-                return '--'
+    const getExpert = async () => {
+        setLoading(true)
+
+        try {
+            const response = await DataProvider.get<{
+                total_results: number
+                results: ExpertType[]
+            }>(`${RESOURCE}`, search)
+
+            if (response) {
+                setExpert({
+                    total_results: response.data.total_results,
+                    data: response.data.results,
+                })
+            }
+        } catch (error: any) {
+            dispatch(
+                setUtil({
+                    open: true,
+                    message: error.message,
+                    severity: 'error',
+                }),
+            )
         }
+
+        setLoading(false)
     }
+    useDeepCompareEffect(() => {
+        getExpert()
+    }, [search])
 
     return (
         <ListPage
             header={title}
-            href={resource + '/create'}
+            href={RESOURCE + '/create'}
             searchField="firstName"
             searchText="نام"
             setParams={setSearch}
             params={search}
-            resource={resource}
+            resource={RESOURCE}
             getList={() => {}}
             filtersData={queryNames}
-            createModal={AgentsCreate}
+            createModal={ExpertCreate}
             isCsvExport
             defaultState={{
                 firstName: '',
@@ -160,25 +182,25 @@ export function AgentsList({title, resource}: {title: string; resource: string})
             </Box>
             {viewMode === 'card' ? (
                 <UserCardGrid
-                    rows={agents.data}
-                    resource={resource}
+                    rows={expert.data}
+                    resource={RESOURCE}
                     getList={() => {}}
                     title="کارشناس"
                 />
             ) : (
                 <CustomTable
                     title={title}
-                    resource={resource}
+                    resource={RESOURCE}
                     headCells={tableHeadCells}
-                    rows={agents.data}
-                    count={agents.total_results}
-                    getList={() => {}}
+                    rows={expert.data}
+                    count={expert.total_results}
+                    getList={() => getExpert()}
                     params={search}
                     setParams={setSearch}
                     handleSort={() => {}}
                     loading={loading}
                     hasDetail={true}
-                    tableBodyCells={agents.data.map((item) => (
+                    tableBodyCells={expert.data.map((item) => (
                         <>
                             <TableCell>
                                 <Typography
@@ -270,7 +292,7 @@ export function AgentsList({title, resource}: {title: string; resource: string})
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {getRoleLabel(item.role)}
+                                    {item.role}
                                 </Typography>
                             </TableCell>
 

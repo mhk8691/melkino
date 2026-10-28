@@ -1,15 +1,26 @@
+
 import React from 'react'
-import {Box, Card, CardActionArea, Container, Typography, Stack} from '@mui/material'
+import {
+    Box,
+    Card,
+    CardActionArea,
+    Container,
+    Typography,
+    Stack,
+} from '@mui/material'
+
 import {
     AdminPanelSettingsRounded,
     DomainRounded,
     ManageAccountsRounded,
     PersonRounded,
-    AccountBalanceRounded,
-    AssignmentIndRounded,
 } from '@mui/icons-material'
-import {keyframes} from '@mui/system'
+
+import { keyframes } from '@mui/system'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectRole, UserRole } from '../../redux/RoleSlice'
+
 
 const slideUp = keyframes`
     from {
@@ -23,13 +34,23 @@ const slideUp = keyframes`
     }
 `
 
-const roles = [
+interface RoleItem {
+    title: string
+    icon: React.ReactNode
+    href: string
+    iconBg: string
+    iconColor: string
+    visibleTo: UserRole[]
+}
+
+const roles: RoleItem[] = [
     {
         title: 'سوپر ادمین',
         icon: <AdminPanelSettingsRounded />,
         href: '/super-users',
         iconBg: 'rgba(30, 97, 205, 0.10)',
         iconColor: '#1E61CD',
+        visibleTo: [UserRole.SUPERADMIN],
     },
     {
         title: 'املاکی',
@@ -37,13 +58,18 @@ const roles = [
         href: '/agencies',
         iconBg: 'rgba(250, 174, 58, 0.13)',
         iconColor: '#AF7A28',
+        visibleTo: [UserRole.SUPERADMIN],
     },
     {
         title: 'کارشناس',
         icon: <ManageAccountsRounded />,
-        href: '/agents',
+        href: '/expert',
         iconBg: 'rgba(75, 131, 220, 0.12)',
         iconColor: '#144493',
+        visibleTo: [
+            UserRole.SUPERADMIN,
+            UserRole.AGENCY,
+        ],
     },
     {
         title: 'کاربر عادی',
@@ -51,24 +77,19 @@ const roles = [
         href: '/user',
         iconBg: 'rgba(91, 91, 91, 0.09)',
         iconColor: '#5B5B5B',
-    },
-    {
-        title: 'حسابدار',
-        icon: <AccountBalanceRounded />,
-        href: '/accountant',
-        iconBg: 'rgba(20, 68, 147, 0.10)',
-        iconColor: '#144493',
-    },
-    {
-        title: 'منشی',
-        icon: <AssignmentIndRounded />,
-        href: '/secretary',
-        iconBg: 'rgba(250, 174, 58, 0.11)',
-        iconColor: '#AF7A28',
+        visibleTo: [UserRole.SUPERADMIN],
     },
 ]
 
 export default function UserPage() {
+    const currentRole = useSelector(selectRole)
+
+    const visibleRoles = roles.filter(
+        (role) =>
+            currentRole !== null &&
+            role.visibleTo.includes(currentRole)
+    )
+
     return (
         <Box
             sx={{
@@ -77,12 +98,16 @@ export default function UserPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                py: {xs: 5, md: 8},
+                py: { xs: 5, md: 8 },
                 direction: 'rtl',
             }}
         >
             <Container maxWidth="lg">
-                <Stack spacing={1} alignItems="center" mb={5}>
+                <Stack
+                    spacing={1}
+                    alignItems="center"
+                    mb={5}
+                >
                     <Typography
                         variant="h4"
                         fontWeight={800}
@@ -95,7 +120,7 @@ export default function UserPage() {
                             },
                         }}
                     >
-                        انتخاب نوع کاربری
+                        مدیریت کاربران
                     </Typography>
 
                     <Typography
@@ -109,122 +134,154 @@ export default function UserPage() {
                             },
                         }}
                     >
-                        برای ورود، نوع حساب کاربری خود را انتخاب کنید
+                        {currentRole === UserRole.SUPERADMIN
+                            ? 'برای مشاهده و مدیریت کاربران، دسته‌بندی موردنظر را انتخاب کنید'
+                            : currentRole === UserRole.AGENCY
+                            ? 'برای مشاهده و مدیریت کارشناسان، وارد بخش کارشناسان شوید'
+                            : 'شما به بخش مدیریت کاربران دسترسی ندارید'}
                     </Typography>
                 </Stack>
 
-                <Box
-                    sx={{
-                        display: 'grid',
-                        gridTemplateColumns: {
-                            xs: '1fr',
-                            sm: 'repeat(2, 1fr)',
-                            md: 'repeat(3, 1fr)',
-                        },
-                        gap: 3,
-                        maxWidth: 1000,
-                        mx: 'auto',
-                    }}
-                >
-                    {roles.map((role, index) => (
-                        <Card
-                            key={role.title}
-                            elevation={0}
-                            sx={{
-                                opacity: 0,
-                                borderRadius: '20px',
-                                backgroundColor: 'background.paper',
-                                border: '1px solid',
-                                borderColor: 'rgba(30, 30, 30, 0.07)',
-                                overflow: 'hidden',
-
-                                animation: `${slideUp} 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards`,
-                                animationDelay: `${index * 0.1}s`,
-
-                                transition:
-                                    'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease',
-
-                                '&:hover': {
-                                    transform: 'translateY(-6px)',
-
-                                    borderColor: 'primary.main',
-
-                                    boxShadow: '0 10px 28px rgba(30, 97, 205, 0.10)',
-                                },
-                            }}
-                        >
-                            <CardActionArea
-                                component={Link}
-                                to={`/users${role.href}`}
+                {visibleRoles.length > 0 ? (
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: {
+                                xs: '1fr',
+                                sm: 'repeat(2, 1fr)',
+                                md: 'repeat(3, 1fr)',
+                            },
+                            gap: 3,
+                            maxWidth: 1000,
+                            mx: 'auto',
+                        }}
+                    >
+                        {visibleRoles.map((role, index) => (
+                            <Card
+                                key={role.title}
+                                elevation={0}
                                 sx={{
-                                    minHeight: 190,
-                                    p: 3.5,
+                                    opacity: 0,
+                                    borderRadius: '20px',
+                                    backgroundColor: 'background.paper',
+                                    border: '1px solid',
+                                    borderColor: 'rgba(30, 30, 30, 0.07)',
+                                    overflow: 'hidden',
 
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    gap: 2,
+                                    animation: `${slideUp} 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+                                    animationDelay: `${index * 0.1}s`,
 
-                                    transition: 'background-color 0.3s ease',
+                                    transition:
+                                        'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease',
 
                                     '&:hover': {
-                                        backgroundColor: 'rgba(244, 245, 247, 0.45)',
+                                        transform: 'translateY(-6px)',
+                                        borderColor: 'primary.main',
+                                        boxShadow:
+                                            '0 10px 28px rgba(30, 97, 205, 0.10)',
                                     },
                                 }}
                             >
-                                <Box
+                                <CardActionArea
+                                    component={Link}
+                                    to={`/users${role.href}`}
                                     sx={{
-                                        width: 68,
-                                        height: 68,
-                                        borderRadius: '18px',
-
+                                        minHeight: 190,
+                                        p: 3.5,
                                         display: 'flex',
-                                        alignItems: 'center',
+                                        flexDirection: 'column',
                                         justifyContent: 'center',
+                                        alignItems: 'center',
+                                        gap: 2,
 
-                                        backgroundColor: role.iconBg,
+                                        transition:
+                                            'background-color 0.3s ease',
 
-                                        color: role.iconColor,
-
-                                        transition: 'transform 0.3s ease',
-
-                                        '& svg': {
-                                            fontSize: 36,
-                                        },
-
-                                        'a:hover &': {
-                                            transform: 'scale(1.06)',
+                                        '&:hover': {
+                                            backgroundColor:
+                                                'rgba(244, 245, 247, 0.45)',
                                         },
                                     }}
                                 >
-                                    {role.icon}
-                                </Box>
+                                    <Box
+                                        sx={{
+                                            width: 68,
+                                            height: 68,
+                                            borderRadius: '18px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            backgroundColor: role.iconBg,
+                                            color: role.iconColor,
+                                            transition: 'transform 0.3s ease',
 
-                                <Typography
-                                    variant="h6"
-                                    fontWeight={700}
-                                    color="text.primary"
-                                    sx={{
-                                        fontSize: '1.05rem',
-                                    }}
-                                >
-                                    {role.title}
-                                </Typography>
+                                            '& svg': {
+                                                fontSize: 36,
+                                            },
 
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{
-                                        fontSize: '0.8rem',
-                                    }}
-                                >
-                                    ورود به پنل {role.title}
-                                </Typography>
-                            </CardActionArea>
-                        </Card>
-                    ))}
-                </Box>
+                                            'a:hover &': {
+                                                transform: 'scale(1.06)',
+                                            },
+                                        }}
+                                    >
+                                        {role.icon}
+                                    </Box>
+
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight={700}
+                                        color="text.primary"
+                                        sx={{
+                                            fontSize: '1.05rem',
+                                        }}
+                                    >
+                                        {role.title}
+                                    </Typography>
+
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        textAlign="center"
+                                        sx={{
+                                            fontSize: '0.8rem',
+                                        }}
+                                    >
+                                        مشاهده و مدیریت {role.title}
+                                    </Typography>
+                                </CardActionArea>
+                            </Card>
+                        ))}
+                    </Box>
+                ) : (
+                    <Box
+                        sx={{
+                            maxWidth: 480,
+                            mx: 'auto',
+                            p: 4,
+                            textAlign: 'center',
+                            borderRadius: '20px',
+                            backgroundColor: 'background.paper',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            fontWeight={700}
+                            gutterBottom
+                        >
+                            عدم دسترسی
+                        </Typography>
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
+                            شما مجوز مشاهده و مدیریت کاربران
+                            را ندارید.
+                        </Typography>
+                    </Box>
+                )}
             </Container>
         </Box>
     )

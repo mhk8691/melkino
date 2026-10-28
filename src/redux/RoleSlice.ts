@@ -1,10 +1,11 @@
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from './store'
 
 export enum UserRole {
     SUPERADMIN = 'superadmin',
     USER = 'user',
+    AGENCY = 'agency',
+    EXPERT = 'expert',
 }
 
 interface RoleState {
@@ -39,5 +40,11 @@ export const selectIsSuperAdmin = (state: RootState): boolean =>
 
 export const selectIsUser = (state: RootState): boolean =>
     state.role.role === UserRole.USER
+
+export const selectIsAgency = (state: RootState): boolean =>
+    state.role.role === UserRole.AGENCY
+
+export const selectIsExpert = (state: RootState): boolean =>
+    state.role.role === UserRole.EXPERT
 
 export default roleSlice.reducer

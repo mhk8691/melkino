@@ -3,8 +3,7 @@ import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
 
 import {Agency, AgencyType} from '../Agency'
-const resource = 'agencies'
-
+const resource = 'users/?group=expert'
 export function AgencyEdit() {
     const state = useLocation().state as {row: AgencyType}
     const [agency, setAgency] = useState(state.row)

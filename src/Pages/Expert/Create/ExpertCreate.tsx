@@ -1,19 +1,17 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import { Agents } from '../Agents'
+import { Expert } from '../Expert'
 
-const resource = 'agents'
+const resource = 'users/?group=expert'
 
-export function AgentsCreate({
+export function ExpertCreate({
     data,
     setData,
     title,
-    resource
 }: {
     data: any
     setData: React.Dispatch<React.SetStateAction<any>>
     title:string
-    resource:string
 }) {
     return (
         <CreatePage
@@ -23,7 +21,7 @@ export function AgentsCreate({
             redirect={resource}
             formDetails={data}
         >
-            <Agents agents={data} setAgents={setData} resource={resource} />
+            <Expert expert={data} setExpert={setData} resource={resource} />
         </CreatePage>
     )
 }
