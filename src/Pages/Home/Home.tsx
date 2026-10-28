@@ -123,12 +123,12 @@ export function Home(props) {
         if (authStatus === 'loading') return
 
         if (authStatus === 'unauth') {
-            // navigate('/login', {replace: true})
+            navigate('/login', {replace: true})
             return
         }
 
         if (profile?.role === UserRole.USER) {
-            // navigate('/login', {replace: true})
+            navigate('/login', {replace: true})
             return
         }
 
