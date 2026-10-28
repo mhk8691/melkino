@@ -1,86 +1,124 @@
-import { MenuItem, TextField, TextFieldProps } from "@mui/material";
-import { styled } from "@mui/material/styles";
 
-export type SelectOption = {
-    label: string;
-    value: string;
-};
+import React from 'react'
+import {MenuItem, TextField, TextFieldProps} from '@mui/material'
+import {styled} from '@mui/material/styles'
 
-type CustomSelectFieldProps = {
-    name: string;
-    setData: React.Dispatch<React.SetStateAction<any>>;
-    resource: string;
-    label: string;
-    defaultValue?: string;
-    options: SelectOption[];
-    disabled?: boolean;
-} & Omit<TextFieldProps, "name" | "label" | "defaultValue" | "disabled">;
+export type SelectOption =
+    | {
+          key: string
+          label: string
+          value?: string
+      }
+    | {
+          value: string
+          label: string
+          key?: string
+      }
 
-export function CustomSelectField({
+type CustomSelectFieldProps<T = Record<string, unknown>> = {
+    name: string
+    setData: React.Dispatch<React.SetStateAction<T>>
+    resource: string
+    label: string
+    defaultValue?: string
+    value?: string
+    options: SelectOption[]
+    disabled?: boolean
+} & Omit<
+    TextFieldProps,
+    'name' | 'label' | 'defaultValue' | 'value' | 'disabled'
+>
+
+export function CustomSelectField<T = Record<string, unknown>>({
     name,
     setData,
     resource,
     label,
     defaultValue,
+    value,
     options,
     disabled,
+    onChange,
     ...rest
-}: CustomSelectFieldProps) {
+}: CustomSelectFieldProps<T>) {
+    const normalizedOptions = React.useMemo(
+        () =>
+            options.map((option) => ({
+                value: option.key ?? option.value ?? '',
+                label: option.label,
+            })),
+        [options],
+    )
+
+    const handleChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const selectedValue = event.target.value
+
+        setData((prev) => ({
+            ...prev,
+            [name]: selectedValue,
+        }) as T)
+
+        onChange?.(event)
+    }
+
     return (
         <Custom
+            {...rest}
             select
             fullWidth
             name={name}
             label={label}
-            defaultValue={defaultValue ?? ""}
+            {...(value !== undefined
+                ? {value: value ?? ''}
+                : {defaultValue: defaultValue ?? ''})}
             disabled={disabled}
-            onChange={(e) =>
-                setData((prev: any) => ({
-                    ...prev,
-                    [name]: e.target.value,
-                }))
-            }
+            onChange={handleChange}
             data-resource={resource}
             variant="outlined"
-            {...rest}
         >
-            {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+            {normalizedOptions.map((option) => (
+                <MenuItem
+                    key={option.value}
+                    value={option.value}
+                >
                     {option.label}
                 </MenuItem>
             ))}
         </Custom>
-    );
+    )
 }
 
-const Custom = styled(TextField)(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        borderRadius: "15px",
+const Custom = styled(TextField)(({theme}) => ({
+    '& .MuiOutlinedInput-root': {
+        borderRadius: '15px',
 
-        "& fieldset": {
-            borderRadius: "15px",
+        '& fieldset': {
+            borderRadius: '15px',
         },
 
-        "&.Mui-disabled": {
-            backgroundColor: theme.palette.action.disabledBackground,
+        '&.Mui-disabled': {
+            backgroundColor:
+                theme.palette.action.disabledBackground,
             opacity: 0.6,
         },
 
-        "&:hover fieldset": {
+        '&:hover fieldset': {
             borderColor: `${theme.palette.primary.light} !important`,
         },
     },
 
-    "& .MuiOutlinedInput-input": {
-        fontSize: "15px",
+    '& .MuiOutlinedInput-input': {
+        fontSize: '15px',
     },
 
-    "& .MuiInputLabel-root": {
+    '& .MuiInputLabel-root': {
         fontSize: 15,
 
-        "&.Mui-disabled": {
+        '&.Mui-disabled': {
             color: theme.palette.text.disabled,
             opacity: 0.7,
         },
     },
-}));
+}))

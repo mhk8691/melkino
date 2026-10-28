@@ -1,6 +1,6 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import { Announcement } from '../Announcement'
+import {Announcement} from '../Announcement'
 
 const resource = 'announcements'
 
@@ -15,11 +15,16 @@ export function AnnouncementCreate({
         <CreatePage
             title={'افزودن اطلاعیه'}
             resource={resource + '/'}
-            isFormData={true}
-            redirect={resource}
+            isFormData={false}
+            redirect="announcements"
             formDetails={data}
         >
-            <Announcement announcement={data} setAnnouncement={setData} resource={resource} />
+            <Announcement
+                announcement={data}
+                setAnnouncement={setData}
+                resource={resource}
+                editMode={false}
+            />
         </CreatePage>
     )
 }

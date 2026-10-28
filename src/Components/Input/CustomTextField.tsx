@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-    Box,
-    IconButton,
-    InputAdornment,
-    TextField,
-    TextFieldProps,
-} from '@mui/material'
+import {Box, IconButton, InputAdornment, TextField, TextFieldProps} from '@mui/material'
 import {styled} from '@mui/material/styles'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -17,54 +11,15 @@ type CustomTextFieldProps<T = Record<string, unknown>> = {
     register?: Record<string, unknown>
     endIcon?: React.ReactNode
     thousandSeparator?: boolean
-
-    /**
-     * نوع داخلی کامپوننت
-     *
-     * text:
-     * فیلد معمولی
-     *
-     * number:
-     * فیلد عددی همراه با + و -
-     */
     inputType?: 'text' | 'number'
-
-    /**
-     * نوع واقعی HTML input
-     *
-     * text
-     * password
-     * email
-     * tel
-     * number
-     * و ...
-     */
     type?: React.HTMLInputTypeAttribute
-
-    /**
-     * مقدار اولیه input عددی
-     */
     defaultNumber?: number
-
-    /**
-     * حداقل مقدار
-     */
     min?: number
-
-    /**
-     * حداکثر مقدار
-     */
     max?: number
-
-    /**
-     * میزان تغییر با هر کلیک
-     */
     step?: number
 } & Omit<TextFieldProps, 'type'>
 
-export function CustomTextField<T = Record<string, unknown>>(
-    props: CustomTextFieldProps<T>,
-) {
+export function CustomTextField<T = Record<string, unknown>>(props: CustomTextFieldProps<T>) {
     const {
         setData,
         change,
@@ -73,179 +28,113 @@ export function CustomTextField<T = Record<string, unknown>>(
         thousandSeparator,
         onChange,
         InputProps,
-
+        inputProps,
         inputType = 'text',
         type = 'text',
-
         defaultNumber = 0,
         min,
         max,
         step = 1,
-
         value,
         defaultValue,
-
-        /**
-         * name را جدا می‌گیریم
-         * تا مشکل computed property name نداشته باشیم
-         */
         name,
-
         ...rest
     } = props
 
-    /**
-     * مقدار عددی داخلی
-     */
-    const [numberValue, setNumberValue] =
-        React.useState<number>(() => {
-            if (typeof value === 'number') {
-                return value
-            }
-
-            if (typeof defaultValue === 'number') {
-                return defaultValue
-            }
-
-            return defaultNumber
-        })
-
-    /**
-     * هماهنگ کردن value خارجی
-     */
-    React.useEffect(() => {
-        if (typeof value === 'number') {
-            setNumberValue(value)
-        }
-    }, [value])
-
-    /**
-     * تغییر مقدار input
-     */
-    function changeField(
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) {
-        const rawValue = event.target.value.replace(/,/g, '')
-
-        const newEvent = {
-            ...event,
-            target: {
-                ...event.target,
-                value: rawValue,
-            },
-        } as React.ChangeEvent<HTMLInputElement>
-
-        /**
-         * اگر change نداشتیم،
-         * مقدار را مستقیماً داخل state قرار می‌دهیم
-         */
-        if (!change && setData && name) {
-            setData(
-                (prev) =>
-                    ({
-                        ...prev,
-                        [name]: rawValue,
-                    }) as T,
-            )
-        }
-
-        /**
-         * callback اختصاصی
-         */
-        if (change) {
-            change(newEvent)
-        }
-
-        /**
-         * callback خود TextField
-         */
-        onChange?.(newEvent)
+    const getInitialNumber = (): number => {
+        const initial = value ?? defaultValue ?? defaultNumber
+        const parsed = Number(initial)
+        return Number.isFinite(parsed) ? parsed : defaultNumber
     }
 
-    /**
-     * تغییر مقدار عددی
-     */
-    function updateNumber(newValue: number) {
-        let finalValue = newValue
+    const [numberValue, setNumberValue] = React.useState<number>(getInitialNumber)
 
-        /**
-         * min
-         */
-        if (min !== undefined) {
-            finalValue = Math.max(finalValue, min)
+    React.useEffect(() => {
+        if (inputType !== 'number') return
+
+        const initial = value ?? defaultValue ?? defaultNumber
+        const parsed = Number(initial)
+
+        if (Number.isFinite(parsed)) {
+            setNumberValue(parsed)
         }
+    }, [value, defaultValue, defaultNumber, inputType])
 
-        /**
-         * max
-         */
-        if (max !== undefined) {
-            finalValue = Math.min(finalValue, max)
-        }
-
-        /**
-         * state داخلی
-         */
-        setNumberValue(finalValue)
-
-        /**
-         * event
-         */
-        const syntheticEvent = {
-            target: {
-                name: name ?? '',
-                value: String(finalValue),
-            },
-        } as React.ChangeEvent<HTMLInputElement>
-
-        /**
-         * آپدیت state فرم
-         */
+    const updateFormData = (newValue: string | number) => {
         if (!change && setData && name) {
             setData(
                 (prev) =>
                     ({
                         ...prev,
-                        [name]: finalValue,
+                        [name]: newValue,
                     }) as T,
             )
         }
+    }
 
-        /**
-         * callback اختصاصی
-         */
+    const emitChange = (newValue: string, originalEvent?: React.ChangeEvent<HTMLInputElement>) => {
+        const syntheticEvent = {
+            ...originalEvent,
+            target: {
+                ...originalEvent?.target,
+                name: name ?? '',
+                value: newValue,
+            },
+            currentTarget: {
+                ...originalEvent?.currentTarget,
+                name: name ?? '',
+                value: newValue,
+            },
+        } as React.ChangeEvent<HTMLInputElement>
+
         if (change) {
             change(syntheticEvent)
         }
 
-        /**
-         * callback اصلی
-         */
         onChange?.(syntheticEvent)
     }
 
-    /**
-     * افزایش مقدار
-     */
-    function increaseNumber() {
+    const changeField = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = event.target.value.replace(/,/g, '')
+
+        if (inputType === 'number') {
+            const parsed = Number(rawValue)
+
+            if (Number.isFinite(parsed)) {
+                setNumberValue(parsed)
+                updateFormData(parsed)
+            }
+        } else {
+            updateFormData(rawValue)
+        }
+
+        emitChange(rawValue, event)
+    }
+
+    const updateNumber = (newValue: number) => {
+        let finalValue = newValue
+
+        if (min !== undefined) {
+            finalValue = Math.max(finalValue, min)
+        }
+
+        if (max !== undefined) {
+            finalValue = Math.min(finalValue, max)
+        }
+
+        setNumberValue(finalValue)
+        updateFormData(finalValue)
+        emitChange(String(finalValue))
+    }
+
+    const increaseNumber = () => {
         updateNumber(numberValue + step)
     }
 
-    /**
-     * کاهش مقدار
-     */
-    function decreaseNumber() {
+    const decreaseNumber = () => {
         updateNumber(numberValue - step)
     }
 
-    /**
-     * ==========================================
-     * NUMBER
-     * ==========================================
-     *
-     * inputType="number"
-     *
-     * در این حالت دکمه‌های + و - نمایش داده می‌شوند.
-     */
     if (inputType === 'number') {
         return (
             <Custom
@@ -256,7 +145,6 @@ export function CustomTextField<T = Record<string, unknown>>(
                 onChange={changeField}
                 InputProps={{
                     ...InputProps,
-
                     endAdornment: (
                         <InputAdornment position="end">
                             <Box
@@ -271,8 +159,7 @@ export function CustomTextField<T = Record<string, unknown>>(
                                     size="small"
                                     onClick={decreaseNumber}
                                     disabled={
-                                        min !== undefined &&
-                                        numberValue <= min
+                                        rest.disabled || (min !== undefined && numberValue <= min)
                                     }
                                 >
                                     <RemoveIcon fontSize="small" />
@@ -283,8 +170,7 @@ export function CustomTextField<T = Record<string, unknown>>(
                                     size="small"
                                     onClick={increaseNumber}
                                     disabled={
-                                        max !== undefined &&
-                                        numberValue >= max
+                                        rest.disabled || (max !== undefined && numberValue >= max)
                                     }
                                 >
                                     <AddIcon fontSize="small" />
@@ -294,6 +180,7 @@ export function CustomTextField<T = Record<string, unknown>>(
                     ),
                 }}
                 inputProps={{
+                    ...inputProps,
                     min,
                     max,
                     step,
@@ -305,14 +192,12 @@ export function CustomTextField<T = Record<string, unknown>>(
         )
     }
 
-    /**
-     * ==========================================
-     * THOUSAND SEPARATOR
-     * ==========================================
-     *
-     * برای قیمت و اعداد دارای جداکننده هزارگان
-     */
     if (thousandSeparator) {
+        const numericValue = typeof value === 'string' || typeof value === 'number' ? value : ''
+
+        const numericDefaultValue =
+            typeof defaultValue === 'string' || typeof defaultValue === 'number' ? defaultValue : ''
+
         return (
             <NumericFormat
                 {...rest}
@@ -320,12 +205,23 @@ export function CustomTextField<T = Record<string, unknown>>(
                 customInput={Custom}
                 thousandSeparator=","
                 valueIsNumericString
-                onChange={changeField}
+                {...(value !== undefined
+                    ? {value: numericValue}
+                    : {defaultValue: numericDefaultValue})}
+                onValueChange={(values, sourceInfo) => {
+                    if (sourceInfo.source !== 'event') return
+
+                    const rawValue = values.value
+
+                    updateFormData(rawValue)
+                    emitChange(rawValue)
+                }}
                 InputProps={{
                     disableUnderline: true,
                     endAdornment: endIcon,
                     ...InputProps,
                 }}
+                inputProps={inputProps}
                 variant="outlined"
                 fullWidth
                 {...register}
@@ -333,22 +229,19 @@ export function CustomTextField<T = Record<string, unknown>>(
         )
     }
 
-    /**
-     * ==========================================
-     * TEXT / OTHER TYPES
-     * ==========================================
-     */
     return (
         <Custom
             {...rest}
             name={name}
             type={type}
+            {...(value !== undefined ? {value: value ?? ''} : {defaultValue: defaultValue ?? ''})}
             onChange={changeField}
             InputProps={{
                 disableUnderline: true,
                 endAdornment: endIcon,
                 ...InputProps,
             }}
+            inputProps={inputProps}
             variant="outlined"
             fullWidth
             {...register}
@@ -356,11 +249,6 @@ export function CustomTextField<T = Record<string, unknown>>(
     )
 }
 
-/**
- * ==========================================
- * STYLED TEXT FIELD
- * ==========================================
- */
 const Custom = styled(TextField)(({theme}) => ({
     '& .MuiOutlinedInput-root': {
         borderRadius: '15px',
@@ -370,8 +258,7 @@ const Custom = styled(TextField)(({theme}) => ({
         },
 
         '&.Mui-disabled': {
-            backgroundColor:
-                theme.palette.action.disabledBackground,
+            backgroundColor: theme.palette.action.disabledBackground,
             opacity: 0.6,
         },
 
@@ -393,9 +280,6 @@ const Custom = styled(TextField)(({theme}) => ({
         },
     },
 
-    /**
-     * حذف spinner پیش‌فرض number
-     */
     '& input[type=number]::-webkit-inner-spin-button, & input[type=number]::-webkit-outer-spin-button':
         {
             WebkitAppearance: 'none',
@@ -406,16 +290,10 @@ const Custom = styled(TextField)(({theme}) => ({
         MozAppearance: 'textfield',
     },
 
-    /**
-     * Adornment
-     */
     '& .MuiInputAdornment-root': {
         margin: 0,
     },
 
-    /**
-     * دکمه‌های + و -
-     */
     '& .MuiIconButton-root': {
         padding: '5px',
     },
