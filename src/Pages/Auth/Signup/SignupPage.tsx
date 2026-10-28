@@ -1,5 +1,7 @@
-import {Box, Paper, Stack, Typography} from '@mui/material'
+
+import {Box, Link, Paper, Stack, Typography} from '@mui/material'
 import {useState} from 'react'
+import {Link as RouterLink} from 'react-router-dom'
 
 import logoImage from '../../../Images/melkino.png'
 
@@ -43,7 +45,6 @@ const SignupPage = () => {
                     borderRadius: '22px',
                     boxSizing: 'border-box',
 
-                    // مرز چرخان - بدون pseudo-element اورسایز، دقیقاً هم‌اندازه‌ی خود باکس
                     border: '3px solid transparent',
 
                     backgroundImage: (theme) => `
@@ -93,17 +94,22 @@ const SignupPage = () => {
                         boxShadow: '0 20px 60px rgba(30, 30, 30, 0.08)',
                         p: {xs: 2.5, sm: 4.5},
                         overflow: 'hidden',
-
                         minHeight: {xs: 520, sm: 580},
                     }}
                 >
-                    <Stack width="100%" spacing={{xs: 2.5, sm: 3}}>
+                    <Stack
+                        width="100%"
+                        spacing={{xs: 2.5, sm: 3}}
+                    >
                         {/* Header */}
-                        <Stack alignItems="center" spacing={{xs: 1, sm: 1.2}}>
+                        <Stack
+                            alignItems="center"
+                            spacing={{xs: 1, sm: 1.2}}
+                        >
                             <Box
                                 component="img"
                                 src={logoImage}
-                                alt="Darine"
+                                alt="ملکینو"
                                 sx={{
                                     width: {xs: 85, sm: 100},
                                     height: {xs: 60, sm: 70},
@@ -116,7 +122,9 @@ const SignupPage = () => {
                                     variant="h6"
                                     fontWeight={700}
                                     color="text.primary"
-                                    sx={{fontSize: {xs: '16px', sm: '20px'}}}
+                                    sx={{
+                                        fontSize: {xs: '16px', sm: '20px'},
+                                    }}
                                 >
                                     ایجاد حساب کاربری
                                 </Typography>
@@ -125,7 +133,9 @@ const SignupPage = () => {
                                     variant="body2"
                                     color="text.secondary"
                                     textAlign="center"
-                                    sx={{fontSize: {xs: '11px', sm: '13px'}}}
+                                    sx={{
+                                        fontSize: {xs: '11px', sm: '13px'},
+                                    }}
                                 >
                                     برای ادامه، اطلاعات خود را وارد کنید
                                 </Typography>
@@ -133,8 +143,20 @@ const SignupPage = () => {
                         </Stack>
 
                         {/* Stepper */}
-                        <Box sx={{width: '100%', direction: 'rtl', pt: 0.5, pb: 1}}>
-                            <Box sx={{display: 'flex', alignItems: 'flex-start'}}>
+                        <Box
+                            sx={{
+                                width: '100%',
+                                direction: 'rtl',
+                                pt: 0.5,
+                                pb: 1,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                }}
+                            >
                                 {steps.map((item, index) => {
                                     const isActive = step === index
                                     const isCompleted = step > index
@@ -145,12 +167,18 @@ const SignupPage = () => {
                                             sx={{
                                                 display: 'flex',
                                                 alignItems: 'flex-start',
-                                                flex: index === steps.length - 1 ? '0 0 auto' : 1,
+                                                flex:
+                                                    index === steps.length - 1
+                                                        ? '0 0 auto'
+                                                        : 1,
                                             }}
                                         >
                                             <Stack
                                                 alignItems="center"
-                                                sx={{flexShrink: 0, width: {xs: 70, sm: 84}}}
+                                                sx={{
+                                                    flexShrink: 0,
+                                                    width: {xs: 70, sm: 84},
+                                                }}
                                             >
                                                 <Box
                                                     sx={{
@@ -160,34 +188,44 @@ const SignupPage = () => {
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
+
                                                         bgcolor:
                                                             isActive || isCompleted
                                                                 ? 'primary.main'
                                                                 : 'background.paper',
+
                                                         color:
                                                             isActive || isCompleted
                                                                 ? '#fff'
                                                                 : 'text.secondary',
+
                                                         border: '2px solid',
+
                                                         borderColor:
                                                             isActive || isCompleted
                                                                 ? 'primary.main'
                                                                 : 'rgba(30, 97, 205, 0.12)',
+
                                                         fontSize: {xs: 10, sm: 11},
                                                         fontWeight: 800,
+
                                                         boxShadow: isActive
                                                             ? '0 0 0 5px rgba(30, 97, 205, 0.08), 0 5px 16px rgba(30, 97, 205, 0.22)'
                                                             : isCompleted
                                                               ? '0 4px 12px rgba(30, 97, 205, 0.15)'
                                                               : 'none',
+
                                                         transform: isActive
                                                             ? 'scale(1.04)'
                                                             : 'scale(1)',
+
                                                         transition:
                                                             'all 350ms cubic-bezier(0.4, 0, 0.2, 1)',
                                                     }}
                                                 >
-                                                    {isCompleted ? '✓' : `0${index + 1}`}
+                                                    {isCompleted
+                                                        ? '✓'
+                                                        : `0${index + 1}`}
                                                 </Box>
 
                                                 <Typography
@@ -195,12 +233,16 @@ const SignupPage = () => {
                                                         mt: 1,
                                                         fontSize: {xs: 10, sm: 12},
                                                         fontWeight:
-                                                            isActive || isCompleted ? 700 : 500,
+                                                            isActive || isCompleted
+                                                                ? 700
+                                                                : 500,
+
                                                         color: isActive
                                                             ? 'primary.main'
                                                             : isCompleted
                                                               ? 'text.primary'
                                                               : 'text.secondary',
+
                                                         transition: 'all 300ms ease',
                                                         textAlign: 'center',
                                                         wordBreak: 'break-word',
@@ -212,11 +254,16 @@ const SignupPage = () => {
                                                 <Typography
                                                     sx={{
                                                         mt: 0.2,
-                                                        display: {xs: 'none', sm: 'block'},
+                                                        display: {
+                                                            xs: 'none',
+                                                            sm: 'block',
+                                                        },
                                                         fontSize: 10,
+
                                                         color: isActive
                                                             ? 'primary.main'
                                                             : 'text.secondary',
+
                                                         opacity: isActive ? 0.8 : 0.6,
                                                         textAlign: 'center',
                                                     }}
@@ -230,14 +277,19 @@ const SignupPage = () => {
                                                     sx={{
                                                         flex: 1,
                                                         alignSelf: 'flex-start',
-                                                        mt: {xs: '16px', sm: '18px'},
+                                                        mt: {
+                                                            xs: '16px',
+                                                            sm: '18px',
+                                                        },
                                                         mx: 0.5,
                                                         height: 2,
                                                         borderRadius: 10,
+
                                                         bgcolor:
                                                             step > index
                                                                 ? 'primary.main'
                                                                 : 'rgba(30, 97, 205, 0.08)',
+
                                                         transition:
                                                             'background-color 450ms cubic-bezier(0.4, 0, 0.2, 1)',
                                                     }}
@@ -268,7 +320,54 @@ const SignupPage = () => {
                                 />
                             )}
 
-                            {step === 2 && <SignupInfo phone={phone} onBack={() => setStep(1)} />}
+                            {step === 2 && (
+                                <SignupInfo
+                                    phone={phone}
+                                    onBack={() => setStep(1)}
+                                />
+                            )}
+                        </Box>
+
+                        {/* Login link */}
+                        <Box
+                            sx={{
+                                width: '100%',
+                                textAlign: 'center',
+                                pt: 2,
+                                mt: 'auto',
+                                borderTop: '1px solid',
+                                borderColor: 'divider',
+                            }}
+                        >
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    fontSize: {xs: '12px', sm: '13px'},
+                                }}
+                            >
+                                قبلاً ثبت‌نام کرده‌اید؟{' '}
+                            </Typography>
+
+                            <Link
+                                component={RouterLink}
+                                to="/login"
+                                underline="none"
+                                sx={{
+                                    fontSize: {xs: '12px', sm: '13px'},
+                                    fontWeight: 700,
+                                    color: 'primary.main',
+                                    transition: 'all 0.2s ease',
+
+                                    '&:hover': {
+                                        color: '#164FA8',
+                                        textDecoration: 'underline',
+                                    },
+                                }}
+                            >
+                                وارد شوید
+                            </Link>
                         </Box>
                     </Stack>
                 </Paper>

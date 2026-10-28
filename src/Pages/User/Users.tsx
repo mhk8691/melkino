@@ -145,6 +145,15 @@ export function Users({
                             }))
                         }
                     />,
+                       <CustomTextField
+                        key="postal_code"
+                        name="postal_code"
+                        setData={setUsers}
+                        resource={resource}
+                        label="کد پستی"
+                        value={users.postal_code ?? ''}
+                    />,
+
 
                     <CustomTextField
                         key="province"
@@ -153,6 +162,7 @@ export function Users({
                         resource={resource}
                         label="استان"
                         value={users.province ?? ''}
+                        disabled
                     />,
 
                     <CustomTextField
@@ -162,17 +172,10 @@ export function Users({
                         resource={resource}
                         label="شهر"
                         value={users.city ?? ''}
+                        disabled
                     />,
 
-                    <CustomTextField
-                        key="postal_code"
-                        name="postal_code"
-                        setData={setUsers}
-                        resource={resource}
-                        label="کد پستی"
-                        value={users.postal_code ?? ''}
-                    />,
-
+                 
                     <CustomTextField
                         key="address"
                         name="address"
@@ -182,6 +185,7 @@ export function Users({
                         value={users.address ?? ''}
                         multiline
                         minRows={2}
+                        disabled
                     />,
 
                     <CustomSelectField
@@ -203,24 +207,6 @@ export function Users({
                         ]}
                     />,
 
-                    <CustomSelectField
-                        key="role"
-                        name="role"
-                        setData={setUsers}
-                        resource={resource}
-                        label="نقش کاربر"
-                        value={users.role ?? ''}
-                        options={[
-                            {
-                                key: 'superadmin',
-                                label: 'سوپر ادمین',
-                            },
-                            {
-                                key: 'user',
-                                label: 'کاربر عادی',
-                            },
-                        ]}
-                    />,
 
                     <CustomSelectField
                         key="account_status"
@@ -301,12 +287,12 @@ export function Users({
                     />,
 
                     <CustomTextField
-                        key="admin_level"
-                        name="admin_level"
+                        key="role_display"
+                        name="role_display"
                         setData={setUsers}
                         resource={resource}
-                        label="سطح مدیریت"
-                        value={users.admin_level ?? ''}
+                        label="نقش کاربر"
+                        value={users.role_display ?? ''}
                         disabled
                     />,
 

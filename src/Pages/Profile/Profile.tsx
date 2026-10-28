@@ -9,8 +9,7 @@ export default function Profile() {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
     const [initialData, setInitialData] = useState<UsersType>({} as UsersType)
     const dispatch = useDispatch()
-    useEffect(() => {
-        const getProfile = async () => {
+      const getProfile = async () => {
             try {
                 const response = await axios.get<{
                     data: UsersType
@@ -23,6 +22,8 @@ export default function Profile() {
                 console.log(error)
             }
         }
+    useEffect(() => {
+      
         getProfile()
     }, [])
 
@@ -55,6 +56,7 @@ export default function Profile() {
             }>(`https://api.mlkino.com/accounts/profile/`, formData, {
                 withCredentials: true,
             })
+            await getProfile()
             dispatch(
                 setUtil({
                     open: true,

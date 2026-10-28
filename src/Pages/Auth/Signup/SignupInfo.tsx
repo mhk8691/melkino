@@ -236,7 +236,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
                         defaultValue="consumer"
                         options={userTypeOptions}
                     />
-
+{/* 
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                         <CustomTextField
                             label="استان"
@@ -254,7 +254,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
                             helperText={errors.city?.message}
                             fullWidth
                         />
-                    </Stack>
+                    </Stack> */}
 
                     <CustomTextField
                         label="کد پستی"
@@ -270,7 +270,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
                         fullWidth
                     />
 
-                    <CustomTextField
+                    {/* <CustomTextField
                         label="آدرس"
                         name="address"
                         multiline
@@ -279,7 +279,7 @@ const SignupInfo = ({ phone, onBack }: Props) => {
                         error={!!errors.address}
                         helperText={errors.address?.message}
                         fullWidth
-                    />
+                    /> */}
 
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                         <CustomTextField

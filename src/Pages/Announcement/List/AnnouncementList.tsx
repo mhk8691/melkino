@@ -16,14 +16,13 @@ import {setUtil} from '../../../redux/UtilSlice'
 import {AnnouncementCreate} from '../Create/AnnouncementCreate'
 import {AnnouncementType} from '../Announcement'
 import useDeepCompareEffect from 'use-deep-compare-effect'
+import { formatDate } from '../../../Core/FormatDate'
 
 const RESOURCE = 'announcements'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('عنوان', 'title'),
-    createTableHeadCells('توضیحات', 'description'),
-    createTableHeadCells('لینک', 'link'),
     createTableHeadCells('وضعیت', 'status_display'),
     createTableHeadCells('ایجاد کننده', 'created_by_name'),
     createTableHeadCells('تاریخ ایجاد', 'created_at'),
@@ -154,15 +153,13 @@ export function AnnouncementList() {
 
                                 <TableCell>{cellText(item.title)}</TableCell>
 
-                                <TableCell>{cellText(item.description)}</TableCell>
 
-                                <TableCell>{cellText(item.link)}</TableCell>
 
                                 <TableCell>{cellText(item.status_display)}</TableCell>
 
                                 <TableCell>{cellText(item.created_by_name)}</TableCell>
 
-                                <TableCell>{cellText(item.created_at)}</TableCell>
+                                <TableCell>{cellText(formatDate(item.created_at))}</TableCell>
                             </>
                         ))}
                     />
