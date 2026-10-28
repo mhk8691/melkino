@@ -1,22 +1,22 @@
 import {Box, Stack} from '@mui/material'
 import axios from 'axios'
 import {useEffect, useState} from 'react'
-import {ProfileType} from '../Core/types'
 import Appbar from './Appbar/Appbar'
 import {AppDrawer, drawerWidth} from './Drawer/AppDrawer'
 import Cookies from 'universal-cookie'
+import { UsersType } from '../Pages/User/Users'
 
 const MainLayout = ({children}: {children: React.ReactNode}) => {
     const cookies = new Cookies()
     const [selectedTitle, setSelectedTitle] = useState<string>('')
     const [drawerOpen, setDrawerOpen] = useState(false)
-    const [user, setUser] = useState<ProfileType>({} as ProfileType)
+    const [user, setUser] = useState<UsersType>({} as UsersType)
 
     useEffect(() => {
         const getUser = async () => {
             try {
                 const response = await axios.get<{
-                    data: ProfileType
+                    data: UsersType
                 }>(`https://api.mlkino.com/accounts/profile/`, {
                     withCredentials: true,
                 })

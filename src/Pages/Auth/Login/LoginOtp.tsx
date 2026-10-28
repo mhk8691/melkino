@@ -62,7 +62,6 @@ const LoginOtp = ({isOtpStep, setIsOtpStep}: LoginOtpProps) => {
             setTime(OTP_DURATION)
 
             setIsOtpStep(true)
-             navigate('/dashboard')
         } catch (error: any) {
             dispatch(
                 setUtil({

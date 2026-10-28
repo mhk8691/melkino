@@ -6,7 +6,6 @@ import {Box, IconButton, Stack, Typography, useMediaQuery, useTheme, Button} fro
 
 import {useEffect, useState} from 'react'
 
-import {ProfileType} from '../../Core/types'
 import {drawerWidth} from '../Drawer/AppDrawer'
 
 import AppbarProfile from './AppbarProfile'
@@ -14,11 +13,12 @@ import AppbarSearch from './AppbarSearch'
 import NewActivity from './NewActivity'
 import {Link} from 'react-router-dom'
 import LoginIcon from '@mui/icons-material/Login';
+import { UsersType } from '../../Pages/User/Users'
 type AppbarProps = {
     selectedTitle: string
     drawerOpen: boolean
     setDrawerOpen: (open: boolean) => void
-    user: ProfileType
+    user: UsersType
 }
 
 const Appbar = ({selectedTitle, drawerOpen, user, setDrawerOpen}: AppbarProps) => {

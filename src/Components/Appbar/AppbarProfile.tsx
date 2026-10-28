@@ -9,9 +9,9 @@ import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
 
-import {ProfileType} from '../../Core/types'
+import { UsersType } from '../../Pages/User/Users'
 
-const AppbarProfile = ({user}: {user: ProfileType}) => {
+const AppbarProfile = ({user}: {user: UsersType}) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
@@ -24,6 +24,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
 
     const handleClose = () => {
         setAnchorEl(null)
+        navigate('/login')
     }
 
     const handleProfile = () => {
@@ -70,7 +71,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                 }}
             >
                 <Avatar
-                    src={user.profile_picture || ''}
+                    src={user.avatar || ''}
                     alt={user.first_name}
                     sx={{
                         width: 38,
@@ -139,7 +140,7 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
                 {/* PROFILE HEADER */}
                 <Stack direction="row" alignItems="center" gap={1.5} px={2} py={1.75}>
                     <Avatar
-                        src={user.profile_picture || ''}
+                        src={user.avatar || ''}
                         sx={{
                             width: 44,
                             height: 44,
@@ -150,11 +151,11 @@ const AppbarProfile = ({user}: {user: ProfileType}) => {
 
                     <Stack minWidth={0}>
                         <Typography fontSize={14} fontWeight={700} noWrap>
-                            {user.first_name}
+                            {`${user.first_name}  ${user.last_name}`}
                         </Typography>
 
                         <Typography fontSize={12} color="text.secondary" noWrap>
-                            {user.mobile}
+                            {user.phone}
                         </Typography>
                     </Stack>
                 </Stack>

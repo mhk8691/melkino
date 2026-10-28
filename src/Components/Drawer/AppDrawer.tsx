@@ -28,7 +28,6 @@ import {
 } from 'react'
 
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ProfileType } from '../../Core/types'
 import AppbarProfile from '../Appbar/AppbarProfile'
 
 import {
@@ -39,11 +38,12 @@ import {
     canAccessDrawerItem,
 } from './DrawerItems'
 import { useAppSelector } from '../../redux/store'
+import { UsersType } from '../../Pages/User/Users'
 
 interface AppDrawerProps {
     setSelectedTitle: (title: string) => void
     drawerOpen: boolean
-    user: ProfileType
+    user: UsersType
     setDrawerOpen: (open: boolean) => void
 }
 

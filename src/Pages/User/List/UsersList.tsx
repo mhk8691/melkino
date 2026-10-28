@@ -87,7 +87,7 @@ const defaultUser: UsersType = {
     admin_level: null,
     has_profile: false,
 
-    last_login: null,
+    last_login: '',
     date_joined: '',
 }
 
