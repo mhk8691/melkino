@@ -163,13 +163,13 @@ export function ExpertList({title}: {title: string}) {
     return (
         <ListPage
             header={title}
-            href={RESOURCE + '/create'}
+            href={'expert' + '/create'}
             searchField="firstName"
             searchText="نام"
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
+            getList={() => getExpert()}
             filtersData={queryNames}
             createModal={ExpertCreate}
             isCsvExport

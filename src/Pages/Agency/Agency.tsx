@@ -1,11 +1,10 @@
-
 import {Stack, FormControlLabel, Switch} from '@mui/material'
 import type {Dispatch, SetStateAction} from 'react'
 
 import {CustomTextField} from '../../Components/Input/CustomTextField'
 import {CustomSelectField} from '../../Components/Input/CustomSelectField'
 import {GridProducer} from '../../Components/Table/GridProducer'
-import { formatDate } from '../../Core/FormatDate'
+import {formatDate} from '../../Core/FormatDate'
 
 export interface AgencyType {
     id: number
@@ -20,18 +19,13 @@ export interface AgencyType {
     user_type_display: string
     account_status: 'active' | 'inactive' | 'suspended'
     account_status_display: string
-    verification_status:
-        | 'not_started'
-        | 'verified'
-        | 'pending'
-        | 'rejected'
-        | 'unverified'
+    verification_status: 'not_started' | 'verified' | 'pending' | 'rejected' | 'unverified'
     phone_verified: boolean
     national_code_verified: boolean
     is_active: boolean
     has_profile: boolean
     date_joined: string
-    last_login: string 
+    last_login: string
 }
 
 interface AgencyProps {
@@ -41,26 +35,25 @@ interface AgencyProps {
     editMode?: boolean
 }
 
-export function Agency({
-    agency,
-    setAgency,
-    resource,
-    editMode = false,
-}: AgencyProps) {
+export function Agency({agency, setAgency, resource, editMode = false}: AgencyProps) {
     return (
         <Stack>
             <GridProducer
                 sx={{marginBottom: '16px'}}
                 data={[
-                    <CustomTextField
-                        key="id"
-                        name="id"
-                        setData={setAgency}
-                        resource={resource}
-                        label="شناسه"
-                        value={agency.id ?? ''}
-                        disabled
-                    />,
+                    ...(editMode
+                        ? [
+                              <CustomTextField
+                                  key="id"
+                                  name="id"
+                                  setData={setAgency}
+                                  resource={resource}
+                                  label="شناسه"
+                                  value={agency.id ?? ''}
+                                  disabled
+                              />,
+                          ]
+                        : []),
 
                     <CustomTextField
                         key="first_name"
@@ -69,7 +62,6 @@ export function Agency({
                         resource={resource}
                         label="نام"
                         value={agency.first_name ?? ''}
-                        disabled={!editMode}
                     />,
 
                     <CustomTextField
@@ -79,18 +71,8 @@ export function Agency({
                         resource={resource}
                         label="نام خانوادگی"
                         value={agency.last_name ?? ''}
-                        disabled={!editMode}
                     />,
 
-                    <CustomTextField
-                        key="full_name"
-                        name="full_name"
-                        setData={setAgency}
-                        resource={resource}
-                        label="نام کامل"
-                        value={agency.full_name ?? ''}
-                        disabled
-                    />,
 
                     <CustomTextField
                         key="phone"
@@ -99,7 +81,6 @@ export function Agency({
                         resource={resource}
                         label="شماره تماس"
                         value={agency.phone ?? ''}
-                        disabled={!editMode}
                     />,
 
                     <CustomTextField
@@ -109,10 +90,9 @@ export function Agency({
                         resource={resource}
                         label="ایمیل"
                         value={agency.email ?? ''}
-                        disabled={!editMode}
                     />,
 
-                    <CustomTextField
+                   ...(editMode ? [ <CustomTextField
                         key="role"
                         name="role"
                         setData={setAgency}
@@ -120,7 +100,7 @@ export function Agency({
                         label="نقش"
                         value={agency.role_display ?? agency.role ?? ''}
                         disabled
-                    />,
+                    />,]:[]),
 
                     <CustomSelectField
                         key="user_type"
@@ -129,7 +109,6 @@ export function Agency({
                         resource={resource}
                         label="نوع کاربر"
                         value={agency.user_type ?? ''}
-                        disabled={!editMode}
                         options={[
                             {key: 'consumer', label: 'مصرف‌کننده'},
                             {key: 'investor', label: 'سرمایه‌گذار'},
@@ -143,7 +122,6 @@ export function Agency({
                         resource={resource}
                         label="وضعیت حساب"
                         value={agency.account_status ?? ''}
-                        disabled={!editMode}
                         options={[
                             {key: 'active', label: 'فعال'},
                             {key: 'inactive', label: 'غیرفعال'},
@@ -158,7 +136,6 @@ export function Agency({
                         resource={resource}
                         label="وضعیت احراز هویت"
                         value={agency.verification_status ?? ''}
-                        disabled={!editMode}
                         options={[
                             {key: 'not_started', label: 'شروع نشده'},
                             {key: 'pending', label: 'در انتظار بررسی'},
@@ -168,48 +145,30 @@ export function Agency({
                         ]}
                     />,
 
-                    <FormControlLabel
+                   ...(editMode ? [ <FormControlLabel
                         key="phone_verified"
                         label="شماره تماس تأیید شده"
-                        control={
-                            <Switch
-                                checked={agency.phone_verified ?? false}
-                                disabled
-                            />
-                        }
+                        control={<Switch checked={agency.phone_verified ?? false} disabled />}
                     />,
 
                     <FormControlLabel
                         key="national_code_verified"
                         label="کد ملی تأیید شده"
                         control={
-                            <Switch
-                                checked={agency.national_code_verified ?? false}
-                                disabled
-                            />
+                            <Switch checked={agency.national_code_verified ?? false} disabled />
                         }
                     />,
 
                     <FormControlLabel
                         key="is_active"
                         label="حساب فعال"
-                        control={
-                            <Switch
-                                checked={agency.is_active ?? false}
-                                disabled
-                            />
-                        }
+                        control={<Switch checked={agency.is_active ?? false} disabled />}
                     />,
 
                     <FormControlLabel
                         key="has_profile"
                         label="پروفایل تکمیل شده"
-                        control={
-                            <Switch
-                                checked={agency.has_profile ?? false}
-                                disabled
-                            />
-                        }
+                        control={<Switch checked={agency.has_profile ?? false} disabled />}
                     />,
 
                     <CustomTextField
@@ -230,7 +189,7 @@ export function Agency({
                         label="آخرین ورود"
                         value={formatDate(agency.last_login) ?? ''}
                         disabled
-                    />,
+                    />,]:[])
                 ]}
             />
         </Stack>

@@ -16,6 +16,7 @@ export function ExpertEdit({title}: {title: string}) {
             formDetails={expert}
             initialData={state.row}
             isFormData={true}
+            redirect={'/users/expert'}
         >
             <Expert expert={expert} setExpert={setExpert} resource={resource} />
         </EditPage>

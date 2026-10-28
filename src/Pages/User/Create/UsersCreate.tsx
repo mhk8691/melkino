@@ -2,7 +2,7 @@ import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
 import { Users } from '../Users'
 
-const resource = 'user'
+const resource = 'users/?group=user'
 
 export function UsersCreate({
     data,
@@ -16,10 +16,11 @@ export function UsersCreate({
             title={'افزودن کاربر عادی'}
             resource={resource + '/'}
             isFormData={true}
-            redirect={resource}
+            redirect={'/users/user'}
             formDetails={data}
+            
         >
-            <Users users={data} setUsers={setData} resource={resource} />
+            <Users users={data} setUsers={setData} resource={resource} editMode={false} />
         </CreatePage>
     )
 }

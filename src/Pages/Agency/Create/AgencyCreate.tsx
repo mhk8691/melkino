@@ -19,7 +19,7 @@ export function AgencyCreate({
             redirect={resource}
             formDetails={data}
         >
-            <Agency agency={data} setAgency={setData} resource={resource} />
+            <Agency agency={data} setAgency={setData} resource={resource} editMode={false} />
         </CreatePage>
     )
 }

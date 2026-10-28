@@ -1,13 +1,12 @@
+import {Stack} from '@mui/material'
+import {type Dispatch, type SetStateAction} from 'react'
 
-import { Stack } from '@mui/material'
-import { type Dispatch, type SetStateAction } from 'react'
-
-import { CustomTextField } from '../../Components/Input/CustomTextField'
-import { CustomSelectField } from '../../Components/Input/CustomSelectField'
-import { GridProducer } from '../../Components/Table/GridProducer'
+import {CustomTextField} from '../../Components/Input/CustomTextField'
+import {CustomSelectField} from '../../Components/Input/CustomSelectField'
+import {GridProducer} from '../../Components/Table/GridProducer'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
 import ProfileUploader from './ProfileUploader'
-import { formatDate } from '../../Core/FormatDate'
+import {formatDate} from '../../Core/FormatDate'
 
 export interface UsersType {
     id: string
@@ -28,11 +27,7 @@ export interface UsersType {
     role_display: string
     account_status: 'active' | 'inactive' | 'suspended'
     account_status_display: string
-    verification_status:
-        | 'verified'
-        | 'pending'
-        | 'rejected'
-        | 'unverified'
+    verification_status: 'verified' | 'pending' | 'rejected' | 'unverified'
     verification_status_display: string
     phone_verified: boolean
     national_code_verified: boolean
@@ -49,13 +44,10 @@ interface UsersProps {
     users: UsersType
     setUsers: Dispatch<SetStateAction<UsersType>>
     resource: string
+    editMode?: boolean
 }
 
-export function Users({
-    users,
-    setUsers,
-    resource,
-}: UsersProps) {
+export function Users({users, setUsers, resource, editMode = true}: UsersProps) {
     return (
         <Stack>
             <Stack
@@ -64,24 +56,25 @@ export function Users({
                     marginBottom: '16px',
                 }}
             >
-                <ProfileUploader
-                    user={users}
-                    setUser={setUsers}
-                />
+                <ProfileUploader user={users} setUser={setUsers} />
             </Stack>
 
             <GridProducer
-                sx={{ marginBottom: '16px' }}
+                sx={{marginBottom: '16px'}}
                 data={[
-                    <CustomTextField
-                        key="id"
-                        name="id"
-                        setData={setUsers}
-                        resource={resource}
-                        label="شناسه"
-                        value={users.id ?? ''}
-                        disabled
-                    />,
+                    ...(editMode
+                        ? [
+                              <CustomTextField
+                                  key="id"
+                                  name="id"
+                                  setData={setUsers}
+                                  resource={resource}
+                                  label="شناسه"
+                                  value={users.id ?? ''}
+                                  disabled
+                              />,
+                          ]
+                        : []),
 
                     <CustomTextField
                         key="first_name"
@@ -126,7 +119,7 @@ export function Users({
                         resource={resource}
                         label="کد ملی"
                         value={users.national_code ?? ''}
-                        disabled
+                        disabled={editMode}
                     />,
 
                     <DatePickerFilter
@@ -255,17 +248,13 @@ export function Users({
                         ]}
                     />,
 
-                    <CustomTextField
+                    ...(editMode ? [<CustomTextField
                         key="phone_verified"
                         name="phone_verified"
                         setData={setUsers}
                         resource={resource}
                         label="تأیید شماره تماس"
-                        value={
-                            users.phone_verified
-                                ? 'تأیید شده'
-                                : 'تأیید نشده'
-                        }
+                        value={users.phone_verified ? 'تأیید شده' : 'تأیید نشده'}
                         disabled
                     />,
 
@@ -275,11 +264,7 @@ export function Users({
                         setData={setUsers}
                         resource={resource}
                         label="تأیید کد ملی"
-                        value={
-                            users.national_code_verified
-                                ? 'تأیید شده'
-                                : 'تأیید نشده'
-                        }
+                        value={users.national_code_verified ? 'تأیید شده' : 'تأیید نشده'}
                         disabled
                     />,
 
@@ -311,7 +296,7 @@ export function Users({
                         label="تاریخ ثبت‌نام"
                         value={formatDate(users.date_joined) ?? ''}
                         disabled
-                    />,
+                    />,]:[])
                 ]}
             />
         </Stack>

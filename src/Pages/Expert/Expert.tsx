@@ -25,10 +25,12 @@ export function Expert({
     expert,
     setExpert,
     resource,
+    editMode = true,
 }: {
     expert: ExpertType
     setExpert: Dispatch<SetStateAction<ExpertType>>
     resource: string
+    editMode?: boolean
 }) {
     return (
         <Stack>
@@ -46,30 +48,28 @@ export function Expert({
                     <GridProducer
                         sx={{marginBottom: '16px'}}
                         data={[
-                            <CustomTextField
-                                name="id"
-                                setData={setExpert}
-                                resource={resource}
-                                label="شناسه"
-                                defaultValue={expert.id}
-                                disabled
-                            />,
-                            <CustomTextField
-                                name="agencyId"
-                                setData={setExpert}
-                                resource={resource}
-                                label="شناسه املاکی"
-                                defaultValue={expert.agencyId}
-                                disabled
-                            />,
-                            <CustomTextField
-                                name="agencyName"
-                                setData={setExpert}
-                                resource={resource}
-                                label="نام املاکی"
-                                defaultValue={expert.agencyName}
-                                disabled
-                            />,
+                            ...(editMode
+                                ? [
+                                      <CustomTextField
+                                          name="id"
+                                          setData={setExpert}
+                                          resource={resource}
+                                          label="شناسه"
+                                          defaultValue={expert.id}
+                                          disabled
+                                      />,
+
+                                      <CustomTextField
+                                          name="agencyName"
+                                          setData={setExpert}
+                                          resource={resource}
+                                          label="نام املاکی"
+                                          defaultValue={expert.agencyName}
+                                          disabled
+                                      />,
+                                  ]
+                                : []),
+
                             <CustomTextField
                                 name="firstName"
                                 setData={setExpert}
@@ -98,46 +98,35 @@ export function Expert({
                                 label="آدرس منزل"
                                 defaultValue={expert.homeAddress}
                             />,
-                            <CustomTextField
-                                name="workAddress"
-                                setData={setExpert}
-                                resource={resource}
-                                label="آدرس محل کار"
-                                defaultValue={expert.workAddress}
-                            />,
-                            <CustomTextField
-                                name="createdAt"
-                                setData={setExpert}
-                                resource={resource}
-                                label="تاریخ ایجاد"
-                                defaultValue={expert.createdAt || ''}
-                                disabled
-                            />,
-                            <CustomTextField
-                                name="updatedAt"
-                                setData={setExpert}
-                                resource={resource}
-                                label="آخرین بروزرسانی"
-                                defaultValue={expert.updatedAt || ''}
-                                disabled
-                            />,
-                            <CustomTextField
-                                name="role"
-                                setData={setExpert}
-                                resource={resource}
-                                label="نقش"
-                                defaultValue={expert.role}
-                                disabled
-                            />,
-                            <DatePickerFilter
-                                key="createdAt"
-                                mode="controlled"
-                                item={{
-                                    label: 'تاریخ ایجاد',
-                                }}
-                                value={expert.createdAt || ''}
-                                onChange={() => {}}
-                            />,
+
+                            ...(editMode
+                                ? [
+                                      <CustomTextField
+                                          name="createdAt"
+                                          setData={setExpert}
+                                          resource={resource}
+                                          label="تاریخ ایجاد"
+                                          defaultValue={expert.createdAt || ''}
+                                          disabled
+                                      />,
+                                      <CustomTextField
+                                          name="updatedAt"
+                                          setData={setExpert}
+                                          resource={resource}
+                                          label="آخرین بروزرسانی"
+                                          defaultValue={expert.updatedAt || ''}
+                                          disabled
+                                      />,
+                                      <CustomTextField
+                                          name="role"
+                                          setData={setExpert}
+                                          resource={resource}
+                                          label="نقش"
+                                          defaultValue={expert.role}
+                                          disabled
+                                      />,
+                                  ]
+                                : []),
                         ]}
                     />
                 </>

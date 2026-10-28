@@ -3,7 +3,7 @@ import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
 
 import {Users,UsersType} from '../Users'
-const resource = 'user'
+const resource = 'users/?group=user'
 
 export function UsersEdit() {
     const state = useLocation().state as {row: UsersType}
@@ -16,6 +16,7 @@ export function UsersEdit() {
             formDetails={users}
             initialData={state.row}
             isFormData={true}
+            redirect={'/users/user'}
         >
             <Users users={users} setUsers={setUsers} resource={resource} />
         </EditPage>

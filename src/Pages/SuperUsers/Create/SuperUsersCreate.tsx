@@ -1,8 +1,8 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import {SuperUsers} from '../SuperUsers'
+import { Users } from '../../User/Users'
 
-const resource = 'super-users'
+const resource = 'users/?group=superadmin'
 
 export function SuperUsersCreate({
     data,
@@ -16,10 +16,11 @@ export function SuperUsersCreate({
             title={'افزودن سوپر ادمین'}
             resource={resource + '/'}
             isFormData={true}
-            redirect={resource}
+            
+            redirect={'/users/super-users'}
             formDetails={data}
         >
-            <SuperUsers superUsers={data} setSuperUsers={setData} resource={resource} />
+            <Users users={data} setUsers={setData} resource={resource} editMode={false} />
         </CreatePage>
     )
 }

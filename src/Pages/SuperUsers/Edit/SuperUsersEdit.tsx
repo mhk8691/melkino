@@ -1,12 +1,12 @@
 import {useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
+import { Users, UsersType } from '../../User/Users'
 
-import {SuperUsers, SuperUsersType} from '../SuperUsers'
-const resource = 'super-users'
+const resource = 'users/?group=superadmin'
 
 export function SuperUsersEdit() {
-    const state = useLocation().state as {row: SuperUsersType}
+    const state = useLocation().state as {row: UsersType}
     const [superUsers, setSuperUsers] = useState(state.row)
 
     return (
@@ -16,10 +16,11 @@ export function SuperUsersEdit() {
             formDetails={superUsers}
             initialData={state.row}
             isFormData={true}
+            redirect={'/users/super-users'}
         >
-            <SuperUsers
-                superUsers={superUsers}
-                setSuperUsers={setSuperUsers}
+            <Users
+                users={superUsers}
+                setUsers={setSuperUsers}
                 resource={resource}
             />
         </EditPage>

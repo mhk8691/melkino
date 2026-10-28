@@ -1,259 +1,310 @@
-import {Avatar, Box, Button, Stack, Typography} from '@mui/material'
-import TableCell, {tableCellClasses} from '@mui/material/TableCell'
-import {useState} from 'react'
+
+import {Avatar, Box, Chip, Stack, Typography} from '@mui/material'
+import TableCell from '@mui/material/TableCell'
+import {Fragment, useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
+import {useDispatch} from 'react-redux'
+
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
-import {useDispatch} from 'react-redux'
-import {SuperUsersType} from '../SuperUsers'
+
+import type {UsersType} from '../../User/Users'
 import {SuperUsersCreate} from '../Create/SuperUsersCreate'
 import profileImage from '../../../Images/user.png'
 import {useViewMode} from '../../../Core/useViewMode'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
 import {UserCardGrid} from '../../User/UserCardGrid'
-const RESOURCE = 'super-users'
+
+const RESOURCE = 'users'
+const LIST_RESOURCE = 'users/?group=superadmin'
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام و نام خانوادگی', 'fullName'),
-    createTableHeadCells('شماره تلفن', 'phoneNumber'),
+    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
+    createTableHeadCells('شماره تماس', 'phone'),
+    createTableHeadCells('ایمیل', 'email'),
     createTableHeadCells('نقش', 'role'),
-    createTableHeadCells('عملیات', 'action'),
+    createTableHeadCells('وضعیت حساب', 'account_status'),
+    createTableHeadCells('احراز هویت', 'verification_status'),
+    createTableHeadCells('تاریخ ثبت‌نام', 'date_joined'),
+    createTableHeadCells('آخرین ورود', 'last_login'),
 ]
 
-const queryNames = tableHeadCells.slice(1, 3).map((cell) => ({
-    field: cell.name,
-    label: cell.label,
-    type: '',
-}))
+const queryNames = [
+    {
+        field: 'full_name',
+        label: 'نام و نام خانوادگی',
+        type: '',
+    },
+    {
+        field: 'phone',
+        label: 'شماره تماس',
+        type: '',
+    },
+    {
+        field: 'email',
+        label: 'ایمیل',
+        type: '',
+    },
+]
+
+interface SuperUsersApiResponse {
+    total_results: number
+    results: UsersType[]
+}
+
+interface SuperUsersListState {
+    total_results: number
+    data: UsersType[]
+}
+
+
+
+const formatDate = (value: string | null): string => {
+    if (!value) return '--'
+
+    const date = new Date(value)
+
+    if (Number.isNaN(date.getTime())) {
+        return value
+    }
+
+    return new Intl.DateTimeFormat('fa-IR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).format(date)
+}
+
+const getVerificationLabel = (status: string): string => {
+    const labels: Record<string, string> = {
+        not_started: 'شروع نشده',
+        verified: 'تأیید شده',
+        pending: 'در انتظار بررسی',
+        rejected: 'رد شده',
+        unverified: 'تأیید نشده',
+    }
+
+    return labels[status] ?? status
+}
 
 export function SuperUsersList() {
-    const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
-    const [loading, setLoading] = useState(false)
-    const [viewMode, setViewMode] = useViewMode(RESOURCE)
+    const [search, setSearch] = useQueryParams(
+        createQueryParam(queryNames),
+    )
 
-    const [superUsers, setSuperUsers] = useState<{
-        total_results: number
-        data: SuperUsersType[]
-    }>({
-        total_results: 5,
-        data: [
-            {
-                id: '1',
-                firstName: 'محمد',
-                lastName: 'احمدی',
-                phoneNumber: '09121234567',
-                profileImage: profileImage,
-                createdAt: '2026-09-01',
-                updatedAt: '2026-09-05',
-                role: 'super_user',
-            },
-            {
-                id: '2',
-                firstName: 'علی',
-                lastName: 'رضایی',
-                phoneNumber: '09129876543',
-                profileImage: profileImage,
-                createdAt: '2026-09-02',
-                updatedAt: '2026-09-06',
-                role: 'super_user',
-            },
-            {
-                id: '3',
-                firstName: 'حسین',
-                lastName: 'کریمی',
-                phoneNumber: '09351234567',
-                profileImage: profileImage,
-                createdAt: '2026-09-03',
-                updatedAt: '2026-09-07',
-                role: 'super_user',
-            },
-            {
-                id: '4',
-                firstName: 'رضا',
-                lastName: 'موسوی',
-                phoneNumber: '09114567890',
-                profileImage: profileImage,
-                createdAt: '2026-09-04',
-                updatedAt: '2026-09-08',
-                role: 'super_user',
-            },
-            {
-                id: '5',
-                firstName: 'امیر',
-                lastName: 'حسینی',
-                phoneNumber: '09361234567',
-                profileImage: profileImage,
-                createdAt: '2026-09-05',
-                updatedAt: '2026-09-09',
-                role: 'super_user',
-            },
-        ],
+    const [loading, setLoading] = useState(false)
+
+    const [viewMode, setViewMode] = useViewMode(LIST_RESOURCE)
+
+    const [superUsers, setSuperUsers] = useState<SuperUsersListState>({
+        total_results: 0,
+        data: [],
     })
 
     const dispatch = useDispatch()
 
-    // const getSuperUsers = async () => {
-    //     setLoading(true)
-    //     try {
-    //         let response = await DataProvider.get<{
-    //             total_results: number
-    //             results: SuperUsersType[]
-    //         }>(`${RESOURCE}/`, search)
-    //         if (response) {
-    //             setSuperUsers({
-    //                 total_results: response.data.total_results,
-    //                 data: response.data.results,
-    //             })
-    //         }
-    //     } catch (error: any) {
-    //         dispatch(
-    //             setUtil({
-    //                 open: true,
-    //                 message: error.message,
-    //                 severity: 'error',
-    //             }),
-    //         )
-    //     }
-    //     setLoading(false)
-    // }
+    const getSuperUsers = async () => {
+        setLoading(true)
 
-    // useDeepCompareEffect(() => {
-    //     getSuperUsers()
-    // }, [search])
+        try {
+            const response =
+                await DataProvider.get<SuperUsersApiResponse>(
+                    LIST_RESOURCE,
+                    search,
+                )
+
+            setSuperUsers({
+                total_results: response.data.total_results ?? 0,
+                data: response.data.results ?? [],
+            })
+        } catch (error) {
+            dispatch(
+                setUtil({
+                    open: true,
+                    message:
+                        error instanceof Error
+                            ? error.message
+                            : 'خطا در دریافت اطلاعات سوپر ادمین‌ها',
+                    severity: 'error',
+                }),
+            )
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useDeepCompareEffect(() => {
+        getSuperUsers()
+    }, [search])
 
     return (
         <ListPage
-            header={'مدیریت سوپر ادمین'}
+            header="مدیریت سوپر ادمین‌ها"
             isCsvExport
-            href={RESOURCE + '/create'}
-            searchField="firstName"
-            searchText="نام"
+            href={`super-users/create`}
+            searchField="full_name"
+            searchText="نام و نام خانوادگی"
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
-            getList={() => {}}
-            // getList={getSuperUsers}
+            getList={getSuperUsers}
             filtersData={queryNames}
             createModal={SuperUsersCreate}
-            defaultState={{
-                name: '',
-            }}
         >
-            <Box sx={{display: 'flex', justifyContent: 'flex-end', my: 2, px: 1}}>
-                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    my: 2,
+                    px: 1,
+                }}
+            >
+                <ViewModeToggle
+                    value={viewMode}
+                    onChange={setViewMode}
+                />
             </Box>
+
             {viewMode === 'card' ? (
                 <UserCardGrid
                     rows={superUsers.data}
                     resource={RESOURCE}
-                    getList={() => {}}
-                    title="سوپر ادمین"
+                    getList={getSuperUsers}
+                    title="سوپر ادمین‌ها"
                 />
             ) : (
                 <CustomTable
-                    title="سوپر یوزر"
+                    title="سوپر ادمین‌ها"
                     resource={RESOURCE}
                     headCells={tableHeadCells}
                     rows={superUsers.data}
                     count={superUsers.total_results}
-                    getList={() => {}}
-                    // getList={getSuperUsers}
+                    getList={getSuperUsers}
                     params={search}
                     setParams={setSearch}
                     handleSort={() => {}}
-                    // handleSort={getSuperUsers}
                     loading={loading}
-                    hasDetail={true}
-                    tableBodyCells={superUsers.data.map((item, index) => (
-                        <>
+                    hasDetail
+                    tableBodyCells={superUsers.data.map((item) => (
+                        <Fragment key={item.id}>
                             <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {item.id || '--'}
+                                <Typography variant="body2">
+                                    {item.id}
                                 </Typography>
                             </TableCell>
+
                             <TableCell>
-                                <Stack direction={'row'} gap={1} alignItems={'center'}>
+                                <Stack
+                                    direction="row"
+                                    gap={1}
+                                    alignItems="center"
+                                >
                                     <Avatar
-                                        src={item.profileImage || ''}
-                                        alt={`${item.firstName} ${item.lastName}`}
+                                        src={
+                                            typeof item.avatar === 'string'
+                                                ? item.avatar
+                                                : profileImage
+                                        }
+                                        alt={item.first_name || 'سوپر ادمین'}
                                         sx={{
                                             width: 40,
                                             height: 40,
                                         }}
                                     />
+
                                     <Typography
                                         variant="body2"
-                                        fontSize={{
-                                            xs: '13px',
-                                            sm: '14px',
-                                            md: '16px',
-                                            xl: '17px',
-                                        }}
-                                        sx={{
-                                            whiteSpace: 'nowrap',
-                                        }}
+                                        sx={{whiteSpace: 'nowrap'}}
                                     >
-                                        {item.firstName + item.lastName || '--'}
+                                        {
+                                            `${item.first_name} ${item.last_name}`.trim() ||
+                                            '--'}
                                     </Typography>
                                 </Stack>
                             </TableCell>
 
                             <TableCell>
+                                <Typography variant="body2">
+                                    {item.phone || '--'}
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="body2">
+                                    {item.email || '--'}
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="body2">
+                                    {item.role_display || item.role || '--'}
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    label={
+                                        item.account_status_display ||
+                                        item.account_status
+                                    }
+                                    color={
+                                        item.account_status === 'active'
+                                            ? 'success'
+                                            : item.account_status === 'suspended'
+                                              ? 'error'
+                                              : 'default'
+                                    }
+                                />
+                            </TableCell>
+
+                            <TableCell>
+                                <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    label={
+                                        item.verification_status_display ||
+                                        getVerificationLabel(
+                                            item.verification_status,
+                                        )
+                                    }
+                                    color={
+                                        item.verification_status === 'verified'
+                                            ? 'success'
+                                            : item.verification_status === 'rejected'
+                                              ? 'error'
+                                              : item.verification_status === 'pending'
+                                                ? 'warning'
+                                                : 'default'
+                                    }
+                                />
+                            </TableCell>
+
+                            <TableCell>
                                 <Typography
                                     variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
+                                    sx={{whiteSpace: 'nowrap'}}
                                 >
-                                    {item.phoneNumber || '--'}
+                                    {formatDate(item.date_joined)}
                                 </Typography>
                             </TableCell>
 
                             <TableCell>
                                 <Typography
                                     variant="body2"
-                                    fontSize={{
-                                        xs: '13px',
-                                        sm: '14px',
-                                        md: '16px',
-                                        xl: '17px',
-                                    }}
-                                    sx={{
-                                        whiteSpace: 'nowrap',
-                                    }}
+                                    sx={{whiteSpace: 'nowrap'}}
                                 >
-                                    {item.role || '--'}
+                                    {formatDate(item.last_login)}
                                 </Typography>
                             </TableCell>
-                            <TableCell>
-                                <Button variant="outlined" color="success">
-                                    ورود به پنل کاربری
-                                </Button>
-                            </TableCell>
-                        </>
+                        </Fragment>
                     ))}
                 />
             )}

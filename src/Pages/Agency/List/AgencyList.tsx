@@ -16,7 +16,6 @@ import profileImage from '../../../Images/user.png'
 import {AgencyType} from '../Agency'
 import {AgencyCreate} from '../Create/AgencyCreate'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
-import {UserCardGrid} from '../../User/UserCardGrid'
 import {useViewMode} from '../../../Core/useViewMode'
 import {DataProvider} from '../../../Core/DataProvider'
 
@@ -148,7 +147,7 @@ export function AgencyList() {
     return (
         <ListPage
             header="مدیریت املاکی‌ها"
-            href={`${RESOURCE}/create`}
+            href={`agencies/create`}
             searchField="phone"
             searchText="شماره تماس"
             setParams={setSearch}

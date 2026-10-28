@@ -18,10 +18,10 @@ export function ExpertCreate({
             title={title}
             resource={resource + '/'}
             isFormData={true}
-            redirect={resource}
+            redirect={'/users/expert'}
             formDetails={data}
         >
-            <Expert expert={data} setExpert={setData} resource={resource} />
+            <Expert expert={data} setExpert={setData} resource={resource} editMode={false} />
         </CreatePage>
     )
 }
