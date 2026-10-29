@@ -1,6 +1,8 @@
 import {Chip, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import React, {useState} from 'react'
+import {useDispatch} from 'react-redux'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
 
 import {createCardField} from '../../../Components/Card/CustomCard'
@@ -8,192 +10,99 @@ import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
+import {DataProvider} from '../../../Core/DataProvider'
 import {formatDate} from '../../../Core/FormatDate'
 import {createQueryParam} from '../../../Core/QueryParams'
+import {setUtil} from '../../../redux/UtilSlice'
+import type {LogsType} from '../Logs'
 
-const tableHeadCells = [
-    createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('ادمین', 'admin_mobile'),
-    createTableHeadCells('کاربر', 'user_mobile'),
-    createTableHeadCells('نوع عملیات', 'action_type'),
-    createTableHeadCells('متن عملیات', 'action'),
-    createTableHeadCells('سطح', 'level'),
-    createTableHeadCells('کد پاسخ', 'response_status'),
-    createTableHeadCells('IP', 'ip_address'),
-    createTableHeadCells('اندپوینت', 'endpoint'),
-    createTableHeadCells('تاریخ', 'created_at'),
-]
+export type {LogsType} from '../Logs'
 
-const queryNames = [
-    {
-        field: 'action_type',
-        label: 'نوع عملیات',
-        type: '',
-        choice: [],
-    },
-    {
-        field: 'start_date',
-        label: 'تاریخ شروع',
-        type: 'date',
-    },
-    {
-        field: 'end_date',
-        label: 'تاریخ پایان',
-        type: 'date',
-    },
-]
+const resource = 'activity-logs'
 
-export type LogsType = {
-    id: number
-    created_at: string
-    action_type: string
-    action: string
-    level: string
-    success: boolean
-    response_status: number | null
-    ip_address: string
-    method: string
-    endpoint: string
-    tracking_code: string | null
-    user_mobile: string
-    admin_mobile: string | null
-}
-
-const resource = 'logs'
-
-const levelColor = (level: string) => {
-    switch (level) {
-        case 'ERROR':
-            return 'error.main'
-        case 'WARNING':
-            return 'warning.main'
-        default:
-            return 'success.main'
-    }
-}
-
-function LevelChip({level}: {level: string}) {
+function StatusChip({statusCode}: {statusCode: number}) {
     return (
         <Chip
             size="small"
-            label={level}
-            sx={{
-                height: 22,
-                fontSize: '11px',
-                fontWeight: 700,
-                color: levelColor(level),
-            }}
+            label={statusCode}
+            color={statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warning' : 'success'}
+            sx={{height: 22, fontSize: '11px', fontWeight: 700}}
         />
     )
 }
 
-const cellText = (value: any) => (
-    <Typography sx={{whiteSpace: 'nowrap'}}>{value ?? '--'}</Typography>
-)
+const fields: {
+    name: keyof LogsType
+    label: string
+    render?: (row: LogsType) => React.ReactNode
+}[] = [
+    {name: 'actor_name', label: 'کاربر'},
+    {name: 'event', label: 'رویداد'},
+    {name: 'method', label: 'متد'},
+    {name: 'path', label: 'مسیر درخواست'},
+    {
+        name: 'status_code',
+        label: 'کد پاسخ',
+        render: (row) => <StatusChip statusCode={row.status_code} />,
+    },
+    {name: 'created_at', label: 'تاریخ ثبت', render: (row) => formatDate(row.created_at)},
+]
 
-/** همان ستون‌ها، اما برای بدنه‌ی کارت. متن عملیات و تاریخ در سربرگ کارت می‌آیند، سطح هم به‌صورت Chip */
-const cardFields = [
-    createCardField('نوع عملیات', 'action_type'),
-    createCardField('کد پاسخ', 'response_status', {
-        render: (row) => row.response_status ?? '--',
-    }),
-    createCardField('ادمین', 'admin_mobile', {render: (row) => row.admin_mobile ?? '--'}),
-    createCardField('کاربر', 'user_mobile'),
-    createCardField('IP', 'ip_address'),
-    createCardField('اندپوینت', 'endpoint', {fullWidth: true}),
+const tableHeadCells = fields.map(({label, name}) => createTableHeadCells(label, name))
+const cardFields = fields
+    .filter(({name}) => !['event', 'created_at', 'status_code'].includes(name))
+    .map(({label, name, render}) => createCardField(label, name, {
+        render: render ?? ((row: LogsType) => row[name] as React.ReactNode ?? '--'),
+        fullWidth: name === 'path',
+    }))
+
+const queryNames = [
+    {field: 'event', label: 'رویداد', type: '', choice: []},
+    {field: 'category', label: 'دسته‌بندی', type: '', choice: []},
+    {field: 'method', label: 'متد درخواست', type: '', choice: []},
+    {field: 'status_code', label: 'کد پاسخ', type: '', choice: []},
+    {field: 'start_date', label: 'تاریخ شروع', type: 'date'},
+    {field: 'end_date', label: 'تاریخ پایان', type: 'date'},
 ]
 
 export function LogsList() {
+    const dispatch = useDispatch()
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
-
     const [logs, setLogs] = useState<{
         total_results: number
         results: LogsType[]
-    }>({
-        total_results: 5,
-        results: [
-            {
-                id: 1,
-                created_at: '2026-08-20T12:30:00Z',
-                action_type: 'LOGIN',
-                action: 'ورود کاربر به سیستم',
-                level: 'INFO',
-                success: true,
-                response_status: 200,
-                ip_address: '192.168.1.10',
-                method: 'POST',
-                endpoint: '/api/auth/login/',
-                tracking_code: 'TRK-10001',
-                user_mobile: '09121234567',
-                admin_mobile: null,
-            },
-            {
-                id: 2,
-                created_at: '2026-08-20T11:45:00Z',
-                action_type: 'CREATE',
-                action: 'ایجاد کاربر جدید',
-                level: 'INFO',
-                success: true,
-                response_status: 201,
-                ip_address: '192.168.1.15',
-                method: 'POST',
-                endpoint: '/api/users/',
-                tracking_code: 'TRK-10002',
-                user_mobile: '09123456789',
-                admin_mobile: '09121111111',
-            },
-            {
-                id: 3,
-                created_at: '2026-08-20T10:20:00Z',
-                action_type: 'UPDATE',
-                action: 'ویرایش اطلاعات کاربر',
-                level: 'INFO',
-                success: true,
-                response_status: 200,
-                ip_address: '10.10.20.5',
-                method: 'PUT',
-                endpoint: '/api/users/25/',
-                tracking_code: 'TRK-10003',
-                user_mobile: '09129876543',
-                admin_mobile: '09121111111',
-            },
-            {
-                id: 4,
-                created_at: '2026-08-20T09:10:00Z',
-                action_type: 'DELETE',
-                action: 'حذف کاربر',
-                level: 'WARNING',
-                success: false,
-                response_status: 400,
-                ip_address: '172.16.0.12',
-                method: 'DELETE',
-                endpoint: '/api/users/18/',
-                tracking_code: 'TRK-10004',
-                user_mobile: '09125555555',
-                admin_mobile: '09122222222',
-            },
-            {
-                id: 5,
-                created_at: '2026-08-19T18:35:00Z',
-                action_type: 'LOGIN',
-                action: 'تلاش ناموفق برای ورود',
-                level: 'ERROR',
-                success: false,
-                response_status: 401,
-                ip_address: '185.20.30.40',
-                method: 'POST',
-                endpoint: '/api/auth/login/',
-                tracking_code: 'TRK-10005',
-                user_mobile: '09127777777',
-                admin_mobile: null,
-            },
-        ],
-    })
+    }>({total_results: 0, results: []})
 
-    const getLogs = () => {}
+    const getLogs = async () => {
+        setLoading(true)
+        try {
+            const response = await DataProvider.get<{
+                total_results: number
+                results: LogsType[]
+            }>(`${resource}/`, search)
 
-    // پراپ‌های مشترک بین جدول و کارت
+            if (response) {
+                setLogs({
+                    total_results: response.data.total_results,
+                    results: response.data.results,
+                })
+            }
+        } catch (error: any) {
+            dispatch(setUtil({
+                open: true,
+                message: error.message,
+                severity: 'error',
+            }))
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useDeepCompareEffect(() => {
+        getLogs()
+    }, [search])
+
     const shared = {
         title: 'لاگ',
         resource,
@@ -203,7 +112,7 @@ export function LogsList() {
         setParams: setSearch,
         loading,
         getList: getLogs,
-        hasDetail: false,
+        hasDetail: true,
         noEdit: true,
         noDelete: true,
     }
@@ -212,10 +121,10 @@ export function LogsList() {
         <ListPage
             viewKey={resource}
             defaultView="list"
-            header="مدیریت لاگ ها"
+            header="مدیریت لاگ‌ها"
             href={`${resource}/create`}
-            searchField="username"
-            searchText="شماره تلفن"
+            searchField="search"
+            searchText="جستجوی لاگ"
             setParams={setSearch}
             params={search}
             resource={resource}
@@ -224,48 +133,44 @@ export function LogsList() {
             filtersData={queryNames}
             noCreate
             listData={logs.results}
-            defaultState={{
-                status: '',
-                username: '',
-                createdAt: '',
-            }}
+            
         >
-            {(view) =>
-                view === 'card' ? (
-                    <CustomCardList
-                        {...shared}
-                        fields={cardFields}
-                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
-                        renderers={{
-                            title: (row) => row.action,
-                            subtitle: (row) => formatDate(row.created_at),
-                            status: (row) => <LevelChip level={row.level} />,
-                        }}
-                    />
-                ) : (
-                    <CustomTable
-                        {...shared}
-                        headCells={tableHeadCells}
-                        handleSort={getLogs}
-                        tableBodyCells={logs.results.map((item) => (
-                            <React.Fragment key={item.id}>
-                                <TableCell>{cellText(item.id)}</TableCell>
-                                <TableCell>{cellText(item.admin_mobile)}</TableCell>
-                                <TableCell>{cellText(item.user_mobile)}</TableCell>
-                                <TableCell>{cellText(item.action_type)}</TableCell>
-                                <TableCell>{cellText(item.action)}</TableCell>
-                                <TableCell>
-                                    <LevelChip level={item.level} />
+            {(view) => view === 'card' ? (
+                <CustomCardList
+                    {...shared}
+                    fields={cardFields}
+                    columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                    renderers={{
+                        title: (row: LogsType) => row.event,
+                        subtitle: (row: LogsType) => formatDate(row.created_at),
+                        status: (row: LogsType) => <StatusChip statusCode={row.status_code} />,
+                    }}
+                />
+            ) : (
+                <CustomTable
+                    {...shared}
+                    headCells={tableHeadCells}
+                    handleSort={getLogs}
+                    tableBodyCells={logs.results.map((item) => (
+                        <React.Fragment key={item.id}>
+                            {fields.map(({name, render}) => (
+                                <TableCell key={name}>
+                                    <Typography
+                                        component="div"
+                                        sx={{
+                                            whiteSpace: 'normal',
+                                            overflowWrap: 'anywhere',
+                                            ...(name === 'path' && {maxWidth: 240, direction: 'ltr', textAlign: 'right'}),
+                                        }}
+                                    >
+                                        {render ? render(item) : (item[name] as React.ReactNode) ?? '--'}
+                                    </Typography>
                                 </TableCell>
-                                <TableCell>{cellText(item.response_status)}</TableCell>
-                                <TableCell>{cellText(item.ip_address)}</TableCell>
-                                <TableCell>{cellText(item.endpoint)}</TableCell>
-                                <TableCell>{cellText(formatDate(item.created_at))}</TableCell>
-                            </React.Fragment>
-                        ))}
-                    />
-                )
-            }
+                            ))}
+                        </React.Fragment>
+                    ))}
+                />
+            )}
         </ListPage>
     )
 }

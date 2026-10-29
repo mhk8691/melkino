@@ -71,6 +71,8 @@ import {TasksList} from '../Tasks/List/TasksList'
 import {clearRole, setRole, UserRole} from '../../redux/RoleSlice'
 import {useDispatch} from 'react-redux'
 import axios from 'axios'
+import { Logs } from '../Logs/Logs'
+import { LogsEdit } from '../Logs/Edit/LogsEdit'
 
 export function Home(props) {
     const [profile, setProfile] = useState<UsersType>({} as UsersType)
@@ -255,6 +257,7 @@ export function Home(props) {
 
                         <Route path="logs" element={<LogsList />} />
                         <Route path="logs" element={<DashboardLayout />} />
+                         <Route path="logs/:id" element={<LogsEdit />} />
                         {/* ...........Announcemen.......... */}
                         <Route
                             path="announcements/create"
