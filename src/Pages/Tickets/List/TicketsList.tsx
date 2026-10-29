@@ -14,7 +14,7 @@ import {DataProvider} from '../../../Core/DataProvider'
 import {formatDate} from '../../../Core/FormatDate'
 import {setUtil} from '../../../redux/UtilSlice'
 import {TicketsCreate} from '../Create/TicketsCreate'
-import {TicketsType, TICKET_STATUSES, TICKET_CATEGORIES, ticketDefaults} from '../Tickets'
+import {TicketsType, TICKET_STATUSES, TICKET_CATEGORIES, ticketCreateDefaults} from '../Tickets'
 
 const RESOURCE = 'tickets'
 
@@ -100,7 +100,7 @@ export function TicketsList() {
             getList={getTickets}
             filtersData={queryNames}
             createModal={TicketsCreate}
-            defaultState={ticketDefaults}
+            defaultState={ticketCreateDefaults}
         >
             {(view) => view === 'card' ? (
                 <CustomCardList
