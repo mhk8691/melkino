@@ -40,3 +40,14 @@ export function buildUserRequestData(
 export function isAgencyValid(data: {agency_name?: string; office_address?: string}) {
     return Boolean(data.agency_name?.trim() && data.office_address?.trim())
 }
+
+// PATCH validates required fields only when the user actually changes them.
+// Missing or incomplete legacy profile fields must not block unrelated edits.
+export function isAgencyUpdateValid(
+    data: {agency_name?: string; office_address?: string},
+    initialData: {agency_name?: string; office_address?: string},
+) {
+    return (['agency_name', 'office_address'] as const).every((field) =>
+        data[field] === initialData[field] || Boolean(data[field]?.trim()),
+    )
+}

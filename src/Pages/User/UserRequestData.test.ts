@@ -1,4 +1,4 @@
-import {buildUserRequestData, isAgencyValid} from './UserRequestData'
+import {buildUserRequestData, isAgencyValid, isAgencyUpdateValid} from './UserRequestData'
 
 test.each(['user', 'agency', 'expert', 'superadmin'] as const)('%s requests omit address lookup fields in both JSON and multipart', (role) => {
     const values = {province: 'تهران', city: 'تهران', address: 'آدرس', postal_code: '1234567890'}
@@ -40,4 +40,16 @@ test('ordinary user requests cannot inherit admin or agency fields from a previo
 test('office verification is omitted from agency requests without superadmin permission', () => {
     expect(buildUserRequestData({office_verification_status: 'verified'}, 'agency', false)).toEqual({})
     expect(buildUserRequestData({office_verification_status: 'verified'}, 'agency', true)).toEqual({office_verification_status: 'verified'})
+})
+
+
+test('partial agency updates are allowed when unchanged required profile fields are missing', () => {
+    expect(isAgencyUpdateValid({}, {})).toBe(true)
+    expect(isAgencyUpdateValid({agency_name: '', office_address: ''}, {agency_name: '', office_address: ''})).toBe(true)
+})
+
+test('partial agency updates cannot erase required fields but can fill them', () => {
+    expect(isAgencyUpdateValid({agency_name: ' ', office_address: 'تهران'}, {agency_name: 'املاک', office_address: 'تهران'})).toBe(false)
+    expect(isAgencyUpdateValid({agency_name: 'املاک', office_address: ''}, {agency_name: 'املاک', office_address: 'تهران'})).toBe(false)
+    expect(isAgencyUpdateValid({agency_name: 'املاک'}, {})).toBe(true)
 })
