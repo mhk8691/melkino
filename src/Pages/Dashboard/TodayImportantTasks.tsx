@@ -1,6 +1,15 @@
-import {useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {useDispatch} from 'react-redux'
+import {DataProvider} from '../../Core/DataProvider'
+import {formatDate} from '../../Core/FormatDate'
+import {setUtil} from '../../redux/UtilSlice'
+import {taskStatusOptions, type TasksType} from '../Tasks/Tasks'
 import {
     Checkbox,
+    CircularProgress,
+    LinearProgress,
+    Alert,
+    Button,
     Chip,
     List,
     ListItem,
@@ -10,46 +19,58 @@ import {
     Typography,
 } from '@mui/material'
 
-interface TaskItem {
-    id: number
-    title: string
-    time?: string
-    priority: 'بالا' | 'متوسط' | 'پایین'
-    done: boolean
-}
-
-const initialTasks: TaskItem[] = [
-    {
-        id: 1,
-        title: 'تماس با آقای رضایی برای پیگیری فایل آپارتمان سعادت‌آباد',
-        time: '۱۰:۰۰',
-        priority: 'بالا',
-        done: false,
-    },
-    {
-        id: 2,
-        title: 'بازدید از ویلای گوهردشت با مشتری جدید',
-        time: '۱۳:۳۰',
-        priority: 'بالا',
-        done: false,
-    },
-    {id: 3, title: 'تنظیم قرارداد اجاره فایل شمارهٔ ۲', priority: 'متوسط', done: false},
-    {id: 4, title: 'پیگیری تسویه‌حساب فایل مشهد', priority: 'پایین', done: true},
-]
-
-const priorityColor: Record<TaskItem['priority'], 'error' | 'warning' | 'default'> = {
-    بالا: 'error',
-    متوسط: 'warning',
-    پایین: 'default',
-}
-
 export default function TodayImportantTasks() {
-    const [tasks, setTasks] = useState<TaskItem[]>(initialTasks)
+    const dispatch = useDispatch()
+    const [tasks, setTasks] = useState<TasksType[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+    const [togglingId, setTogglingId] = useState<number | null>(null)
+    const togglePending = useRef(false)
 
-    const toggleTask = (id: number) => {
-        setTasks((prev) =>
-            prev.map((task) => (task.id === id ? {...task, done: !task.done} : task)),
-        )
+    const getTasks = useCallback(
+        async (showLoading = true) => {
+            if (showLoading) setLoading(true)
+            setError('')
+            try {
+                const response = await DataProvider.get<{
+                    total_results: number
+                    results: TasksType[]
+                }>('tasks/')
+                setTasks(response.data.results)
+            } catch (error: any) {
+                const message = error.message || 'خطا در دریافت تسک‌ها'
+                setError(message)
+                dispatch(setUtil({open: true, message, severity: 'error'}))
+            } finally {
+                if (showLoading) setLoading(false)
+            }
+        },
+        [dispatch],
+    )
+
+    useEffect(() => {
+        getTasks()
+    }, [getTasks])
+
+    const toggleTask = async (id: number) => {
+        if (togglePending.current) return
+        togglePending.current = true
+        setTogglingId(id)
+        try {
+            await DataProvider.patch(`dashboard/tasks/${id}/toggle/`)
+            await getTasks(false)
+        } catch (error: any) {
+            dispatch(
+                setUtil({
+                    open: true,
+                    message: error.message || 'خطا در تغییر وضعیت تسک',
+                    severity: 'error',
+                }),
+            )
+        } finally {
+            togglePending.current = false
+            setTogglingId(null)
+        }
     }
 
     return (
@@ -57,6 +78,19 @@ export default function TodayImportantTasks() {
             elevation={0}
             sx={{p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider'}}
         >
+            {loading && <LinearProgress aria-label="دریافت تسک‌ها" />}
+            {error && (
+                <Alert
+                    severity="error"
+                    action={
+                        <Button color="inherit" onClick={() => getTasks()}>
+                            تلاش مجدد
+                        </Button>
+                    }
+                >
+                    {error}
+                </Alert>
+            )}
             <List disablePadding>
                 {tasks.map((task) => (
                     <ListItem
@@ -65,34 +99,52 @@ export default function TodayImportantTasks() {
                             borderBottom: '1px solid',
                             borderColor: 'divider',
                             '&:last-of-type': {borderBottom: 'none'},
-                            opacity: task.done ? 0.5 : 1,
+                            opacity: task.status === 'done' ? 0.5 : 1,
                         }}
                         secondaryAction={
                             <Chip
-                                label={task.priority}
+                                label={
+                                    taskStatusOptions.find(({value}) => value === task.status)
+                                        ?.label ?? '--'
+                                }
                                 size="small"
-                                color={priorityColor[task.priority]}
+                                color={
+                                    task.status === 'done'
+                                        ? 'success'
+                                        : task.status === 'in_progress'
+                                          ? 'info'
+                                          : 'warning'
+                                }
                                 variant="outlined"
                             />
                         }
                     >
                         <ListItemIcon sx={{minWidth: 40}}>
-                            <Checkbox
-                                edge="start"
-                                checked={task.done}
-                                onChange={() => toggleTask(task.id)}
-                            />
+                            {togglingId === task.id ? (
+                                <CircularProgress size={22} aria-label="تغییر وضعیت تسک" />
+                            ) : (
+                                <Checkbox
+                                    edge="start"
+                                    checked={task.status === 'done'}
+                                    onChange={() => toggleTask(task.id)}
+                                    disabled={togglingId !== null || loading}
+                                    inputProps={{'aria-label': `تغییر وضعیت ${task.title}`}}
+                                />
+                            )}
                         </ListItemIcon>
                         <ListItemText
                             primary={task.title}
-                            secondary={task.time}
+                            secondary={task.due_date ? formatDate(task.due_date) : undefined}
                             primaryTypographyProps={{
-                                sx: {textDecoration: task.done ? 'line-through' : 'none'},
+                                sx: {
+                                    textDecoration:
+                                        task.status === 'done' ? 'line-through' : 'none',
+                                },
                             }}
                         />
                     </ListItem>
                 ))}
-                {tasks.length === 0 && (
+                {!loading && !error && tasks.length === 0 && (
                     <Typography
                         variant="body2"
                         color="text.secondary"
