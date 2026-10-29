@@ -7,6 +7,7 @@ import TableSortLabel from '@mui/material/TableSortLabel'
 export type HeadCellType = {
     name: string
     label: string
+    sortable?: boolean
 }[]
 
 export function createTableHeadCells(label, name) {
@@ -69,6 +70,8 @@ export function CustomTableHead(props: {
                         }}
                     >
                         <TableSortLabel
+                            disabled={headCell.sortable === false}
+                            hideSortIcon={headCell.sortable === false}
                             active={search.sort === headCell.name}
                             direction={
                                 search.sort === headCell.name

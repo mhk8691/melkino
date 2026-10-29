@@ -2,6 +2,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import UtilSlice from './UtilSlice'
 import RoleSlice from './RoleSlice'
+import ImpersonationSlice from './ImpersonationSlice'
 import {
     useDispatch,
     useSelector,
@@ -12,6 +13,7 @@ export const store = configureStore({
     reducer: {
         util: UtilSlice,
         role: RoleSlice,
+        impersonation: ImpersonationSlice,
     },
 })
 

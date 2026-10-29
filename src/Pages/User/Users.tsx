@@ -1,3 +1,4 @@
+import {ImpersonateButton} from '../../Components/Impersonation/ImpersonateButton'
 
 import {
     CircularProgress,
@@ -176,6 +177,7 @@ export function Users<T extends UsersType>({
     )
     return (
         <Stack spacing={2}>
+            {editMode && <Stack direction="row"><ImpersonateButton target={users} /></Stack>}
             <ProfileUploader user={users} setUser={setUsers} />
             <GridProducer
                 sx={{marginBottom: '16px'}}

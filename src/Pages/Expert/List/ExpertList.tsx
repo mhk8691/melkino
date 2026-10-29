@@ -1,3 +1,5 @@
+import {ImpersonateButton} from '../../../Components/Impersonation/ImpersonateButton'
+import {selectIsSuperAdmin} from '../../../redux/RoleSlice'
 import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, UserIdentity} from '../../User/UserListFields'
 import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {Box} from '@mui/material'
@@ -16,7 +18,7 @@ import {createQueryParam} from '../../../Core/QueryParams'
 import { DataProvider } from '../../../Core/DataProvider'
 import { setUtil } from '../../../redux/UtilSlice'
 import useDeepCompareEffect from 'use-deep-compare-effect'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const RESOURCE = 'users'
 const LIST_RESOURCE = 'users/?group=expert'
@@ -41,6 +43,7 @@ const queryNames = ['full_name', 'phone', 'expert_code', 'agency_id'].map((name)
 }))
 
 export function ExpertList({title}: {title: string}) {
+    const canImpersonate = useSelector(selectIsSuperAdmin)
     const [search, setSearch] = useQueryParams(
         createQueryParam(queryNames),
     )
@@ -118,6 +121,7 @@ export function ExpertList({title}: {title: string}) {
                     count={expert.total_results}
                     hasDetail
                     renderers={{
+                        actions: canImpersonate ? (row: ExpertType) => <ImpersonateButton target={row} /> : undefined,
                         title: (row: ExpertType) => userFullName(row),
                         status: (row: ExpertType) => <AccountStatus user={row} />,
                     }}
@@ -126,7 +130,7 @@ export function ExpertList({title}: {title: string}) {
                 <CustomTable
                     title={title}
                     resource={RESOURCE}
-                    headCells={tableHeadCells}
+                    headCells={canImpersonate ? [...tableHeadCells, {name: 'impersonate', label: 'ورود مدیریتی', sortable: false}] : tableHeadCells}
                     rows={expert.data}
                     count={expert.total_results}
                     getList={() => getExpert()}
@@ -136,7 +140,7 @@ export function ExpertList({title}: {title: string}) {
                     loading={loading}
                     hasDetail={true}
                     tableBodyCells={expert.data.map((item) => (
-                        <UserListCells key={item.id} fields={fields} row={item} />
+                        <UserListCells key={item.id} fields={fields} row={item} action={canImpersonate ? <ImpersonateButton target={item} /> : undefined} />
                     ))}
                 />
             )}

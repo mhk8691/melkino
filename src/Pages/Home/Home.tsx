@@ -1,3 +1,7 @@
+import {getImpersonationStatus, impersonationError} from '../../Core/Impersonation'
+import {setImpersonation, setImpersonationError, clearImpersonation} from '../../redux/ImpersonationSlice'
+import type {RootState} from '../../redux/store'
+import {ImpersonationBanner} from '../../Components/Impersonation/ImpersonationBanner'
 import Box from '@mui/material/Box'
 import {useEffect, useState} from 'react'
 import {Route, Routes, useLocation, useNavigate} from 'react-router-dom'
@@ -41,7 +45,6 @@ import {UsersEdit} from '../User/Edit/UsersEdit'
 import {ExpertCreate} from '../Expert/Create/ExpertCreate'
 import {ExpertList} from '../Expert/List/ExpertList'
 import {ExpertEdit} from '../Expert/Edit/ExpertEdit'
-import {UsersType} from '../User/Users'
 import {LessorsList} from '../Lessors/List/LessorsList'
 import {LessorsEdit} from '../Lessors/Edit/LessorsEdit'
 import {TenantsList} from '../Tenants/List/TenantsList'
@@ -69,13 +72,13 @@ import {TasksCreate} from '../Tasks/Create/TasksCreate'
 import {TasksEdit} from '../Tasks/Edit/TasksEdit'
 import {TasksList} from '../Tasks/List/TasksList'
 import {clearRole, setRole, UserRole} from '../../redux/RoleSlice'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useStore} from 'react-redux'
 import axios from 'axios'
 import { Logs } from '../Logs/Logs'
 import { LogsEdit } from '../Logs/Edit/LogsEdit'
 
 export function Home(props) {
-    const [profile, setProfile] = useState<UsersType>({} as UsersType)
+    const reduxStore = useStore<RootState>()
     const navigate = useNavigate()
     const location = useLocation()
     const [data, setData] = useState({})
@@ -84,6 +87,7 @@ export function Home(props) {
 
     useEffect(() => {
         let active = true
+        dispatch(clearImpersonation())
 
         const getProfile = async () => {
             try {
@@ -102,14 +106,26 @@ export function Home(props) {
                     throw new Error('Invalid user role')
                 }
 
-                setProfile(user)
                 dispatch(setRole(user.role as UserRole))
+                try {
+                    const session = await getImpersonationStatus()
+                    if (!active) return
+                    dispatch(setImpersonation({session, actorId: session.active ? session.actor_id! : user.id}))
+                    if (session.active) dispatch(setRole(session.target_role!))
+                } catch (statusError) {
+                    if (!active) return
+                    if (axios.isAxiosError(statusError) && [401, 403].includes(statusError.response?.status ?? 0) && reduxStore.getState().role.role !== UserRole.SUPERADMIN) {
+                        dispatch(setImpersonation({session: {active: false}, actorId: user.id}))
+                    } else {
+                        dispatch(setImpersonationError(impersonationError(statusError, 'خطا در بررسی ورود مدیریتی')))
+                    }
+                }
                 setAuthStatus('auth')
             } catch (error) {
                 if (!active) return
 
-                setProfile({} as UsersType)
                 dispatch(clearRole())
+                dispatch(clearImpersonation())
                 setAuthStatus('unauth')
             }
         }
@@ -119,7 +135,7 @@ export function Home(props) {
         return () => {
             active = false
         }
-    }, [dispatch])
+    }, [dispatch, reduxStore])
 
     useEffect(() => {
         if (authStatus === 'loading') return
@@ -129,15 +145,18 @@ export function Home(props) {
             return
         }
 
-        if (profile?.role === UserRole.USER) {
-            navigate('/login', {replace: true})
-            return
-        }
-
         if (location.pathname === '/') {
             navigate('/dashboard', {replace: true})
         }
-    }, [authStatus, profile, navigate, location.pathname])
+    }, [authStatus, navigate, location.pathname])
+
+    useEffect(() => {
+        const onStorage = (event: StorageEvent) => {
+            if (event.key === 'mlkino:identity-change') window.location.reload()
+        }
+        window.addEventListener('storage', onStorage)
+        return () => window.removeEventListener('storage', onStorage)
+    }, [])
 
     if (authStatus === 'loading') {
         return null
@@ -147,9 +166,6 @@ export function Home(props) {
         return null
     }
 
-    if (profile?.role === UserRole.USER) {
-        return null
-    }
     return (
         <MainLayout>
             <Box
@@ -164,6 +180,7 @@ export function Home(props) {
                         : 'unset'
                 }
             >
+                <ImpersonationBanner />
                 <Box
                     bgcolor={!location.pathname.includes('dashboard') ? 'background.main' : 'unset'}
                     borderRadius={'15px'}

@@ -1,3 +1,5 @@
+import {ImpersonateButton} from '../../../Components/Impersonation/ImpersonateButton'
+import {selectIsSuperAdmin} from '../../../redux/RoleSlice'
 import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, UserIdentity, VerificationStatus} from '../UserListFields'
 import {CustomCardList} from '../../../Components/Card/CustomCardList'
 import {commonUserDefaults} from '../UserTypes'
@@ -5,7 +7,7 @@ import {commonUserDefaults} from '../UserTypes'
 import {Box} from '@mui/material'
 import {useCallback, useState} from 'react'
 import {useQueryParams} from 'use-query-params'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {CustomTable} from '../../../Components/Table/CustomTable'
@@ -77,6 +79,7 @@ const initialUsers: UsersListState = {
 
 
 export function UsersList() {
+    const canImpersonate = useSelector(selectIsSuperAdmin)
     const [search, setSearch] = useQueryParams(
         createQueryParam(queryNames),
     )
@@ -164,6 +167,7 @@ export function UsersList() {
                     count={users.total_results}
                     hasDetail
                     renderers={{
+                        actions: canImpersonate ? (row: UsersType) => <ImpersonateButton target={row} /> : undefined,
                         title: (row: UsersType) => userFullName(row),
                         status: (row: UsersType) => <AccountStatus user={row} />,
                     }}
@@ -172,7 +176,7 @@ export function UsersList() {
                 <CustomTable
                     title="کاربران عادی"
                     resource={RESOURCE}
-                    headCells={tableHeadCells}
+                    headCells={canImpersonate ? [...tableHeadCells, {name: 'impersonate', label: 'ورود مدیریتی', sortable: false}] : tableHeadCells}
                     rows={users.data}
                     count={users.total_results}
                     getList={getList}
@@ -182,7 +186,7 @@ export function UsersList() {
                     loading={loading}
                     hasDetail
                     tableBodyCells={users.data.map((item) => (
-                        <UserListCells key={item.id} fields={fields} row={item} />
+                        <UserListCells key={item.id} fields={fields} row={item} action={canImpersonate ? <ImpersonateButton target={item} /> : undefined} />
                     ))}
                 />
             )}

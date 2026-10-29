@@ -1,10 +1,12 @@
+import {ImpersonateButton} from '../../../Components/Impersonation/ImpersonateButton'
+import {selectIsSuperAdmin} from '../../../redux/RoleSlice'
 import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, VerificationStatus} from '../../User/UserListFields'
 import {CustomCardList} from '../../../Components/Card/CustomCardList'
 
 import {Box} from '@mui/material'
 import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {CustomTable} from '../../../Components/Table/CustomTable'
@@ -65,6 +67,7 @@ type AgencyListResponse = {
 }
 
 export function AgencyList() {
+    const canImpersonate = useSelector(selectIsSuperAdmin)
     const [search, setSearch] = useQueryParams(
         createQueryParam(queryNames),
     )
@@ -159,6 +162,7 @@ export function AgencyList() {
                     count={agency.total_results}
                     hasDetail
                     renderers={{
+                        actions: canImpersonate ? (row: AgencyType) => <ImpersonateButton target={row} /> : undefined,
                         title: (row: AgencyType) => row.agency_name || '--',
                         status: (row: AgencyType) => <AccountStatus user={row} />,
                     }}
@@ -167,7 +171,7 @@ export function AgencyList() {
                 <CustomTable
                     title="املاکی‌ها"
                     resource={RESOURCE}
-                    headCells={tableHeadCells}
+                    headCells={canImpersonate ? [...tableHeadCells, {name: 'impersonate', label: 'ورود مدیریتی', sortable: false}] : tableHeadCells}
                     rows={agency.data}
                     count={agency.total_results}
                     getList={getAgency}
@@ -177,7 +181,7 @@ export function AgencyList() {
                     loading={loading}
                     hasDetail
                     tableBodyCells={agency.data.map((item) => (
-                        <UserListCells key={item.id} fields={fields} row={item} />
+                        <UserListCells key={item.id} fields={fields} row={item} action={canImpersonate ? <ImpersonateButton target={item} /> : undefined} />
                     ))}
                 />
             )}

@@ -62,12 +62,12 @@ function fieldValue<T>(field: UserListField<T>, row: T): ReactNode {
     return String(value)
 }
 
-export function UserListCells<T>({fields, row}: {fields: UserListField<T>[]; row: T}) {
+export function UserListCells<T>({fields, row, action}: {fields: UserListField<T>[]; row: T; action?: ReactNode}) {
     return <>{fields.map((field) => (
         <TableCell key={field.name} sx={{overflowWrap: 'anywhere'}}>
             {fieldValue(field, row)}
         </TableCell>
-    ))}</>
+    ))}{action !== undefined && <TableCell>{action}</TableCell>}</>
 }
 
 export function userCardFields<T>(fields: UserListField<T>[]) {

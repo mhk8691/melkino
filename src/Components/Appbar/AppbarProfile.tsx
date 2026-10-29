@@ -1,3 +1,8 @@
+import type {RootState} from '../../redux/store'
+import {useDispatch, useSelector, useStore} from 'react-redux'
+import {selectImpersonation, setImpersonationPending} from '../../redux/ImpersonationSlice'
+import {exitImpersonation, impersonationError, reloadIdentity} from '../../Core/Impersonation'
+import {setUtil} from '../../redux/UtilSlice'
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
@@ -12,6 +17,10 @@ import axios from 'axios'
 import {UsersType} from '../../Pages/User/Users'
 
 const AppbarProfile = ({user}: {user: UsersType}) => {
+    const {session, pending} = useSelector(selectImpersonation)
+    const reduxStore = useStore<RootState>()
+    const dispatch = useDispatch()
+    const [exiting, setExiting] = useState(false)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
@@ -36,6 +45,20 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
     }
 
     const handleLogout = async () => {
+        if (exiting || reduxStore.getState().impersonation.pending) return
+        if (session?.active) {
+            dispatch(setImpersonationPending(true))
+            setExiting(true)
+            try {
+                await exitImpersonation()
+                reloadIdentity()
+            } catch (error) {
+                dispatch(setUtil({open: true, message: impersonationError(error, 'بازگشت به حساب مدیر انجام نشد'), severity: 'error'}))
+                setExiting(false)
+                dispatch(setImpersonationPending(false))
+            }
+            return
+        }
         try {
             await axios.post('https://api.mlkino.com/accounts/logout/', null, {
                 withCredentials: true,
@@ -195,7 +218,7 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
                 <Divider sx={{my: 0.5}} />
 
                 <MenuItem
-                    onClick={handleLogout}
+                    onClick={handleLogout} disabled={exiting || pending}
                     sx={{
                         mx: 0.75,
                         mb: 0.75,
@@ -217,7 +240,7 @@ const AppbarProfile = ({user}: {user: UsersType}) => {
                     </ListItemIcon>
 
                     <Typography fontSize={13} fontWeight={600}>
-                        خروج از حساب
+                        {session?.active ? 'بازگشت به حساب مدیر' : 'خروج از حساب'}
                     </Typography>
                 </MenuItem>
             </Menu>
