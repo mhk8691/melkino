@@ -1,0 +1,42 @@
+// Use JSON unless a new file requires multipart. Keep nulls and arrays intact in JSON.
+export function buildUserRequestData(
+    data: Record<string, unknown>,
+    role?: 'user' | 'agency' | 'expert' | 'superadmin',
+    canVerifyOffice = false,
+): Record<string, unknown> | FormData {
+    const common = [
+        'first_name', 'last_name', 'phone', 'email', 'national_code', 'birth_date',
+        'avatar', 'postal_code', 'user_type', 'role',
+        'account_status', 'verification_status', 'is_active',
+    ]
+    const specific = {
+        user: [],
+        agency: ['agency_name', 'marital_status', 'ownership_type', 'lease_end_date', 'logo',
+            'has_business_license', 'license_number', 'license_image', 'landline',
+            'office_address', 'latitude', 'longitude', 'description',
+            ...(canVerifyOffice ? ['office_verification_status'] : [])],
+        expert: ['expert_code', 'agency_id', 'job_title', 'specialties', 'experience_years', 'professional_document', 'bio'],
+        superadmin: ['admin_level', 'is_staff', 'is_superuser'],
+    }
+    const allowed = role ? new Set([...common, ...specific[role]]) : null
+    const readOnly = new Set([
+        'province', 'city', 'address',
+        'id', 'full_name', 'manager_name', 'phone_verified', 'national_code_verified',
+        'has_profile', 'date_joined', 'last_login', 'role_display', 'user_type_display',
+        'account_status_display', 'verification_status_display',
+    ])
+    const entries = Object.entries(data).filter(([key, value]) => !readOnly.has(key) && (!allowed || allowed.has(key)) && value !== undefined)
+    if (!entries.some(([, value]) => value instanceof File)) return Object.fromEntries(entries)
+
+    const formData = new FormData()
+    entries.forEach(([key, value]) => {
+        if (value instanceof File) formData.append(key, value)
+        else if (Array.isArray(value)) formData.append(key, JSON.stringify(value))
+        else formData.append(key, value === null ? '' : String(value))
+    })
+    return formData
+}
+
+export function isAgencyValid(data: {agency_name?: string; office_address?: string}) {
+    return Boolean(data.agency_name?.trim() && data.office_address?.trim())
+}

@@ -1,8 +1,10 @@
+import {commonUserDefaults} from '../UserTypes'
+import {buildUserRequestData} from '../UserRequestData'
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
 import { Users } from '../Users'
 
-const resource = 'users/?group=user'
+const resource = 'users'
 
 export function UsersCreate({
     data,
@@ -11,16 +13,18 @@ export function UsersCreate({
     data: any
     setData: React.Dispatch<React.SetStateAction<any>>
 }) {
+    const formValues = {...commonUserDefaults, ...data, role: commonUserDefaults.role}
     return (
         <CreatePage
             title={'افزودن کاربر عادی'}
             resource={resource + '/'}
             isFormData={true}
-            redirect={'/users/user'}
-            formDetails={data}
+            buildRequestData={(values: Record<string, unknown>) => buildUserRequestData(values, 'user')}
+            redirect={'users/user'}
+            formDetails={formValues}
             
         >
-            <Users users={data} setUsers={setData} resource={resource} editMode={false} />
+            <Users users={formValues} setUsers={setData} resource={resource} editMode={false} />
         </CreatePage>
     )
 }

@@ -1,9 +1,11 @@
+import {buildUserRequestData} from '../../User/UserRequestData'
 import {useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
-import { Users, UsersType } from '../../User/Users'
+import type {SuperUserType as UsersType} from '../SuperUsers'
+import { SuperUser } from '../SuperUsers'
 
-const resource = 'users/?group=superadmin'
+const resource = 'users'
 
 export function SuperUsersEdit() {
     const state = useLocation().state as {row: UsersType}
@@ -16,9 +18,10 @@ export function SuperUsersEdit() {
             formDetails={superUsers}
             initialData={state.row}
             isFormData={true}
-            redirect={'/users/super-users'}
+            buildRequestData={(values: Record<string, unknown>) => buildUserRequestData(values, 'superadmin')}
+            redirect={'users/super-users'}
         >
-            <Users
+            <SuperUser
                 users={superUsers}
                 setUsers={setSuperUsers}
                 resource={resource}

@@ -1,9 +1,10 @@
+import {buildUserRequestData} from '../../User/UserRequestData'
 import {useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
 import {Expert, ExpertType} from '../Expert'
 
-const resource = 'users/?group=expert'
+const resource = 'users'
 
 export function ExpertEdit({title}: {title: string}) {
     const state = useLocation().state as {row: ExpertType}
@@ -16,7 +17,8 @@ export function ExpertEdit({title}: {title: string}) {
             formDetails={expert}
             initialData={state.row}
             isFormData={true}
-            redirect={'/users/expert'}
+            buildRequestData={(values: Record<string, unknown>) => buildUserRequestData(values, 'expert')}
+            redirect={'users/expert'}
         >
             <Expert expert={expert} setExpert={setExpert} resource={resource} />
         </EditPage>

@@ -18,6 +18,8 @@ export function EditPage(props) {
         noId = false,
         reload = false,
         hasChange = true,
+        buildRequestData,
+        disabled = false,
     } = props
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -53,7 +55,7 @@ export function EditPage(props) {
             const res = await DataProvider.patch(
                 noId ? `${resource}` : `${resource}/${params.id || formDetails.id}/`,
                 {
-                    data: isFormData ? formData : updatedFields,
+                    data: buildRequestData ? buildRequestData(hasChange ? updatedFields : formDetails) : isFormData ? formData : updatedFields,
                 },
             )
             dispatch(
@@ -104,6 +106,7 @@ export function EditPage(props) {
                             <Button
                                 variant="outlined"
                                 onClick={saveChanges}
+                                disabled={disabled}
                                 sx={{
                                     fontSize: {
                                         xs: '14px !important',

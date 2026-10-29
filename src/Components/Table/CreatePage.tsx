@@ -14,7 +14,8 @@ export function CreatePage(props) {
         redirect,
         isFormData = false,
         disabled = false,
-        buttonText
+        buttonText,
+        buildRequestData,
     } = props
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -41,7 +42,7 @@ export function CreatePage(props) {
         try {
             dispatch(setUtil({loading: true}))
             const res = await DataProvider.post(resource, {
-                data: isFormData ? formData : formDetails,
+                data: buildRequestData ? buildRequestData(formDetails) : isFormData ? formData : formDetails,
                 headers: {
                     'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
                 },

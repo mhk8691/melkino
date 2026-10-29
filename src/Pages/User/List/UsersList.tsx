@@ -1,13 +1,9 @@
+import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, UserIdentity, VerificationStatus} from '../UserListFields'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
+import {commonUserDefaults} from '../UserTypes'
 
-import {
-    Avatar,
-    Box,
-    Chip,
-    Stack,
-    Typography,
-} from '@mui/material'
-import TableCell from '@mui/material/TableCell'
-import {Fragment, useCallback, useState} from 'react'
+import {Box} from '@mui/material'
+import {useCallback, useState} from 'react'
 import {useQueryParams} from 'use-query-params'
 import {useDispatch} from 'react-redux'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -20,28 +16,25 @@ import {DataProvider} from '../../../Core/DataProvider'
 import {setUtil} from '../../../redux/UtilSlice'
 
 import type {UsersType} from '../Users'
-import profileImage from '../../../Images/user.png'
 import {UsersCreate} from '../Create/UsersCreate'
-import {UserCardGrid} from '../UserCardGrid'
 import {ViewModeToggle} from '../ViewModeToggle'
 import {useViewMode} from '../../../Core/useViewMode'
 
 const RESOURCE = 'users'
 const LIST_RESOURCE = 'users/?group=user'
 
-const tableHeadCells = [
-    createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
-    createTableHeadCells('شماره تماس', 'phone'),
-    createTableHeadCells('کد ملی', 'national_code'),
-    createTableHeadCells('شهر', 'city'),
-    createTableHeadCells('آدرس', 'address'),
-    createTableHeadCells('تاریخ ثبت‌نام', 'date_joined'),
-    createTableHeadCells('نقش', 'role'),
-    createTableHeadCells('نوع کاربر', 'user_type'),
-    createTableHeadCells('وضعیت حساب', 'account_status'),
-    createTableHeadCells('احراز هویت', 'verification_status'),
+const fields: UserListField<UsersType>[] = [
+    {name: 'id', label: 'شناسه'},
+    {name: 'full_name', label: 'نام و نام خانوادگی', render: (row) => <UserIdentity user={row} />},
+    {name: 'phone', label: 'شماره موبایل'},
+    {name: 'user_type', label: 'نوع کاربر', render: (row) => row.user_type_display || ({consumer: 'مصرف‌کننده', investor: 'سرمایه‌گذار'}[row.user_type]) || '--'},
+    {name: 'city', label: 'شهر'},
+    {name: 'account_status', label: 'وضعیت حساب', render: (row) => <AccountStatus user={row} />},
+    {name: 'verification_status', label: 'احراز هویت', render: (row) => <VerificationStatus status={row.verification_status} label={row.verification_status_display} />},
 ]
+
+const tableHeadCells = fields.map(({label, name}) => createTableHeadCells(label, name))
+const cardFields = userCardFields(fields)
 
 const queryNames = [
     {
@@ -82,49 +75,6 @@ const initialUsers: UsersListState = {
 }
 
 
-
-const formatDate = (value: string | null): string => {
-    if (!value) return '--'
-
-    const date = new Date(value)
-
-    if (Number.isNaN(date.getTime())) {
-        return value
-    }
-
-    return new Intl.DateTimeFormat('fa-IR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(date)
-}
-
-const getVerificationLabel = (status: string): string => {
-    const labels: Record<string, string> = {
-        not_started: 'شروع نشده',
-        verified: 'تأیید شده',
-        pending: 'در انتظار بررسی',
-        rejected: 'رد شده',
-        unverified: 'تأیید نشده',
-    }
-
-    return labels[status] ?? status
-}
-
-const getVerificationColor = (
-    status: string,
-): 'success' | 'error' | 'warning' | 'default' => {
-    switch (status) {
-        case 'verified':
-            return 'success'
-        case 'rejected':
-            return 'error'
-        case 'pending':
-            return 'warning'
-        default:
-            return 'default'
-    }
-}
 
 export function UsersList() {
     const [search, setSearch] = useQueryParams(
@@ -185,6 +135,7 @@ export function UsersList() {
             getList={getList}
             filtersData={queryNames}
             createModal={UsersCreate}
+            defaultState={commonUserDefaults}
         >
             <Box
                 sx={{
@@ -201,13 +152,22 @@ export function UsersList() {
             </Box>
 
             {viewMode === 'card' ? (
-                // <UserCardGrid
-                //     rows={users.data}
-                //     resource={RESOURCE}
-                //     getList={getList}
-                //     title="کاربران عادی"
-                // />
-                <></>
+                <CustomCardList
+                    rows={users.data}
+                    resource={RESOURCE}
+                    getList={getList}
+                    title="کاربران عادی"
+                    fields={cardFields}
+                    loading={loading}
+                    params={search}
+                    setParams={setSearch}
+                    count={users.total_results}
+                    hasDetail
+                    renderers={{
+                        title: (row: UsersType) => userFullName(row),
+                        status: (row: UsersType) => <AccountStatus user={row} />,
+                    }}
+                />
             ) : (
                 <CustomTable
                     title="کاربران عادی"
@@ -222,155 +182,7 @@ export function UsersList() {
                     loading={loading}
                     hasDetail
                     tableBodyCells={users.data.map((item) => (
-                        <Fragment key={item.id}>
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {item.id}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Stack
-                                    direction="row"
-                                    gap={1}
-                                    alignItems="center"
-                                >
-                                    <Avatar
-                                        src={
-                                            typeof item.avatar === 'string'
-                                                ? item.avatar
-                                                : profileImage
-                                        }
-                                        alt={
-                                            item.first_name ||
-                                            'کاربر'
-                                        }
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                        }}
-                                    />
-
-                                    <Typography
-                                        variant="body2"
-                                        sx={{whiteSpace: 'nowrap'}}
-                                    >
-                                        {
-                                            `${item.first_name} ${item.last_name}`.trim() ||
-                                            '--'}
-                                    </Typography>
-                                </Stack>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {item.phone || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.national_code || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.city || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        maxWidth: '300px',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                    }}
-                                >
-                                    {item.address || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {formatDate(item.date_joined)}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {item.role_display ||
-                                        (item.role === 'superadmin'
-                                            ? 'سوپر ادمین'
-                                            : 'کاربر عادی')}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {item.user_type_display ||
-                                        (item.user_type === 'consumer'
-                                            ? 'مصرف‌کننده'
-                                            : 'سرمایه‌گذار')}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={
-                                        item.account_status_display ||
-                                        (item.account_status === 'active'
-                                            ? 'فعال'
-                                            : item.account_status === 'inactive'
-                                              ? 'غیرفعال'
-                                              : 'مسدود')
-                                    }
-                                    color={
-                                        item.account_status === 'active'
-                                            ? 'success'
-                                            : item.account_status === 'suspended'
-                                              ? 'error'
-                                              : 'default'
-                                    }
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={
-                                        item.verification_status_display ||
-                                        getVerificationLabel(
-                                            item.verification_status,
-                                        )
-                                    }
-                                    color={getVerificationColor(
-                                        item.verification_status,
-                                    )}
-                                />
-                            </TableCell>
-                        </Fragment>
+                        <UserListCells key={item.id} fields={fields} row={item} />
                     ))}
                 />
             )}

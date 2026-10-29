@@ -1,7 +1,8 @@
+import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, VerificationStatus} from '../../User/UserListFields'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 
-import {Avatar, Box, Chip, Stack, Typography} from '@mui/material'
-import TableCell from '@mui/material/TableCell'
-import {Fragment, useState} from 'react'
+import {Box} from '@mui/material'
+import {useState} from 'react'
 import {useQueryParams} from 'use-query-params'
 import {useDispatch} from 'react-redux'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -11,9 +12,8 @@ import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
-import profileImage from '../../../Images/user.png'
 
-import {AgencyType} from '../Agency'
+import {AgencyType, agencyDefaults} from '../Agency'
 import {AgencyCreate} from '../Create/AgencyCreate'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
 import {useViewMode} from '../../../Core/useViewMode'
@@ -22,20 +22,21 @@ import {DataProvider} from '../../../Core/DataProvider'
 const RESOURCE = 'users'
 const LIST_RESOURCE = 'users/?group=agency'
 
-const tableHeadCells = [
-    createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
-    createTableHeadCells('شماره تماس', 'phone'),
-    createTableHeadCells('نقش', 'role_display'),
-    createTableHeadCells('نوع کاربر', 'user_type_display'),
-    createTableHeadCells('وضعیت حساب', 'account_status'),
-    createTableHeadCells('وضعیت احراز هویت', 'verification_status'),
-    createTableHeadCells('تأیید شماره تماس', 'phone_verified'),
-    createTableHeadCells('تکمیل پروفایل', 'has_profile'),
-    createTableHeadCells('تاریخ ثبت‌نام', 'date_joined'),
+const fields: UserListField<AgencyType>[] = [
+    {name: 'id', label: 'شناسه'},
+    {name: 'agency_name', label: 'نام دفتر املاک'},
+    {name: 'manager_name', label: 'مدیر دفتر', render: (row) => row.manager_name || userFullName(row)},
+    {name: 'phone', label: 'شماره موبایل'},
+    {name: 'city', label: 'شهر'},
+    {name: 'office_verification_status', label: 'تأیید دفتر', render: (row) => <VerificationStatus status={row.office_verification_status} />},
+    {name: 'account_status', label: 'وضعیت حساب', render: (row) => <AccountStatus user={row} />},
 ]
 
+const tableHeadCells = fields.map(({label, name}) => createTableHeadCells(label, name))
+const cardFields = userCardFields(fields)
+
 const queryNames = [
+    {field: 'agency_name', label: 'نام دفتر املاک', type: ''},
     {
         field: 'full_name',
         label: 'نام و نام خانوادگی',
@@ -52,8 +53,8 @@ const queryNames = [
         type: '',
     },
     {
-        field: 'verification_status',
-        label: 'وضعیت احراز هویت',
+        field: 'office_verification_status',
+        label: 'وضعیت تأیید دفتر',
         type: '',
     },
 ]
@@ -61,34 +62,6 @@ const queryNames = [
 type AgencyListResponse = {
     total_results: number
     results: AgencyType[]
-}
-
-const getVerificationLabel = (status: string) => {
-    const labels: Record<string, string> = {
-        not_started: 'شروع نشده',
-        verified: 'تأیید شده',
-        pending: 'در انتظار بررسی',
-        rejected: 'رد شده',
-        unverified: 'تأیید نشده',
-    }
-
-    return labels[status] ?? status
-}
-
-const formatDate = (value: string | null) => {
-    if (!value) return '--'
-
-    const date = new Date(value)
-
-    if (Number.isNaN(date.getTime())) {
-        return value
-    }
-
-    return new Intl.DateTimeFormat('fa-IR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(date)
 }
 
 export function AgencyList() {
@@ -157,9 +130,7 @@ export function AgencyList() {
             isCsvExport
             filtersData={queryNames}
             createModal={AgencyCreate}
-            defaultState={{
-                phone: '',
-            }}
+            defaultState={agencyDefaults}
         >
             <Box
                 sx={{
@@ -176,13 +147,22 @@ export function AgencyList() {
             </Box>
 
             {viewMode === 'card' ? (
-                // <UserCardGrid
-                //     rows={agency.data}
-                //     resource={RESOURCE}
-                //     getList={getAgency}
-                //     title="املاکی‌ها"
-                // />
-                <></>
+                <CustomCardList
+                    rows={agency.data}
+                    resource={RESOURCE}
+                    getList={getAgency}
+                    title="املاکی‌ها"
+                    fields={cardFields}
+                    loading={loading}
+                    params={search}
+                    setParams={setSearch}
+                    count={agency.total_results}
+                    hasDetail
+                    renderers={{
+                        title: (row: AgencyType) => row.agency_name || '--',
+                        status: (row: AgencyType) => <AccountStatus user={row} />,
+                    }}
+                />
             ) : (
                 <CustomTable
                     title="املاکی‌ها"
@@ -197,122 +177,7 @@ export function AgencyList() {
                     loading={loading}
                     hasDetail
                     tableBodyCells={agency.data.map((item) => (
-                        <Fragment key={item.id}>
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.id}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Stack
-                                    direction="row"
-                                    spacing={1}
-                                    alignItems="center"
-                                >
-                                    <Avatar
-                                        src={profileImage}
-                                        alt={item.full_name || 'املاکی'}
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                        }}
-                                    />
-
-                                    <Typography
-                                        variant="body2"
-                                        sx={{whiteSpace: 'nowrap'}}
-                                    >
-                                        {item.full_name ||
-                                            [item.first_name, item.last_name]
-                                                .filter(Boolean)
-                                                .join(' ') ||
-                                            '--'}
-                                    </Typography>
-                                </Stack>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {item.phone || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.role_display || item.role || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.user_type_display || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={
-                                        item.account_status_display ||
-                                        item.account_status
-                                    }
-                                    color={
-                                        item.account_status === 'active'
-                                            ? 'success'
-                                            : item.account_status === 'suspended'
-                                              ? 'error'
-                                              : 'default'
-                                    }
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={getVerificationLabel(
-                                        item.verification_status,
-                                    )}
-                                    color={
-                                        item.verification_status === 'verified'
-                                            ? 'success'
-                                            : item.verification_status === 'rejected'
-                                              ? 'error'
-                                              : 'default'
-                                    }
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.phone_verified
-                                        ? 'تأیید شده'
-                                        : 'تأیید نشده'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.has_profile
-                                        ? 'تکمیل شده'
-                                        : 'تکمیل نشده'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {formatDate(item.date_joined)}
-                                </Typography>
-                            </TableCell>
-                        </Fragment>
+                        <UserListCells key={item.id} fields={fields} row={item} />
                     ))}
                 />
             )}

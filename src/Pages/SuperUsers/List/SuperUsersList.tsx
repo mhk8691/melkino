@@ -1,7 +1,8 @@
+import {UserListCells, userCardFields, AccountStatus, userFullName, type UserListField, UserIdentity} from '../../User/UserListFields'
+import {CustomCardList} from '../../../Components/Card/CustomCardList'
 
-import {Avatar, Box, Chip, Stack, Typography} from '@mui/material'
-import TableCell from '@mui/material/TableCell'
-import {Fragment, useState} from 'react'
+import {Box} from '@mui/material'
+import {useState} from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
 import {useDispatch} from 'react-redux'
@@ -13,29 +14,29 @@ import {DataProvider} from '../../../Core/DataProvider'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {setUtil} from '../../../redux/UtilSlice'
 
-import type {UsersType} from '../../User/Users'
+import {type SuperUserType as UsersType, superUserDefaults} from '../SuperUsers'
 import {SuperUsersCreate} from '../Create/SuperUsersCreate'
-import profileImage from '../../../Images/user.png'
 import {useViewMode} from '../../../Core/useViewMode'
 import {ViewModeToggle} from '../../User/ViewModeToggle'
-import {UserCardGrid} from '../../User/UserCardGrid'
 
 const RESOURCE = 'users'
 const LIST_RESOURCE = 'users/?group=superadmin'
 
-const tableHeadCells = [
-    createTableHeadCells('شناسه', 'id'),
-    createTableHeadCells('نام و نام خانوادگی', 'full_name'),
-    createTableHeadCells('شماره تماس', 'phone'),
-    createTableHeadCells('ایمیل', 'email'),
-    createTableHeadCells('نقش', 'role'),
-    createTableHeadCells('وضعیت حساب', 'account_status'),
-    createTableHeadCells('احراز هویت', 'verification_status'),
-    createTableHeadCells('تاریخ ثبت‌نام', 'date_joined'),
-    createTableHeadCells('آخرین ورود', 'last_login'),
+const fields: UserListField<UsersType>[] = [
+    {name: 'id', label: 'شناسه'},
+    {name: 'full_name', label: 'نام و نام خانوادگی', render: (row) => <UserIdentity user={row} />},
+    {name: 'phone', label: 'شماره موبایل'},
+    {name: 'admin_level', label: 'سطح مدیریت'},
+    {name: 'is_staff', label: 'دسترسی پنل'},
+    {name: 'is_superuser', label: 'دسترسی کامل Django'},
+    {name: 'account_status', label: 'وضعیت حساب', render: (row) => <AccountStatus user={row} />},
 ]
 
+const tableHeadCells = fields.map(({label, name}) => createTableHeadCells(label, name))
+const cardFields = userCardFields(fields)
+
 const queryNames = [
+    {field: 'admin_level', label: 'سطح مدیریت', type: ''},
     {
         field: 'full_name',
         label: 'نام و نام خانوادگی',
@@ -64,34 +65,6 @@ interface SuperUsersListState {
 }
 
 
-
-const formatDate = (value: string | null): string => {
-    if (!value) return '--'
-
-    const date = new Date(value)
-
-    if (Number.isNaN(date.getTime())) {
-        return value
-    }
-
-    return new Intl.DateTimeFormat('fa-IR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(date)
-}
-
-const getVerificationLabel = (status: string): string => {
-    const labels: Record<string, string> = {
-        not_started: 'شروع نشده',
-        verified: 'تأیید شده',
-        pending: 'در انتظار بررسی',
-        rejected: 'رد شده',
-        unverified: 'تأیید نشده',
-    }
-
-    return labels[status] ?? status
-}
 
 export function SuperUsersList() {
     const [search, setSearch] = useQueryParams(
@@ -156,6 +129,7 @@ export function SuperUsersList() {
             getList={getSuperUsers}
             filtersData={queryNames}
             createModal={SuperUsersCreate}
+            defaultState={superUserDefaults}
         >
             <Box
                 sx={{
@@ -172,13 +146,22 @@ export function SuperUsersList() {
             </Box>
 
             {viewMode === 'card' ? (
-                // <UserCardGrid
-                //     rows={superUsers.data}
-                //     resource={RESOURCE}
-                //     getList={getSuperUsers}
-                //     title="سوپر ادمین‌ها"
-                // />
-                <></>
+                <CustomCardList
+                    rows={superUsers.data}
+                    resource={RESOURCE}
+                    getList={getSuperUsers}
+                    title="سوپر ادمین‌ها"
+                    fields={cardFields}
+                    loading={loading}
+                    params={search}
+                    setParams={setSearch}
+                    count={superUsers.total_results}
+                    hasDetail
+                    renderers={{
+                        title: (row: UsersType) => userFullName(row),
+                        status: (row: UsersType) => <AccountStatus user={row} />,
+                    }}
+                />
             ) : (
                 <CustomTable
                     title="سوپر ادمین‌ها"
@@ -193,119 +176,7 @@ export function SuperUsersList() {
                     loading={loading}
                     hasDetail
                     tableBodyCells={superUsers.data.map((item) => (
-                        <Fragment key={item.id}>
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.id}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Stack
-                                    direction="row"
-                                    gap={1}
-                                    alignItems="center"
-                                >
-                                    <Avatar
-                                        src={
-                                            typeof item.avatar === 'string'
-                                                ? item.avatar
-                                                : profileImage
-                                        }
-                                        alt={item.first_name || 'سوپر ادمین'}
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                        }}
-                                    />
-
-                                    <Typography
-                                        variant="body2"
-                                        sx={{whiteSpace: 'nowrap'}}
-                                    >
-                                        {
-                                            `${item.first_name} ${item.last_name}`.trim() ||
-                                            '--'}
-                                    </Typography>
-                                </Stack>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.phone || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.email || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography variant="body2">
-                                    {item.role_display || item.role || '--'}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={
-                                        item.account_status_display ||
-                                        item.account_status
-                                    }
-                                    color={
-                                        item.account_status === 'active'
-                                            ? 'success'
-                                            : item.account_status === 'suspended'
-                                              ? 'error'
-                                              : 'default'
-                                    }
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={
-                                        item.verification_status_display ||
-                                        getVerificationLabel(
-                                            item.verification_status,
-                                        )
-                                    }
-                                    color={
-                                        item.verification_status === 'verified'
-                                            ? 'success'
-                                            : item.verification_status === 'rejected'
-                                              ? 'error'
-                                              : item.verification_status === 'pending'
-                                                ? 'warning'
-                                                : 'default'
-                                    }
-                                />
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {formatDate(item.date_joined)}
-                                </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                                <Typography
-                                    variant="body2"
-                                    sx={{whiteSpace: 'nowrap'}}
-                                >
-                                    {formatDate(item.last_login)}
-                                </Typography>
-                            </TableCell>
-                        </Fragment>
+                        <UserListCells key={item.id} fields={fields} row={item} />
                     ))}
                 />
             )}

@@ -20,44 +20,10 @@ import {GridProducer} from '../../Components/Table/GridProducer'
 import DatePickerFilter from '../../Components/Filter/DatePicker'
 import ProfileUploader from './ProfileUploader'
 import {formatDate} from '../../Core/FormatDate'
+import type {CommonUserType} from './UserTypes'
+import {FormControlLabel, Switch} from '@mui/material'
 
-export interface UsersType {
-    id: number
-    phone: string
-    email: string | null
-    first_name: string
-    last_name: string
-    full_name: string
-    national_code: string | null
-    birth_date: string | null
-    avatar: string | File | null
-    province: string | null
-    city: string | null
-    postal_code: string | null
-    address: string | null
-    user_type: 'consumer' | 'investor'
-    user_type_display: string
-    role: 'superadmin' | 'user'
-    role_display: string
-    account_status: 'active' | 'inactive' | 'suspended'
-    account_status_display: string
-    verification_status:
-        | 'not_started'
-        | 'verified'
-        | 'pending'
-        | 'rejected'
-        | 'unverified'
-    verification_status_display: string
-    phone_verified: boolean
-    national_code_verified: boolean
-    is_active: boolean
-    is_staff: boolean
-    is_superuser: boolean
-    admin_level: string | number | null
-    has_profile: boolean
-    last_login: string | null
-    date_joined: string
-}
+export interface UsersType extends CommonUserType {}
 
 interface AddressType {
     province: string
@@ -65,19 +31,19 @@ interface AddressType {
     address: string
 }
 
-interface UsersProps {
-    users: UsersType
-    setUsers: Dispatch<SetStateAction<UsersType>>
+interface UsersProps<T extends UsersType> {
+    users: T
+    setUsers: Dispatch<SetStateAction<T>>
     resource: string
     editMode?: boolean
 }
 
-export function Users({
+export function Users<T extends UsersType>({
     users,
     setUsers,
     resource,
     editMode = true,
-}: UsersProps) {
+}: UsersProps<T>) {
     const [postalLoading, setPostalLoading] = useState(false)
     const [postalError, setPostalError] = useState('')
     const lookupIdRef = useRef(0)
@@ -175,323 +141,125 @@ export function Users({
 
         setUsers((prev) => ({
             ...prev,
-            postal_code: postal,
+            postal_code: postal || null,
             province: null,
             city: null,
             address: null,
         }))
     }
 
+    const text = (name: keyof CommonUserType, label: string, nullable = false, disabled = false) => (
+        <CustomTextField
+            key={name}
+            name={name}
+            data-resource={resource}
+            label={label}
+            value={users[name] ?? ''}
+            disabled={disabled}
+            change={(event) => {
+                const value = event.target.value
+                setUsers((prev) => ({...prev, [name]: nullable && value === '' ? null : value}))
+            }}
+        />
+    )
+    const select = (name: 'user_type' | 'account_status' | 'verification_status', label: string, options: {key: string; label: string}[]) => (
+        <CustomSelectField
+            key={name}
+            name={name}
+            setData={setUsers}
+            resource={resource}
+            label={label}
+            value={users[name] ?? ''}
+            options={users[name] && !options.some((option) => option.key === users[name])
+                ? [...options, {key: users[name], label: users[name]}] : options}
+        />
+    )
     return (
-        <Stack>
-            <Stack
-                sx={{
-                    width: '100%',
-                    marginBottom: '16px',
-                }}
-            >
-                <ProfileUploader
-                    user={users}
-                    setUser={setUsers}
-                />
-            </Stack>
-
+        <Stack spacing={2}>
+            <ProfileUploader user={users} setUser={setUsers} />
             <GridProducer
                 sx={{marginBottom: '16px'}}
                 data={[
-                    ...(editMode
-                        ? [
-                              <CustomTextField
-                                  key="id"
-                                  name="id"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="شناسه"
-                                  value={users.id ?? ''}
-                                  disabled
-                              />,
-                          ]
-                        : []),
-
+                    ...(editMode ? [text('id', 'شناسه کاربر', false, true)] : []),
+                    text('first_name', 'نام'),
+                    text('last_name', 'نام خانوادگی'),
                     <CustomTextField
-                        key="first_name"
-                        name="first_name"
-                        setData={setUsers}
-                        resource={resource}
-                        label="نام"
-                        value={users.first_name ?? ''}
+                        key="full_name"
+                        label="نام کامل"
+                        value={[users.first_name, users.last_name].filter(Boolean).join(' ') || users.full_name || ''}
+                        disabled
                     />,
-
-                    <CustomTextField
-                        key="last_name"
-                        name="last_name"
-                        setData={setUsers}
-                        resource={resource}
-                        label="نام خانوادگی"
-                        value={users.last_name ?? ''}
-                    />,
-
-                    <CustomTextField
-                        key="phone"
-                        name="phone"
-                        setData={setUsers}
-                        resource={resource}
-                        label="شماره تماس"
-                        value={users.phone ?? ''}
-                    />,
-
-                    <CustomTextField
-                        key="email"
-                        name="email"
-                        setData={setUsers}
-                        resource={resource}
-                        label="ایمیل"
-                        value={users.email ?? ''}
-                    />,
-
-                    <CustomTextField
-                        key="national_code"
-                        name="national_code"
-                        setData={setUsers}
-                        resource={resource}
-                        label="کد ملی"
-                        value={users.national_code ?? ''}
-                        disabled={editMode}
-                    />,
-
+                    text('phone', 'شماره موبایل'),
+                    text('email', 'ایمیل', true),
+                    text('national_code', 'کد ملی', true, editMode),
                     <DatePickerFilter
                         key="birth_date"
                         mode="controlled"
-                        item={{
-                            field: 'birth_date',
-                            label: 'تاریخ تولد',
-                        }}
-                        value={users.birth_date ?? ''}
-                        onChange={(value) =>
-                            setUsers((prev) => ({
-                                ...prev,
-                                birth_date: value || null,
-                            }))
-                        }
+                        item={{field: 'birth_date', label: 'تاریخ تولد'}}
+                        value={users.birth_date ?? null}
+                        onChange={(value) => setUsers((prev) => ({...prev, birth_date: value || null}))}
                     />,
-
                     <CustomTextField
                         key="postal_code"
                         name="postal_code"
-                        setData={setUsers}
-                        resource={resource}
+                        data-resource={resource}
                         label="کد پستی"
                         value={users.postal_code ?? ''}
-                        inputMode="numeric"
+                        inputProps={{inputMode: 'numeric', maxLength: 10}}
                         error={Boolean(postalError)}
                         helperText={postalError}
-                        onChange={handlePostalChange}
-                        sx={{
-                            '& input': {
-                                direction: 'ltr',
-                                textAlign: 'right',
-                            },
-                        }}
+                        change={handlePostalChange}
                         InputProps={{
                             startAdornment: (
-                                <InputAdornment position="end">
+                                <InputAdornment position="start">
                                     <IconButton
-                                        edge="end"
-                                        color="primary"
+                                        type="button"
                                         aria-label="استعلام کد پستی"
                                         onClick={postalLookup}
-                                        disabled={
-                                            postalLoading ||
-                                            !/^\d{10}$/.test(
-                                                users.postal_code ?? '',
-                                            )
-                                        }
+                                        disabled={postalLoading || !/^\d{10}$/.test(users.postal_code ?? '')}
                                     >
-                                        {postalLoading ? (
-                                            <CircularProgress size={20} />
-                                        ) : (
-                                            <SearchIcon fontSize="small" />
-                                        )}
+                                        {postalLoading ? <CircularProgress size={20} /> : <SearchIcon />}
                                     </IconButton>
                                 </InputAdornment>
                             ),
                         }}
                     />,
-
-                    <CustomTextField
-                        key="province"
-                        name="province"
-                        setData={setUsers}
-                        resource={resource}
-                        label="استان"
-                        value={users.province ?? ''}
-                        disabled
+                    text('province', 'استان', true, true),
+                    text('city', 'شهر', true, true),
+                    text('address', 'آدرس', true, true),
+                    select('user_type', 'نوع کاربر', [
+                        {key: 'consumer', label: 'مصرف‌کننده'},
+                        {key: 'investor', label: 'سرمایه‌گذار'},
+                    ]),
+                    select('account_status', 'وضعیت حساب', [
+                        {key: 'active', label: 'فعال'},
+                        {key: 'inactive', label: 'غیرفعال'},
+                        {key: 'suspended', label: 'مسدود'},
+                    ]),
+                    select('verification_status', 'وضعیت احراز هویت', [
+                        {key: 'not_started', label: 'شروع نشده'},
+                        {key: 'pending', label: 'در انتظار بررسی'},
+                        {key: 'verified', label: 'تأیید شده'},
+                        {key: 'rejected', label: 'رد شده'},
+                        {key: 'unverified', label: 'تأیید نشده'},
+                    ]),
+                    <CustomTextField key="role" label="نقش کاربر" value={users.role_display || users.role || ''} disabled />,
+                    <FormControlLabel
+                        key="is_active"
+                        label="حساب فعال"
+                        control={<Switch checked={users.is_active ?? true} onChange={(_, checked) => setUsers((prev) => ({...prev, is_active: checked}))} />}
                     />,
-
-                    <CustomTextField
-                        key="city"
-                        name="city"
-                        setData={setUsers}
-                        resource={resource}
-                        label="شهر"
-                        value={users.city ?? ''}
-                        disabled
-                    />,
-
-                    <CustomTextField
-                        key="address"
-                        name="address"
-                        setData={setUsers}
-                        resource={resource}
-                        label="آدرس"
-                        value={users.address ?? ''}
-                        multiline
-                        minRows={2}
-                        disabled
-                    />,
-
-                    <CustomSelectField
-                        key="user_type"
-                        name="user_type"
-                        setData={setUsers}
-                        resource={resource}
-                        label="نوع کاربر"
-                        value={users.user_type ?? ''}
-                        options={[
-                            {
-                                key: 'consumer',
-                                label: 'مصرف‌کننده',
-                            },
-                            {
-                                key: 'investor',
-                                label: 'سرمایه‌گذار',
-                            },
-                        ]}
-                    />,
-
-                    <CustomSelectField
-                        key="account_status"
-                        name="account_status"
-                        setData={setUsers}
-                        resource={resource}
-                        label="وضعیت حساب"
-                        value={users.account_status ?? ''}
-                        options={[
-                            {
-                                key: 'active',
-                                label: 'فعال',
-                            },
-                            {
-                                key: 'inactive',
-                                label: 'غیرفعال',
-                            },
-                            {
-                                key: 'suspended',
-                                label: 'مسدود',
-                            },
-                        ]}
-                    />,
-
-                    <CustomSelectField
-                        key="verification_status"
-                        name="verification_status"
-                        setData={setUsers}
-                        resource={resource}
-                        label="وضعیت احراز هویت"
-                        value={users.verification_status ?? ''}
-                        options={[
-                            {
-                                key: 'not_started',
-                                label: 'شروع نشده',
-                            },
-                            {
-                                key: 'verified',
-                                label: 'تأیید شده',
-                            },
-                            {
-                                key: 'pending',
-                                label: 'در انتظار بررسی',
-                            },
-                            {
-                                key: 'rejected',
-                                label: 'رد شده',
-                            },
-                            {
-                                key: 'unverified',
-                                label: 'تأیید نشده',
-                            },
-                        ]}
-                    />,
-
-                    ...(editMode
-                        ? [
-                              <CustomTextField
-                                  key="phone_verified"
-                                  name="phone_verified"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="تأیید شماره تماس"
-                                  value={
-                                      users.phone_verified
-                                          ? 'تأیید شده'
-                                          : 'تأیید نشده'
-                                  }
-                                  disabled
-                              />,
-
-                              <CustomTextField
-                                  key="national_code_verified"
-                                  name="national_code_verified"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="تأیید کد ملی"
-                                  value={
-                                      users.national_code_verified
-                                          ? 'تأیید شده'
-                                          : 'تأیید نشده'
-                                  }
-                                  disabled
-                              />,
-
-                              <CustomTextField
-                                  key="role_display"
-                                  name="role_display"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="نقش کاربر"
-                                  value={users.role_display ?? ''}
-                                  disabled
-                              />,
-
-                              <CustomTextField
-                                  key="last_login"
-                                  name="last_login"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="آخرین ورود"
-                                  value={
-                                      users.last_login
-                                          ? formatDate(users.last_login)
-                                          : ''
-                                  }
-                                  disabled
-                              />,
-
-                              <CustomTextField
-                                  key="date_joined"
-                                  name="date_joined"
-                                  setData={setUsers}
-                                  resource={resource}
-                                  label="تاریخ ثبت‌نام"
-                                  value={
-                                      users.date_joined
-                                          ? formatDate(users.date_joined)
-                                          : ''
-                                  }
-                                  disabled
-                              />,
-                          ]
-                        : []),
+                    ...(editMode ? [
+                        ...([
+                            ['phone_verified', 'موبایل تأیید شده'],
+                            ['national_code_verified', 'کد ملی تأیید شده'],
+                            ['has_profile', 'پروفایل تکمیل شده'],
+                        ] as const).map(([name, label]) => (
+                            <FormControlLabel key={name} label={label} control={<Switch checked={users[name] ?? false} disabled />} />
+                        )),
+                        <CustomTextField key="date_joined" label="تاریخ ثبت‌نام" value={users.date_joined ? formatDate(users.date_joined) : '--'} disabled />,
+                        <CustomTextField key="last_login" label="آخرین ورود" value={users.last_login ? formatDate(users.last_login) : '--'} disabled />,
+                    ] : []),
                 ]}
             />
         </Stack>
