@@ -1,6 +1,10 @@
-import {Typography} from '@mui/material'
+import {Chip, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
-import {useState} from 'react'
+import {Fragment, useState} from 'react'
+import {useDispatch} from 'react-redux'
+import useDeepCompareEffect from 'use-deep-compare-effect'
+import {DataProvider} from '../../../Core/DataProvider'
+import {setUtil} from '../../../redux/UtilSlice'
 import {useQueryParams} from 'use-query-params'
 import {createCardField} from '../../../Components/Card/CustomCard'
 import {CustomCardList} from '../../../Components/Card/CustomCardList'
@@ -10,21 +14,26 @@ import {ListPage} from '../../../Components/Table/ListPage'
 import {formatDate} from '../../../Core/FormatDate'
 import {createQueryParam} from '../../../Core/QueryParams'
 import {ReminderCreate} from '../Create/ReminderCreate'
-import {ReminderType} from '../Reminder'
+import {ReminderType, reminderDefaults} from '../Reminder'
 
 const RESOURCE = 'reminders'
+
+function ReminderStatus({isDone}: {isDone: boolean}) {
+    return <Chip size="small" label={isDone ? 'انجام شده' : 'انجام نشده'} color={isDone ? 'success' : 'warning'} variant="outlined" />
+}
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('عنوان', 'title'),
     createTableHeadCells('توضیحات', 'description'),
-    createTableHeadCells('تاریخ', 'date'),
+    createTableHeadCells('زمان یادآوری', 'remind_at'),
+    createTableHeadCells('وضعیت', 'is_done'),
 ]
 
 /** همان ستون‌ها، اما برای بدنه‌ی کارت. عنوان در renderers.title می‌آید پس اینجا تکرار نشده */
 const cardFields = [
     createCardField('شناسه', 'id'),
-    createCardField('تاریخ', 'date', {render: (row) => formatDate(row.date)}),
+    createCardField('زمان یادآوری', 'remind_at', {render: (row: ReminderType) => formatDate(row.remind_at)}),
     createCardField('توضیحات', 'description', {fullWidth: true}),
 ]
 
@@ -38,62 +47,50 @@ const cellText = (value: any) => (
     <Typography
         variant="body2"
         fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-        sx={{whiteSpace: 'nowrap'}}
+        sx={{overflowWrap: 'anywhere', maxWidth: 260}}
     >
-        {value || '--'}
+        {value ?? '--'}
     </Typography>
 )
 
 export function ReminderList() {
+    const dispatch = useDispatch()
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
     const [reminders, setReminders] = useState<{
         total_results: number
         data: ReminderType[]
     }>({
-        total_results: 5,
-        data: [
-            {
-                id: 1,
-                title: 'اطلاعیه بروزرسانی سامانه',
-                description:
-                    'سامانه در روز پنجشنبه جهت بروزرسانی به مدت یک ساعت در دسترس نخواهد بود.',
-                date: '2026-08-06T13:30:55.008241+03:30',
-            },
-            {
-                id: 2,
-                title: 'تغییر ساعات پشتیبانی',
-                description: 'از این پس ساعات پاسخگویی تیم پشتیبانی از ساعت ۸ صبح تا ۱۸ خواهد بود.',
-                date: '2026-08-06T13:30:55.008241+03:30',
-            },
-            {
-                id: 3,
-                title: 'نسخه جدید پنل مدیریت',
-                description: 'نسخه جدید پنل مدیریت با امکانات و قابلیت‌های جدید منتشر شد.',
-                date: '2026-08-06T13:30:55.008241+03:30',
-            },
-            {
-                id: 4,
-                title: 'اطلاعیه مهم کاربران',
-                description:
-                    'لطفاً اطلاعات حساب کاربری خود را بررسی و در صورت نیاز بروزرسانی کنید.',
-                date: '2026-08-06T13:30:55.008241+03:30',
-            },
-            {
-                id: 5,
-                title: 'جشنواره ویژه کاربران',
-                description:
-                    'جشنواره ویژه کاربران از تاریخ ۱ شهریور آغاز می‌شود و تا پایان ماه ادامه دارد.',
-                date: '2026-08-06T13:30:55.008241+03:30',
-            },
-        ],
+        total_results: 0,
+        data: [],
     })
 
-    const getReminders = () => {}
+    const getReminders = async () => {
+        setLoading(true)
+        try {
+            const response = await DataProvider.get<{
+                total_results: number
+                results: ReminderType[]
+            }>(`${RESOURCE}/`, search)
+            if (response) {
+                setReminders({
+                    total_results: response.data.total_results,
+                    data: response.data.results,
+                })
+            }
+        } catch (error: any) {
+            dispatch(setUtil({open: true, message: error.message || 'خطا در دریافت یادآوری‌ها', severity: 'error'}))
+        } finally {
+            setLoading(false)
+        }
+    }
+    useDeepCompareEffect(() => {
+        getReminders()
+    }, [search])
 
     // پراپ‌های مشترک بین جدول و کارت
     const shared = {
-        title: 'اطلاعیه',
+        title: 'یادآوری',
         resource: RESOURCE,
         rows: reminders.data,
         count: reminders.total_results,
@@ -108,17 +105,17 @@ export function ReminderList() {
         <ListPage
             viewKey={RESOURCE}
             defaultView="list"
-            header={'مدیریت یادآوری ها'}
+            header="مدیریت یادآوری‌ها"
             href={RESOURCE + '/create'}
             searchField="title"
-            searchText="نام"
+            searchText="عنوان"
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getReminders}
             filtersData={queryNames}
             createModal={ReminderCreate}
-            defaultState={{name: ''}}
+            defaultState={reminderDefaults}
         >
             {(view) =>
                 view === 'card' ? (
@@ -128,7 +125,8 @@ export function ReminderList() {
                         columns={{xs: 1, sm: 2, md: 3, xl: 4}}
                         renderers={{
                             title: (row) => row.title || '--',
-                            subtitle: (row) => formatDate(row.date),
+                            subtitle: (row: ReminderType) => formatDate(row.remind_at),
+                            status: (row: ReminderType) => <ReminderStatus isDone={row.is_done} />,
                         }}
                     />
                 ) : (
@@ -137,16 +135,17 @@ export function ReminderList() {
                         headCells={tableHeadCells}
                         handleSort={getReminders}
                         tableBodyCells={reminders.data.map((item) => (
-                            <>
+                            <Fragment key={item.id}>
                                 <TableCell>{cellText(item.id)}</TableCell>
                                 <TableCell>{cellText(item.title)}</TableCell>
                                 <TableCell>{cellText(item.description)}</TableCell>
                                 <TableCell>
-                                    <Typography sx={{whiteSpace: 'nowrap'}}>
-                                        {formatDate(item.date)}
+                                    <Typography sx={{overflowWrap: 'anywhere', maxWidth: 260}}>
+                                        {formatDate(item.remind_at)}
                                     </Typography>
                                 </TableCell>
-                            </>
+                                <TableCell><ReminderStatus isDone={item.is_done} /></TableCell>
+                            </Fragment>
                         ))}
                     />
                 )

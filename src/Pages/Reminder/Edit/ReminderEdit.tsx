@@ -13,9 +13,10 @@ export function ReminderEdit() {
         <EditPage
             resource={resource}
             title="جزئیات یادآوری"
-            formDetails={reminders}
+            formDetails={{title: reminders.title, description: reminders.description, remind_at: reminders.remind_at, is_done: reminders.is_done}}
+            disabled={!reminders.title.trim() || !reminders.remind_at}
             initialData={state.row}
-            isFormData={true}
+            isFormData={false}
         >
             <Reminder
             editMode
