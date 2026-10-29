@@ -241,7 +241,7 @@ export const drawerItems: DrawerItemType[] = [
     {
         title: 'لاگ',
         link: 'logs',
-        role: 'all',
+         role: UserRole.SUPERADMIN,
         icon: <AssignmentIcon sx={iconStyle} />,
     },
     {

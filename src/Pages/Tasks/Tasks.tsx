@@ -1,94 +1,127 @@
-import { Stack } from '@mui/material'
-import { CustomTextField } from '../../Components/Input/CustomTextField'
-import { CustomSelectField } from '../../Components/Input/CustomSelectField'
-import { GridProducer } from '../../Components/Table/GridProducer'
+import {Stack} from '@mui/material'
+import type {Dispatch, SetStateAction} from 'react'
+import {CustomTextField} from '../../Components/Input/CustomTextField'
+import {CustomSelectField} from '../../Components/Input/CustomSelectField'
+import {GridProducer} from '../../Components/Table/GridProducer'
+import {formatDate} from '../../Core/FormatDate'
 
 export type TasksType = {
     id: number
     title: string
-    date: string
-    isDone: boolean
-    priority: 'high' | 'medium' | 'low'
+    status: 'pending' | 'in_progress' | 'done'
+    description: string
+    due_date: string
+    created_by: number
+    created_at: string
+    updated_at: string
+    assignments: unknown[]
 }
+
+export const taskStatusOptions: {label: string; value: TasksType['status']}[] = [
+    {label: 'در انتظار', value: 'pending'},
+    {label: 'در حال انجام', value: 'in_progress'},
+    {label: 'انجام شده', value: 'done'},
+]
 
 export function Tasks({
     tasks,
     setTasks,
     resource,
-    editMode=false
+    editMode = false,
 }: {
     tasks: TasksType
-    setTasks: React.Dispatch<React.SetStateAction<TasksType>>
+    setTasks: Dispatch<SetStateAction<TasksType>>
     resource: string
-    editMode?:boolean
+    editMode?: boolean
 }) {
     return (
         <Stack>
             {tasks && (
                 <GridProducer
-                    sx={{ marginBottom: '16px' }}
+                    sx={{marginBottom: '16px'}}
                     data={[
-                           ...(editMode
-                            ? [
-                                  <CustomTextField
-                                      key="id"
-                                      name="id"
-                                      setData={setTasks}
-                                      resource={resource}
-                                      label="شناسه"
-                                      defaultValue={tasks.id}
-                                      disabled
-                                  />,
-                              ]
-                            : []),
-
+                        ...(editMode ? [
+                            <CustomTextField
+                                key="id"
+                                name="id"
+                                data-resource={resource}
+                                label="شناسه"
+                                value={tasks.id}
+                                disabled
+                            />,
+                        ] : []),
                         <CustomTextField
+                            key="title"
                             name="title"
                             setData={setTasks}
-                            resource={resource}
+                            data-resource={resource}
                             label="عنوان"
-                            defaultValue={tasks.title}
+                            value={tasks.title}
                         />,
-
+                        <CustomSelectField
+                            key="status"
+                            name="status"
+                            setData={setTasks}
+                            resource={resource}
+                            label="وضعیت"
+                            value={tasks.status}
+                            options={taskStatusOptions}
+                        />,
                         <CustomTextField
-                            name="date"
+                            key="description"
+                            name="description"
                             setData={setTasks}
-                            resource={resource}
-                            label="تاریخ"
-                            defaultValue={tasks.date}
+                            data-resource={resource}
+                            label="توضیحات"
+                            value={tasks.description}
+                            multiline
+                            minRows={3}
                         />,
-
-                        <CustomSelectField
-                            name="priority"
+                        <CustomTextField
+                            key="due_date"
+                            name="due_date"
                             setData={setTasks}
-                            resource={resource}
-                            label="اولویت"
-                            defaultValue={tasks.priority}
-                            options={[
-                                { label: 'بالا', value: 'high' },
-                                { label: 'متوسط', value: 'medium' },
-                                { label: 'پایین', value: 'low' },
-                            ]}
+                            data-resource={resource}
+                            label="تاریخ سررسید"
+                            value={tasks.due_date}
+                            type="date"
+                            InputLabelProps={{shrink: true}}
                         />,
-
-                        <CustomSelectField
-                            name="isDone"
-                            setData={setTasks}
-                            resource={resource}
-                            label="وضعیت انجام"
-                            defaultValue={String(tasks.isDone)}
-                            options={[
-                                { label: 'انجام شده', value: 'true' },
-                                { label: 'انجام نشده', value: 'false' },
-                            ]}
-                            onChange={(event) => {
-                                const isDone = event.target.value === 'true'
-                                setTasks((prev) => ({
-                                    ...prev,
-                                    isDone,
-                                }))
-                            }}
-                        />,
+                        ...(editMode ? [
+                            <CustomTextField
+                                key="created_by"
+                                name="created_by"
+                                data-resource={resource}
+                                label="شناسه ایجادکننده"
+                                value={tasks.created_by}
+                                disabled
+                            />,
+                            <CustomTextField
+                                key="created_at"
+                                name="created_at"
+                                data-resource={resource}
+                                label="تاریخ ایجاد"
+                                value={formatDate(tasks.created_at)}
+                                disabled
+                            />,
+                            <CustomTextField
+                                key="updated_at"
+                                name="updated_at"
+                                data-resource={resource}
+                                label="آخرین ویرایش"
+                                value={formatDate(tasks.updated_at)}
+                                disabled
+                            />,
+                            <CustomTextField
+                                key="assignments"
+                                name="assignments"
+                                data-resource={resource}
+                                label="تخصیص‌ها"
+                                value={tasks.assignments.length ? JSON.stringify(tasks.assignments, null, 2) : 'بدون تخصیص'}
+                                multiline
+                                disabled
+                            />,
+                        ] : []),
                     ]}
                 />
             )}

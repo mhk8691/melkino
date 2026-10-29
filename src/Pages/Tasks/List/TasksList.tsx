@@ -1,3 +1,8 @@
+import React, {useState} from 'react'
+import {useDispatch} from 'react-redux'
+import useDeepCompareEffect from 'use-deep-compare-effect'
+import {DataProvider} from '../../../Core/DataProvider'
+import {setUtil} from '../../../redux/UtilSlice'
 import { Chip, Typography } from '@mui/material'
 import TableCell from '@mui/material/TableCell'
 import { useQueryParams } from 'use-query-params'
@@ -7,24 +12,35 @@ import { CustomTable } from '../../../Components/Table/CustomTable'
 import { createTableHeadCells } from '../../../Components/Table/CustomTableHead'
 import { ListPage } from '../../../Components/Table/ListPage'
 import { createQueryParam } from '../../../Core/QueryParams'
+import {formatDate} from '../../../Core/FormatDate'
 import { TasksCreate } from '../Create/TasksCreate'
-import { TasksType } from '../Tasks'
+import { TasksType, taskStatusOptions } from '../Tasks'
 
 const RESOURCE = 'tasks'
+
+function TaskStatusChip({status}: {status: TasksType['status']}) {
+    return (
+        <Chip
+            size="small"
+            label={taskStatusOptions.find((option) => option.value === status)?.label ?? '--'}
+            color={status === 'done' ? 'success' : status === 'in_progress' ? 'info' : 'warning'}
+        />
+    )
+}
 
 const tableHeadCells = [
     createTableHeadCells('شناسه', 'id'),
     createTableHeadCells('عنوان', 'title'),
-    createTableHeadCells('تاریخ', 'date'),
-    createTableHeadCells('اولویت', 'priority'),
-    createTableHeadCells('وضعیت انجام', 'isDone'),
+    createTableHeadCells('وضعیت', 'status'),
+    createTableHeadCells('تاریخ سررسید', 'due_date'),
+    createTableHeadCells('ایجادکننده', 'created_by'),
 ]
 
 const cardFields = [
     createCardField('شناسه', 'id'),
-    createCardField('تاریخ', 'date'),
-    createCardField('اولویت', 'priority'),
-    createCardField('وضعیت انجام', 'isDone'),
+    createCardField('وضعیت', 'status', {render: (row: TasksType) => <TaskStatusChip status={row.status} /> }),
+    createCardField('تاریخ سررسید', 'due_date', {render: (row: TasksType) => formatDate(row.due_date)}),
+    createCardField('ایجادکننده', 'created_by'),
 ]
 
 const queryNames = tableHeadCells.slice(1,2).map((cell) => ({
@@ -43,66 +59,44 @@ const cellText = (value: string | number | boolean | null | undefined) => (
     </Typography>
 )
 
-const priorityLabels: Record<TasksType['priority'], string> = {
-    high: 'بالا',
-    medium: 'متوسط',
-    low: 'پایین',
-}
-
-const priorityColors = {
-    high: 'error',
-    medium: 'warning',
-    low: 'success',
-} as const
-
 export function TasksList() {
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
 
-    const tasks: {
+    const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
+    const [tasks, setTasks] = useState<{
         total_results: number
         data: TasksType[]
-    } = {
-        total_results: 5,
-        data: [
-            {
-                id: 1,
-                title: 'بررسی درخواست‌های مشتریان',
-                date: '۱۴۰۵/۰۷/۲۳',
-                isDone: false,
-                priority: 'high',
-            },
-            {
-                id: 2,
-                title: 'پیگیری بازدیدهای امروز',
-                date: '۱۴۰۵/۰۷/۲۳',
-                isDone: false,
-                priority: 'high',
-            },
-            {
-                id: 3,
-                title: 'بررسی فایل‌های جدید',
-                date: '۱۴۰۵/۰۷/۲۳',
-                isDone: true,
-                priority: 'medium',
-            },
-            {
-                id: 4,
-                title: 'تماس با مشتریان',
-                date: '۱۴۰۵/۰۷/۲۳',
-                isDone: false,
-                priority: 'medium',
-            },
-            {
-                id: 5,
-                title: 'به‌روزرسانی اطلاعات فایل‌ها',
-                date: '۱۴۰۵/۰۷/۲۳',
-                isDone: false,
-                priority: 'low',
-            },
-        ],
+    }>({total_results: 0, data: []})
+
+    const getTasks = async () => {
+        setLoading(true)
+        try {
+            const response = await DataProvider.get<{
+                total_results: number
+                results: TasksType[]
+            }>(`${RESOURCE}/`, search)
+
+            if (response) {
+                setTasks({
+                    total_results: response.data.total_results,
+                    data: response.data.results,
+                })
+            }
+        } catch (error: any) {
+            dispatch(setUtil({
+                open: true,
+                message: error.message,
+                severity: 'error',
+            }))
+        } finally {
+            setLoading(false)
+        }
     }
 
-    const getTasks = () => {}
+    useDeepCompareEffect(() => {
+        getTasks()
+    }, [search])
 
     const shared = {
         title: 'تسک',
@@ -111,7 +105,7 @@ export function TasksList() {
         count: tasks.total_results,
         params: search,
         setParams: setSearch,
-        loading: false,
+        loading,
         getList: getTasks,
         hasDetail: true,
     }
@@ -132,9 +126,10 @@ export function TasksList() {
             createModal={TasksCreate}
             defaultState={{
                 title: '',
-                date: '',
-                isDone: false,
-                priority: 'medium',
+                status: 'pending',
+                description: '',
+                due_date: '',
+                assignments: [],
             }}
         >
             {(view) =>
@@ -145,10 +140,7 @@ export function TasksList() {
                         columns={{ xs: 1, sm: 2, md: 3, xl: 4 }}
                         renderers={{
                             title: (row: TasksType) => row.title || '--',
-                            subtitle: (row: TasksType) =>
-                                `${priorityLabels[row.priority]} | ${
-                                    row.isDone ? 'انجام شده' : 'انجام نشده'
-                                }`,
+                            subtitle: (row: TasksType) => row.description || '--',
                         }}
                     />
                 ) : (
@@ -157,25 +149,13 @@ export function TasksList() {
                         headCells={tableHeadCells}
                         handleSort={getTasks}
                         tableBodyCells={tasks.data.map((item) => (
-                            <>
+                            <React.Fragment key={item.id}>
                                 <TableCell>{cellText(item.id)}</TableCell>
                                 <TableCell>{cellText(item.title)}</TableCell>
-                                <TableCell>{cellText(item.date)}</TableCell>
-                                <TableCell>
-                                    <Chip
-                                        size="small"
-                                        label={priorityLabels[item.priority]}
-                                        color={priorityColors[item.priority]}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        size="small"
-                                        label={item.isDone ? 'انجام شده' : 'انجام نشده'}
-                                        color={item.isDone ? 'success' : 'default'}
-                                    />
-                                </TableCell>
-                            </>
+                                <TableCell><TaskStatusChip status={item.status} /></TableCell>
+                                <TableCell>{cellText(formatDate(item.due_date))}</TableCell>
+                                <TableCell>{cellText(item.created_by)}</TableCell>
+                            </React.Fragment>
                         ))}
                     />
                 )
