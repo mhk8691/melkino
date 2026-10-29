@@ -1,6 +1,6 @@
 import React from 'react'
 import {CreatePage} from '../../../Components/Table/CreatePage'
-import {Tickets} from '../Tickets'
+import {Tickets, ticketDefaults} from '../Tickets'
 
 const resource = 'tickets'
 
@@ -11,15 +11,16 @@ export function TicketsCreate({
     data: any
     setData: React.Dispatch<React.SetStateAction<any>>
 }) {
+    const formValues = {...ticketDefaults, ...data}
     return (
         <CreatePage
             title={'ثبت تیکت'}
             resource={resource + '/'}
-            isFormData={true}
+            isFormData={false}
             redirect={resource}
-            formDetails={data}
+            formDetails={{subject: formValues.subject, category: formValues.category, status: formValues.status}}
         >
-            <Tickets tickets={data} setTickets={setData} resource={resource} />
+            <Tickets tickets={formValues} setTickets={setData} resource={resource} />
         </CreatePage>
     )
 }

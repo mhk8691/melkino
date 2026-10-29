@@ -1,207 +1,99 @@
-import {
-    Stack,
-    Paper,
-    Grid,
-    MenuItem,
-    Button,
-    Typography,
-    Box,
-    Divider,
-} from '@mui/material'
-import {useState} from 'react'
-import UploadFileIcon from '@mui/icons-material/UploadFileOutlined'
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
-import CloseIcon from '@mui/icons-material/Close'
+import {Stack} from '@mui/material'
+import type {Dispatch, SetStateAction} from 'react'
 import {CustomTextField} from '../../Components/Input/CustomTextField'
+import {CustomSelectField} from '../../Components/Input/CustomSelectField'
+import {GridProducer} from '../../Components/Table/GridProducer'
+import {formatDate} from '../../Core/FormatDate'
 
-export type TicketsType = {
-    title: string
-    description: string
-    file: File | string | null
-    priority: 'low' | 'medium' | 'high'
-    category: 'complaints' | 'technical' | 'other'
-}
+export type TicketStatus =
+    | 'open'
+    | 'in_progress'
+    | 'waiting_for_user'
+    | 'answered'
+    | 'closed'
 
-const priorityOptions = [
-    {value: 'low', label: 'کم'},
-    {value: 'medium', label: 'متوسط'},
-    {value: 'high', label: 'زیاد'},
-]
+export const TICKET_STATUSES = [
+    {value: 'open', label: 'باز', color: 'info'},
+    {value: 'in_progress', label: 'در حال بررسی', color: 'warning'},
+    {value: 'waiting_for_user', label: 'در انتظار پاسخ کاربر', color: 'secondary'},
+    {value: 'answered', label: 'پاسخ داده شده', color: 'success'},
+    {value: 'closed', label: 'بسته شده', color: 'default'},
+] as const
 
-const categoryOptions = [
-    {value: 'complaints', label: 'شکایت‌ها'},
+export const TICKET_CATEGORIES = [
+    {value: 'complaint', label: 'شکایت'},
     {value: 'technical', label: 'سوالات فنی درمورد ملکینو'},
     {value: 'other', label: 'متفرقه'},
-]
+] as const
 
-export function Tickets({
-    tickets,
-    setTickets,
-    resource,
-}: {
+export type TicketCategory = typeof TICKET_CATEGORIES[number]['value']
+
+export type TicketsType = {
+    id: number
+    creator: number
+    creator_name: string
+    assigned_to: number | null
+    assigned_to_name: string | null
+    category: TicketCategory
+    category_display: string
+    subject: string
+    status: TicketStatus
+    status_display: string
+    created_at: string
+    updated_at: string
+    closed_at: string | null
+    messages_count: number
+}
+
+export const ticketDefaults: TicketsType = {
+    id: 0, creator: 0, creator_name: '', assigned_to: null, assigned_to_name: null,
+    category: 'other', category_display: '', subject: '', status: 'open', status_display: '',
+    created_at: '', updated_at: '', closed_at: null, messages_count: 0,
+}
+
+export function Tickets({tickets, setTickets, resource, editMode = false}: {
     tickets: TicketsType
-    setTickets: React.Dispatch<React.SetStateAction<TicketsType>>
+    setTickets: Dispatch<SetStateAction<TicketsType>>
     resource: string
+    editMode?: boolean
 }) {
-    const [fileName, setFileName] = useState<string>(
-        typeof tickets?.file === 'string' ? tickets.file : ''
-    )
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            setFileName(file.name)
-            setTickets((prev) => ({...prev, file}))
-        }
-    }
-
-    const handleRemoveFile = () => {
-        setFileName('')
-        setTickets((prev) => ({...prev, file: null}))
-    }
-
     if (!tickets) return null
-
     return (
-        <Paper
-            variant="outlined"
-            sx={{
-                p: {xs: 2, sm: 3},
-                borderRadius: 2,
-            }}
-        >
-            <Stack spacing={0.5} sx={{mb: 3}}>
-                <Typography variant="subtitle1" fontWeight={600}>
-                    ثبت تیکت
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    موضوع تیکت را با جزئیات کامل شرح دهید تا سریع‌تر بررسی شود.
-                </Typography>
-            </Stack>
-
-            <Divider sx={{mb: 3}} />
-
-            <Grid container spacing={2.5}>
-                <Grid item xs={12}>
+        <Stack>
+            <GridProducer data={[
+                ...(editMode ? [
+                    <CustomTextField key="id" label="شناسه" value={tickets.id} disabled />,
+                ] : []),
+                <CustomTextField
+                    key="subject" name="subject" label="موضوع" data-resource={resource}
+                    value={tickets.subject ?? ''} setData={setTickets}
+                />,
+                <CustomSelectField
+                    key="category" name="category" label="دسته‌بندی" resource={resource}
+                    value={tickets.category} setData={setTickets} options={[...TICKET_CATEGORIES]}
+                />,
+                <CustomSelectField
+                    key="status" name="status" label="وضعیت" resource={resource}
+                    value={tickets.status} setData={setTickets} options={[...TICKET_STATUSES]}
+                />,
+                ...(editMode ? [
                     <CustomTextField
-                        name="title"
-                        setData={setTickets}
-                        resource={resource}
-                        label="عنوان"
-                        defaultValue={tickets.title}
-                        fullWidth
-                    />
-                </Grid>
-
-                <Grid item xs={12}>
-                    <CustomTextField
-                        name="description"
-                        setData={setTickets}
-                        resource={resource}
-                        label="توضیحات"
-                        defaultValue={tickets.description}
-                        multiline
-                        minRows={5}
-                        fullWidth
-                    />
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                    <CustomTextField
-                        name="priority"
-                        setData={setTickets}
-                        resource={resource}
-                        label="میزان اهمیت"
-                        defaultValue={tickets.priority}
-                        select
-                        fullWidth
-                    >
-                        {priorityOptions.map((opt) => (
-                            <MenuItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </MenuItem>
-                        ))}
-                    </CustomTextField>
-                </Grid>
-
-                <Grid item xs={12} sm={8}>
-                    <CustomTextField
-                        name="category"
-                        setData={setTickets}
-                        resource={resource}
-                        label="دسته‌بندی"
-                        defaultValue={tickets.category}
-                        select
-                        fullWidth
-                    >
-                        {categoryOptions.map((opt) => (
-                            <MenuItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </MenuItem>
-                        ))}
-                    </CustomTextField>
-                </Grid>
-
-                <Grid item xs={12}>
-                    <Typography variant="body2" sx={{mb: 1, color: 'text.secondary'}}>
-                        فایل پیوست
-                    </Typography>
-
-                    {fileName ? (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                borderRadius: 1.5,
-                                px: 2,
-                                py: 1.25,
-                            }}
-                        >
-                            <Stack direction="row" spacing={1} alignItems="center" sx={{minWidth: 0}}>
-                                <InsertDriveFileOutlinedIcon fontSize="small" color="action" />
-                                <Typography
-                                    variant="body2"
-                                    noWrap
-                                    sx={{maxWidth: {xs: 160, sm: 320}}}
-                                >
-                                    {fileName}
-                                </Typography>
-                            </Stack>
-                            <Button
-                                size="small"
-                                color="inherit"
-                                onClick={handleRemoveFile}
-                                startIcon={<CloseIcon fontSize="small" />}
-                            >
-                                حذف
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Button
-                            variant="outlined"
-                            component="label"
-                            color="inherit"
-                            startIcon={<UploadFileIcon />}
-                            sx={{
-                                justifyContent: 'flex-start',
-                                px: 2,
-                                py: 1.25,
-                                borderStyle: 'dashed',
-                                borderRadius: 1.5,
-                                textTransform: 'none',
-                                color: 'text.secondary',
-                                width: {xs: '100%', sm: 'auto'},
-                            }}
-                        >
-                            انتخاب فایل
-                            <input type="file" hidden onChange={handleFileChange} />
-                        </Button>
-                    )}
-                </Grid>
-            </Grid>
-        </Paper>
+                        key="assigned_to" name="assigned_to" label="شناسه مسئول رسیدگی"
+                        value={tickets.assigned_to ?? ''} disabled
+                    />,
+                    <CustomTextField key="creator" label="شناسه ثبت‌کننده" value={tickets.creator} disabled />,
+                    <CustomTextField key="creator_name" label="ثبت‌کننده" value={tickets.creator_name || '--'} disabled />,
+                    <CustomTextField key="assigned_to_name" label="مسئول رسیدگی" value={tickets.assigned_to_name ?? '--'} disabled />,
+                    <CustomTextField key="messages_count" label="تعداد پیام‌ها" value={tickets.messages_count} disabled />,
+                    ...([
+                        ['created_at', 'تاریخ ثبت'],
+                        ['updated_at', 'آخرین ویرایش'],
+                        ['closed_at', 'تاریخ بسته شدن'],
+                    ] as const).map(([name, label]) => (
+                        <CustomTextField key={name} label={label} value={tickets[name] ? formatDate(tickets[name]!) : '--'} disabled />
+                    )),
+                ] : []),
+            ]} />
+        </Stack>
     )
 }

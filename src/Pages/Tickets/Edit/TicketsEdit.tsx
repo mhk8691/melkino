@@ -3,7 +3,7 @@ import {useLocation} from 'react-router-dom'
 import {EditPage} from '../../../Components/Table/EditPage'
 
 import {Tickets, TicketsType} from '../Tickets'
-const resource = 'announcements'
+const resource = 'tickets'
 
 export function TicketsEdit() {
     const state = useLocation().state as {row: TicketsType}
@@ -15,12 +15,13 @@ export function TicketsEdit() {
             title="جزئیات تیکت"
             formDetails={tickets}
             initialData={state.row}
-            isFormData={true}
+            isFormData={false}
         >
             <Tickets
                 tickets={tickets}
                 setTickets={setTickets}
                 resource={resource}
+                editMode
             />
         </EditPage>
     )

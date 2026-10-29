@@ -1,6 +1,8 @@
 import {Chip, Typography} from '@mui/material'
 import TableCell from '@mui/material/TableCell'
-import {useState} from 'react'
+import {Fragment, useState} from 'react'
+import {useDispatch} from 'react-redux'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import {useQueryParams} from 'use-query-params'
 import {createCardField} from '../../../Components/Card/CustomCard'
 import {CustomCardList} from '../../../Components/Card/CustomCardList'
@@ -8,210 +10,127 @@ import {CustomTable} from '../../../Components/Table/CustomTable'
 import {createTableHeadCells} from '../../../Components/Table/CustomTableHead'
 import {ListPage} from '../../../Components/Table/ListPage'
 import {createQueryParam} from '../../../Core/QueryParams'
+import {DataProvider} from '../../../Core/DataProvider'
+import {formatDate} from '../../../Core/FormatDate'
+import {setUtil} from '../../../redux/UtilSlice'
 import {TicketsCreate} from '../Create/TicketsCreate'
-import {TicketsType} from '../Tickets'
+import {TicketsType, TICKET_STATUSES, TICKET_CATEGORIES, ticketDefaults} from '../Tickets'
 
 const RESOURCE = 'tickets'
 
-const tableHeadCells = [
-    createTableHeadCells('عنوان', 'title'),
-    createTableHeadCells('توضیحات', 'description'),
-    createTableHeadCells('فایل', 'file'),
-    createTableHeadCells('میزان اهمیت', 'priority'),
-    createTableHeadCells('دسته‌بندی', 'category'),
+function TicketStatusChip({ticket}: {ticket: TicketsType}) {
+    const option = TICKET_STATUSES.find((item) => item.value === ticket.status)
+    return <Chip label={ticket.status_display || option?.label || '--'} color={option?.color ?? 'default'} size="small" />
+}
+
+const categoryLabel = (ticket: TicketsType) => ticket.category_display ||
+    TICKET_CATEGORIES.find((option) => option.value === ticket.category)?.label || '--'
+
+const fields: {
+    name: keyof TicketsType
+    label: string
+    render?: (row: TicketsType) => React.ReactNode
+}[] = [
+    {name: 'subject', label: 'موضوع'},
+    {name: 'creator_name', label: 'ثبت‌کننده'},
+    {name: 'assigned_to_name', label: 'مسئول رسیدگی'},
+    {name: 'category', label: 'دسته‌بندی', render: categoryLabel},
+    {name: 'status', label: 'وضعیت', render: (row) => <TicketStatusChip ticket={row} />},
+    {name: 'created_at', label: 'تاریخ ثبت', render: (row) => formatDate(row.created_at)},
 ]
-
-const queryNames = tableHeadCells.slice(1,2).map((cell) => ({
-    field: cell.name,
-    label: cell.label,
-    type: '',
-}))
-
-const priorityLabel: Record<string, string> = {
-    low: 'کم',
-    medium: 'متوسط',
-    high: 'زیاد',
-}
-
-const priorityColor: Record<string, 'default' | 'success' | 'warning' | 'error'> = {
-    low: 'success',
-    medium: 'warning',
-    high: 'error',
-}
-
-const categoryLabel: Record<string, string> = {
-    complaints: 'شکایت‌ها',
-    technical: 'سوالات فنی درمورد ملکینو',
-    other: 'متفرقه',
-}
-
-function PriorityChip({priority}: {priority: string}) {
-    return (
-        <Chip
-            label={priorityLabel[priority] || '--'}
-            color={priorityColor[priority] || 'default'}
-            size="small"
-        />
-    )
-}
-
-const cellText = (value: any) => (
-    <Typography
-        variant="body2"
-        fontSize={{xs: '13px', sm: '14px', md: '16px', xl: '17px'}}
-        sx={{whiteSpace: 'nowrap'}}
-    >
-        {value || '--'}
-    </Typography>
-)
-
-/** همان ستون‌ها، اما برای بدنه‌ی کارت. عنوان در سربرگ می‌آید و اهمیت به‌صورت Chip در گوشه‌ی کارت */
+const tableHeadCells = fields.map(({name, label}) => createTableHeadCells(label, name))
 const cardFields = [
-    createCardField('دسته‌بندی', 'category', {
-        render: (row) => categoryLabel[row.category] || '--',
-    }),
-    createCardField('فایل', 'file', {
-        render: (row) => (typeof row.file === 'string' ? row.file : '--'),
-    }),
-    createCardField('توضیحات', 'description', {fullWidth: true}),
+    createCardField('ثبت‌کننده', 'creator_name'),
+    createCardField('مسئول رسیدگی', 'assigned_to_name', {render: (row: TicketsType) => row.assigned_to_name ?? '--'}),
+    createCardField('دسته‌بندی', 'category', {render: categoryLabel}),
+    createCardField('تعداد پیام‌ها', 'messages_count'),
+]
+const queryNames = [
+    {field: 'status', label: 'وضعیت', type: 'choice', choice: TICKET_STATUSES.map(({value, label}) => ({id: value, label}))},
+    {field: 'category', label: 'دسته‌بندی', type: 'choice', choice: TICKET_CATEGORIES.map(({value, label}) => ({id: value, label}))},
 ]
 
 export function TicketsList() {
+    const dispatch = useDispatch()
     const [search, setSearch] = useQueryParams(createQueryParam(queryNames))
     const [loading, setLoading] = useState(false)
     const [tickets, setTickets] = useState<{
         total_results: number
         data: TicketsType[]
-    }>({
-        total_results: 6,
-        data: [
-            {
-                title: 'مشکل در پرداخت آنلاین',
-                description: 'هنگام پرداخت با کارت بانکی، سیستم خطای نامشخص نمایش می‌دهد.',
-                file: 'payment-error.png',
-                priority: 'high',
-                category: 'complaints',
-            },
-            {
-                title: 'راهنمایی درباره API ملکینو',
-                description: 'نیاز به توضیح بیشتر درباره نحوه احراز هویت در API دارم.',
-                file: null,
-                priority: 'medium',
-                category: 'technical',
-            },
-            {
-                title: 'پیشنهاد بهبود رابط کاربری',
-                description: 'پیشنهاد می‌شود منوی اصلی ساده‌تر و کاربرپسندتر شود.',
-                file: null,
-                priority: 'low',
-                category: 'other',
-            },
-            {
-                title: 'عدم نمایش تصاویر ملک',
-                description: 'در برخی از آگهی‌ها تصاویر ملک به درستی بارگذاری نمی‌شود.',
-                file: 'screenshot-bug.jpg',
-                priority: 'medium',
-                category: 'technical',
-            },
-            {
-                title: 'شکایت از تاخیر در پاسخ‌گویی',
-                description: 'بیش از سه روز است که به تیکت قبلی من پاسخی داده نشده است.',
-                file: null,
-                priority: 'high',
-                category: 'complaints',
-            },
-            {
-                title: 'سوال درباره تعرفه‌های اشتراک',
-                description: 'می‌خواستم بدانم تفاوت پلن‌های اشتراک ویژه و معمولی چیست.',
-                file: 'pricing.pdf',
-                priority: 'low',
-                category: 'other',
-            },
-        ],
-    })
+    }>({total_results: 0, data: []})
 
-    const getTickets = () => {}
-
-    // پراپ‌های مشترک بین جدول و کارت
-    const shared = {
-        title: 'تیکت',
-        resource: RESOURCE,
-        rows: tickets.data,
-        count: tickets.total_results,
-        params: search,
-        setParams: setSearch,
-        loading,
-        getList: getTickets,
-        hasDetail: true,
+    const getTickets = async () => {
+        setLoading(true)
+        try {
+            const response = await DataProvider.get<{
+                total_results: number
+                results: TicketsType[]
+            }>(`${RESOURCE}/`, search)
+            if (response) {
+                setTickets({
+                    total_results: response.data.total_results,
+                    data: response.data.results,
+                })
+            }
+        } catch (error: any) {
+            dispatch(setUtil({open: true, message: error.message, severity: 'error'}))
+        } finally {
+            setLoading(false)
+        }
     }
+    useDeepCompareEffect(() => {
+        getTickets()
+    }, [search])
 
+    const shared = {
+        title: 'تیکت', resource: RESOURCE, rows: tickets.data, count: tickets.total_results,
+        params: search, setParams: setSearch, loading, getList: getTickets, hasDetail: true,
+    }
     return (
         <ListPage
             viewKey={RESOURCE}
             defaultView="list"
-            header={'مدیریت تیکت‌ها'}
-            href={RESOURCE + '/create'}
-            searchField="title"
-            searchText="عنوان"
+            header="مدیریت تیکت‌ها"
+            href={`${RESOURCE}/create`}
+            searchField="subject"
+            searchText="موضوع"
             setParams={setSearch}
             params={search}
             resource={RESOURCE}
             getList={getTickets}
             filtersData={queryNames}
             createModal={TicketsCreate}
-            defaultState={{name: ''}}
+            defaultState={ticketDefaults}
         >
-            {(view) =>
-                view === 'card' ? (
-                    <CustomCardList
-                        {...shared}
-                        fields={cardFields}
-                        columns={{xs: 1, sm: 2, md: 3, xl: 4}}
-                        renderers={{
-                            title: (row) => row.title || '--',
-                            subtitle: (row) => categoryLabel[row.category] || '--',
-                            status: (row) => <PriorityChip priority={row.priority} />,
-                        }}
-                    />
-                ) : (
-                    <CustomTable
-                        {...shared}
-                        headCells={tableHeadCells}
-                        handleSort={getTickets}
-                        tableBodyCells={tickets.data.map((item) => (
-                            <>
-                                <TableCell>{cellText(item.title)}</TableCell>
-                                <TableCell>
-                                    <Typography
-                                        variant="body2"
-                                        fontSize={{
-                                            xs: '13px',
-                                            sm: '14px',
-                                            md: '16px',
-                                            xl: '17px',
-                                        }}
-                                        sx={{
-                                            whiteSpace: 'nowrap',
-                                            maxWidth: '250px',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}
-                                    >
-                                        {item.description || '--'}
+            {(view) => view === 'card' ? (
+                <CustomCardList
+                    {...shared}
+                    fields={cardFields}
+                    columns={{xs: 1, sm: 2, md: 3, xl: 4}}
+                    renderers={{
+                        title: (row: TicketsType) => row.subject || '--',
+                        subtitle: (row: TicketsType) => formatDate(row.created_at),
+                        status: (row: TicketsType) => <TicketStatusChip ticket={row} />,
+                    }}
+                />
+            ) : (
+                <CustomTable
+                    {...shared}
+                    headCells={tableHeadCells}
+                    handleSort={getTickets}
+                    tableBodyCells={tickets.data.map((item) => (
+                        <Fragment key={item.id}>
+                            {fields.map(({name, render}) => (
+                                <TableCell key={name}>
+                                    <Typography component="div" variant="body2" sx={{overflowWrap: 'anywhere'}}>
+                                        {render ? render(item) : item[name] ?? '--'}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>
-                                    {cellText(typeof item.file === 'string' ? item.file : '--')}
-                                </TableCell>
-                                <TableCell>
-                                    <PriorityChip priority={item.priority} />
-                                </TableCell>
-                                <TableCell>{cellText(categoryLabel[item.category])}</TableCell>
-                            </>
-                        ))}
-                    />
-                )
-            }
+                            ))}
+                        </Fragment>
+                    ))}
+                />
+            )}
         </ListPage>
     )
 }
