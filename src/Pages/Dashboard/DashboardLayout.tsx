@@ -9,6 +9,7 @@ import {PropertyCard} from '../Files/PropertyCard/PropertyCard'
 import SectionTitle from './SectionTitle'
 import TodayControlCenter from './TodayControlCenter'
 import TodayImportantTasks from './TodayImportantTasks'
+import DashboardAnnouncements from './DashboardAnnouncements'
 import { useNavigate } from 'react-router-dom'
 
 interface DashboardStatsType {
@@ -229,6 +230,10 @@ export default function DashboardLayout() {
                         navigate('/customers')
                     }}
                 />
+
+                <Box sx={{my: 4}}>
+                    <DashboardAnnouncements />
+                </Box>
 
                 <Box sx={{my: 4}}>
                     <SectionTitle title="کارهای مهم امروز" />
